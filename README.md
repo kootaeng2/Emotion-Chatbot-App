@@ -1,3 +1,12 @@
+---
+title: Emotion Chatbot
+emoji: 🤗
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
 # 🤖 일기 기반 감정 분석 및 콘텐츠 추천 웹 애플리케이션
 
 > 사용자의 일기 텍스트를 AI로 분석하여 감정을 파악하고, '감정 수용' 또는 '기분 전환'이라는 두 가지 선택지에 따라 맞춤형 콘텐츠(영화, 음악, 책)를 추천해주는 웹 기반 서비스입니다.
