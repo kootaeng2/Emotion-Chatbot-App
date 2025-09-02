@@ -1,0 +1,19 @@
+# 가상환경 폴더
+venv/
+.venv/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
+
+# VS Code 설정 폴더
+.vscode/
+
+# 훈련 로그 폴더
+logs/
+
+# 훈련된 모델이 저장된 폴더
+results/
+
+# 기타 운영체제 파일
+.DS_Store
