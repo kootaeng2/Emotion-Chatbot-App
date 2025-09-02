@@ -1,0 +1,229 @@
+<!-- 홈페이지 -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title> 일기 기반 추천 웹페이지</title>
+    <style>
+        body {
+            font-family: "Spoqa Han Sans Neo", Arial, sans-serif;
+            padding: 50px;
+            background: linear-gradient(135deg, #ece9f7, #cacae0); /* 기본 배경 */
+            transition: background 0.5s ease;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px #0001;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+        h1 { color: #65e5c9; margin-bottom: 18px; }
+        textarea {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #d0d0e0;
+            padding: 16px;
+            font-size: 18px;
+            margin-bottom: 12px;
+            background: #f7f7fb;
+            resize: vertical;
+        }
+        button {
+            background: #6598e5;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-right: 8px;
+        }
+        button:hover { background: #5540a3; }
+        #result {
+            margin-top: 24px;
+            font-size: 17px;
+            color: #444a70;
+            background: #f2f2f7;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 2px 8px #cfcfe0;
+            min-height: 40px;
+        }
+        .history-title {
+            margin: 32px 0 12px 0;
+            color: #8855b0;
+            font-size: 20px;
+        }
+        #history {
+            background: #fff9;
+            border-radius: 10px;
+            padding: 14px 12px;
+            font-size: 15px;
+            min-height: 40px;
+            box-shadow: 0 2px 8px #edebf5;
+            margin-bottom: 15px;
+        }
+        .history-item {
+            margin-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+        }
+        .history-date {
+            color: #b2a4d4;
+            font-size: 13px;
+            margin-bottom: 3px;
+            display: block;
+        }
+        .clear-btn {
+            background: #e25b66;
+            color: white;
+            font-size: 14px;
+            padding: 7px 13px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            float: right;
+            transition: 0.2s;
+        }
+        .clear-btn:hover { background: #c73442; }
+        /* 테마 변경 버튼 스타일 */
+        .theme-buttons {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        .theme-buttons button {
+            font-size: 14px;
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- 테마 변경 버튼 -->
+        <div class="theme-buttons">
+            <button onclick="changeTheme('light')">🌞 밝은 모드</button>
+            <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
+            <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
+        </div>
+
+        <h1>오늘의 일기 입력</h1>
+        <textarea id="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요."></textarea><br>
+        <button onclick="recommend()">추천 받기</button>
+        <div id="result"></div>
+
+        <div class="history-title">
+            나의 일기 히스토리
+            <button class="clear-btn" onclick="clearHistory()">모두 지우기</button>
+        </div>
+        <div id="history"></div>
+    </div>
+
+    <script>
+        // 테마 변경 함수 + 로컬스토리지 저장
+        function changeTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = 'linear-gradient(135deg, #ffffff, #f0f0f0)';
+            } 
+            else if (mode === 'dark') {
+                document.body.style.background = 'linear-gradient(135deg, #2c2c3e, #1a1a28)';
+            } 
+            else if (mode === 'pastel') {
+                document.body.style.background = 'linear-gradient(135deg, #ffefd5, #ffe4e1)';
+            }
+            localStorage.setItem('selectedTheme', mode); // 선택한 테마 저장
+        }
+
+        // 페이지 로드시 저장된 테마 불러오기
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme) {
+                changeTheme(savedTheme);
+            }
+            renderHistory();
+        };
+
+        async function recommend() {
+            const diary = document.getElementById('diary').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (!diary) {
+                resultDiv.innerHTML = "일기 내용을 입력해 주세요.";
+                return;
+            }
+
+            resultDiv.innerHTML = "추천 콘텐츠를 생성 중입니다. 잠시만 기다려주세요...";
+
+            try {
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ diary })
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.innerHTML = `오류: ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong>감정분석:</strong> ${data.emotion} ${data.emoji}<br>
+                        <strong>추천:</strong> ${data.recommendation}
+                    `;
+                    saveDiary({
+                        text: diary,
+                        emotion: data.emotion,
+                        emoji: data.emoji,
+                        date: new Date().toISOString()
+                    });
+                    renderHistory();
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                resultDiv.innerHTML = '서버 통신 중 오류가 발생했습니다.';
+            }
+        }
+
+        function saveDiary(entry) {
+            let diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+            diaryHistory.unshift(entry);
+            if (diaryHistory.length > 20) diaryHistory = diaryHistory.slice(0, 20);
+            localStorage.setItem('diaryHistory', JSON.stringify(diaryHistory));
+        }
+
+        function renderHistory() {
+            const historyDiv = document.getElementById('history');
+            const diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+
+            if (!diaryHistory.length) {
+                historyDiv.innerHTML = "저장된 일기가 없습니다.";
+                return;
+            }
+
+            historyDiv.innerHTML = diaryHistory.map(item => `
+                <div class="history-item">
+                    <span class="history-date">
+                        ${new Date(item.date).toLocaleString('ko-KR', { 
+                            year: 'numeric', month: '2-digit', day: '2-digit', 
+                            hour: '2-digit', minute: '2-digit' 
+                        })}
+                    </span>
+                    <span>${item.emoji} <strong>[${item.emotion}]</strong> : ${item.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            if (confirm('정말 모두 삭제하시겠어요?')) {
+                localStorage.removeItem('diaryHistory');
+                renderHistory();
+                document.getElementById('result').innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>

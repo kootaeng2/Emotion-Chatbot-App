@@ -1,0 +1,31 @@
+name: Sync to Hugging Face hub # 이 Action의 이름
+
+on:
+  push:
+    branches: [main] # GitHub의 'main' 브랜치에 push 이벤트가 발생할 때마다 실행됩니다.
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }} # 1단계에서 GitHub에 저장한 HF_TOKEN 값을 가져옵니다.
+        run: |
+          # 사용자 이름(koons)과 Space 이름(emotion-chatbot)이 포함된 주소를 설정합니다.
+          # git-lfs를 사용하는 경우를 대비해 사용자 정보를 설정합니다.
+          git config --global user.email "hf@example.com"
+          git config --global user.name "Hugging Face"
+          
+          # 'huggingface'라는 이름으로 원격 저장소 주소를 추가합니다.
+          # 주소 형식: https://[사용자이름]:[토큰]@[Hugging Face 주소]
+          git remote add huggingface https://koons:${HF_TOKEN}@huggingface.co/spaces/koons/emotion-chatbot
+          
+          # 현재 로컬의 HEAD(최신 커밋)를 huggingface 원격 저장소의 main 브랜치로 강제 푸시합니다.
+          # -f 옵션은 Space의 기존 기록을 덮어쓰므로, GitHub를 기준으로 항상 최신 상태를 유지합니다.
+          git push huggingface HEAD:main -f
