@@ -89,7 +89,6 @@ pip install torch torchvision torchaudio --index-url [https://download.pytorch.o
 pip install -r requirements.txt
 
 
-<<<<<<< HEAD
 python scripts/train_model.py
 4. 웹 애플리케이션 실행
 Bash
@@ -147,7 +146,6 @@ Emotion-Chatbot-App/
 
 문제: Hugging Face Space 배포 과정에서 구식 인증 방식 오류, requirements.txt 누락, Python 모듈 탐색 경로 문제(ModuleNotFoundError), Flask 템플릿 경로 문제(TemplateNotFound) 등 다양한 런타임 오류 발생.
 
-<<<<<<< HEAD
 해결:
 
 **Dockerfile**을 작성하여 어떤 환경에서든 동일하게 실행될 수 있는 표준화된 환경을 구축.
