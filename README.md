@@ -92,7 +92,7 @@ python src/app.py
 
 📂 최종 폴더 구조
 프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
-
+```
 Emotion-Chatbot-App/
 └── src/
     ├── app.py               # Flask 웹 서버 실행 파일
@@ -100,6 +100,7 @@ Emotion-Chatbot-App/
     ├── recommender.py       # 추천 로직 모듈
     ├── static/              # CSS, 클라이언트 JS 파일
     └── templates/           # HTML 템플릿 파일
+```
 ... (기타 프로젝트 파일 및 폴더) ...
 <br>
 
