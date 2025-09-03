@@ -1,37 +1,32 @@
-# emotion_engine.py
+# emotion_engine.py (수정 후 최종 버전)
 
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import os
 
 def load_emotion_classifier():
-    # 현재 스크립트 파일의 디렉터리 경로를 가져옵니다.
-    base_path = os.path.dirname(os.path.abspath(__file__))
+    # --- 이 부분을 수정합니다 ---
+    # 현재 스크립트 파일의 절대 경로를 찾습니다. (예: /app/src/emotion_engine.py)
+    script_path = os.path.abspath(__file__)
+    # 스크립트가 있는 디렉터리를 찾습니다. (예: /app/src)
+    src_dir = os.path.dirname(script_path)
+    # 그 상위 디렉터리, 즉 프로젝트 루트를 찾습니다. (예: /app)
+    base_dir = os.path.dirname(src_dir)
+    # 프로젝트 루트와 모델 폴더 이름을 합쳐 정확한 경로를 만듭니다.
+    MODEL_PATH = os.path.join(base_dir, "korean-emotion-classifier-final")
     
-    # 모델 폴더의 절대 경로를 만듭니다.
-    MODEL_PATH = os.path.join(base_path, "korean-emotion-classifier-final")
-    
-    # 경로가 로컬 디렉터리인지 확인
-    if not os.path.isdir(MODEL_PATH):
-        print(f"❌ 오류: 지정된 경로 '{MODEL_PATH}'에 모델 폴더가 존재하지 않습니다.")
-        return None
-        
-    print(f"--- 최종 모델 경로 확인: [{MODEL_PATH}] ---")
-    print(f"로컬 절대 경로 '{MODEL_PATH}'에서 모델을 직접 불러옵니다...")
+    print(f"--- 배포 환경 모델 경로 확인: [{MODEL_PATH}] ---")
     
     try:
-        # 1. from_pretrained()에 절대 경로를 직접 전달합니다.
-        # 2. `local_files_only=True`는 제거합니다. 라이브러리가 자동으로 인식합니다.
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-        model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
-        
+        # local_files_only 옵션은 로컬 경로를 명시할 때 안전을 위해 유지하는 것이 좋습니다.
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, local_files_only=True)
         print("✅ 로컬 모델 파일 직접 로딩 성공!")
 
     except Exception as e:
         print(f"❌ 모델 로딩 중 오류: {e}")
-        # 오류가 발생한 원인을 정확히 출력합니다.
-        print(f"상세 오류 메시지: {e}")
         return None
+    # --- 여기까지 수정 ---
     
     device = 0 if torch.cuda.is_available() else -1
     emotion_classifier = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
