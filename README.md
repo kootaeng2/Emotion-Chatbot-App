@@ -38,14 +38,16 @@ pinned: false
 <br>
 
 # ⚙️ 기술 스택 및 아키텍처
-구분	기술
-Backend	Python 3.10, Flask, Gunicorn
-Frontend	HTML, CSS, JavaScript
-AI / Data	PyTorch, Hugging Face Transformers, Scikit-learn, Pandas
-Deployment	Docker, GitHub Actions, Hugging Face Spaces
-Version Control	Git, GitHub, Git LFS
+| 구분 | 기술 |
+| :--- | :--- |
+| **Backend** | python, Flask, Gunicorn |
+| **Frontend**| HTML, CSS, JavaScript |
+| **AI / Data**| PyTorch, Hugging Face Transformers, Scikit-learn, Pandas |
+| **Deployment**| Docker, GitHub Actions, Hugging Face Spaces |
+| **Version Control**| Git, GitHub, Git LFS |
 
-Sheets로 내보내기
+
+
 <br>
 
 배포 아키텍처 (CI/CD Pipeline)
@@ -54,43 +56,28 @@ Git Push (main 브랜치) → GitHub Actions (CI/CD 트리거) → Dockerfile �
 
 <br>
 
-🛠️ 시작하기: 로컬 환경에서 실행
-사전 요구사항
-Python 3.10
+## 🚀 시작하기: 로컬 환경 설정 및 실행 (Getting Started)
 
-Git
+이 프로젝트는 독립된 가상환경에서 실행하는 것을 강력하게 권장합니다. 가상환경은 PC의 다른 파이썬 프로젝트와 라이브러리가 충돌하는 것을 방지해주는 '독립된 작업 공간'입니다.
 
-1. 프로젝트 복제 (Clone)
-Bash
+### 🌍 방법 1: Anaconda 사용 (가장 안정적인 방법)
 
-git clone https://github.com/kootaeng2/Emotion-Chatbot-App.git
+AI/ML 프로젝트에 필요한 복잡한 라이브러리들을 가장 안정적으로 관리해주는 Anaconda 사용을 추천합니다.
+
+```bash
+# 1. GitHub에서 프로젝트 복제
+git clone [https://github.com/kootaeng2/Emotion-Chatbot-App.git](https://github.com/kootaeng2/Emotion-Chatbot-App.git)
 cd Emotion-Chatbot-App
-(저장소 이름이 변경되었다면, 위 주소를 새로 만드신 주소로 수정해주세요.)
 
-2. 가상환경 생성 및 라이브러리 설치
-Bash
+# 2. 'sentiment_env'라는 이름으로 Python 3.10 Conda 가상환경 생성
+conda create -n sentiment_env python=3.10
 
-# Python 3.10 가상환경 생성 및 활성화
-py -3.10 -m venv venv
-.\venv\Scripts\Activate
+# 3. 새로 만든 가상환경 활성화
+conda activate sentiment_env
 
-# PyTorch 및 기타 라이브러리 설치
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# 4. 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
+pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cu118](https://download.pytorch.org/whl/cu118)
 pip install -r requirements.txt
-3. AI 모델 직접 훈련하기 (최초 1회 필수)
-⚠️ 주의: 이 프로젝트는 훈련된 모델 파일을 포함하고 있지 않습니다. AI Hub '감성대화 말뭉치' 데이터셋을 다운로드하여 data/ 폴더에 위치시킨 후, 아래 명령어를 실행해야 합니다.
-
-Bash
-
-python scripts/train_model.py
-4. 웹 애플리케이션 실행
-Bash
-
-python src/app.py
-서버가 실행되면, 웹 브라우저 주소창에 http://127.0.0.1:5000 을 입력하여 접속하세요.
-
-<br>
-
 # 📂 최종 폴더 구조
 프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
 ```
