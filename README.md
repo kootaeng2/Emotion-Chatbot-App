@@ -64,7 +64,7 @@ Git Push (main 브랜치) → GitHub Actions (CI/CD 트리거) → Dockerfile �
 
 AI/ML 프로젝트에 필요한 복잡한 라이브러리들을 가장 안정적으로 관리해주는 Anaconda 사용을 추천합니다.
 
-```bash
+```
 # 1. GitHub에서 프로젝트 복제
 git clone [https://github.com/kootaeng2/Emotion-Chatbot-App.git](https://github.com/kootaeng2/Emotion-Chatbot-App.git)
 cd Emotion-Chatbot-App
@@ -80,15 +80,15 @@ pip install torch torchvision torchaudio --index-url [https://download.pytorch.o
 pip install -r requirements.txt
 # 📂 최종 폴더 구조
 프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
-```
-Emotion-Chatbot-App/
+
+```Emotion-Chatbot-App/
 └── src/
     ├── app.py               # Flask 웹 서버 실행 파일
     ├── emotion_engine.py    # 감정 분석 엔진 모듈
     ├── recommender.py       # 추천 로직 모듈
     ├── static/              # CSS, 클라이언트 JS 파일
-    └── templates/           # HTML 템플릿 파일
-```
+    └── templates/           # HTML 템플릿 파일```
+<br>
 ... (기타 프로젝트 파일 및 폴더) ...
 <br>
 
