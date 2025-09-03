@@ -78,6 +78,8 @@ conda activate sentiment_env
 # 4. 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
 pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cu118](https://download.pytorch.org/whl/cu118)
 pip install -r requirements.txt
+
+
 # 📂 최종 폴더 구조
 프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
 
