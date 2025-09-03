@@ -15,17 +15,18 @@ pinned: false
 
 <br>
 
-🚀 라이브 데모 (Live Demo)
+## 🚀 라이브 데모 (Live Demo)
 👉 https://huggingface.co/spaces/koons/emotion-chatbot
+<br>
 (위 주소는 이전에 확인된 Space ID 기준이며, 실제 최종 배포된 주소로 수정해주세요.)
 
 <br>
 
-[여기에 웹 애플리케이션 실제 작동 스크린샷이나 GIF를 삽입하세요]
+
 
 <br>
 
-✨ 핵심 기능
+# ✨ 핵심 기능
 🤖 텍스트 속 감정 탐색: klue/roberta-base 모델을 한국어 '감성대화 말뭉치' 데이터로 미세조정하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
 
 🎭 감성 맞춤 큐레이션: 분석된 감정을 더 깊이 음미하고 싶을 때(수용)와 새로운 기분으로 전환하고 싶을 때(전환), 두 가지 시나리오에 맞춰 영화, 음악, 책을 추천합니다.
@@ -36,7 +37,7 @@ pinned: false
 
 <br>
 
-⚙️ 기술 스택 및 아키텍처
+# ⚙️ 기술 스택 및 아키텍처
 구분	기술
 Backend	Python 3.10, Flask, Gunicorn
 Frontend	HTML, CSS, JavaScript
@@ -90,7 +91,7 @@ python src/app.py
 
 <br>
 
-📂 최종 폴더 구조
+# 📂 최종 폴더 구조
 프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
 ```
 Emotion-Chatbot-App/
