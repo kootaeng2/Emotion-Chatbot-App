@@ -99,6 +99,7 @@ python src/app.py
 <br>
 
 # 📂 프로젝트 폴더 구조
+```
 Emotion-Chatbot-App/
 │
 ├── .github/
@@ -123,7 +124,7 @@ Emotion-Chatbot-App/
 ├── Dockerfile               # Hugging Face 배포용 Docker 설정
 ├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
 └── requirements.txt         # 필수 Python 라이브러리 목록
-=======
+```
 
 <br>
 
