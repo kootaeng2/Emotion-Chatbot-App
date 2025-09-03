@@ -95,7 +95,7 @@ Bash
 
 python src/app.py
 서버가 실행되면, 웹 브라우저 주소창에 http://127.0.0.1:5000 을 입력하여 접속하세요.
-
+```
 <br>
 
 # 📂 프로젝트 폴더 구조
@@ -155,6 +155,6 @@ GitHub Actions 워크플로우를 최신 공식 Action(huggingface/sync-to-hub)�
 서버 환경에서의 Python 임포트 방식을 이해하고 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결.
 
 Flask의 동작 원리에 맞춰 templates 폴더를 src 내부로 재배치하여 최종적으로 모든 런타임 오류를 해결하고 배포에 성공.
-=======
+
 해결: gunicorn의 작동 방식을 이해하고, Python의 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결. 또한 Flask의 기본 규칙에 맞게 templates 및 static 폴더를 app.py가 있는 src 폴더 내부로 재배치하여 문제를 최종 해결.
->>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
+
