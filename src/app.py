@@ -1,11 +1,16 @@
-# app.py
+# app.py (수정 후 최종 버전)
 
 from flask import Flask, render_template, request, jsonify
-# emotion_engine.py에서 두 함수를 모두 올바르게 import 합니다.
-from emotion_engine import load_emotion_classifier, predict_emotion
-# recommender.py에서 대문자 Recommender '클래스'를 올바르게 import 합니다.
-from recommender import Recommender
+# '현재 폴더에 있는' 이라는 의미로 파일 이름 앞에 점(.)을 추가합니다.
+from .emotion_engine import load_emotion_classifier, predict_emotion
+from .recommender import Recommender
 import random
+
+app = Flask(__name__)
+
+# --- (이하 나머지 코드는 모두 동일) ---
+print("AI 챗봇 서버를 준비 중입니다...")
+# ...
 
 app = Flask(__name__)
 
