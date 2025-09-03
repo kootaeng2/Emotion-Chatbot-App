@@ -7,26 +7,42 @@ sdk: docker
 app_port: 7860
 pinned: false
 ---
+<<<<<<< HEAD
 🤖 일기 기반 감정 분석 및 콘텐츠 추천 웹 (v2.0)
 하루를 마무리하며 쓰는 당신의 일기, 그 속에 숨겨진 진짜 감정은 무엇일까요?
 이 프로젝트는 AI를 통해 당신의 글을 이해하고, 감정에 몰입하거나 혹은 새로운 활력이 필요할 때 맞춤형 콘텐츠를 추천해주는 당신만의 감성 비서입니다.
+=======
+# 🤖 일기 기반 감정 분석 및 콘텐츠 추천 웹
+> 하루를 마무리하며 쓰는 당신의 일기, 그 속에 숨겨진 진짜 감정은 무엇일까요?
+> 이 프로젝트는 AI를 통해 당신의 글을 이해하고, 감정에 몰입하거나 혹은 새로운 활력이 필요할 때 맞춤형 콘텐츠를 추천해주는 당신만의 감성 비서입니다.
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 
 <br>
 
 <br>
 
-🚀 라이브 데모 (Live Demo)
+## 🚀 라이브 데모 (Live Demo)
 👉 https://huggingface.co/spaces/koons/emotion-chatbot
+<<<<<<< HEAD
 (위 주소는 실제 배포된 Space ID 기준입니다.)
+=======
+<br>
+(위 주소는 이전에 확인된 Space ID 기준이며, 실제 최종 배포된 주소로 수정해주세요.)
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 
 <br>
 
-[여기에 웹 애플리케이션 실제 작동 스크린샷이나 GIF를 삽입하세요]
+
 
 <br>
 
+<<<<<<< HEAD
 ✨ 핵심 기능 (Key Features)
 🤖 AI 기반 감정 분석: klue/roberta-base 모델을 'AI Hub 감성대화 말뭉치' 데이터로 미세 조정(Fine-tuning)하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
+=======
+# ✨ 핵심 기능
+🤖 텍스트 속 감정 탐색: klue/roberta-base 모델을 한국어 '감성대화 말뭉치' 데이터로 미세조정하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 
 🎭 감성 맞춤 큐레이션: 분석된 감정을 더 깊이 음미하고 싶을 때(수용)와 새로운 기분으로 전환하고 싶을 때(전환), 두 가지 시나리오에 맞춰 영화, 음악, 책을 추천합니다.
 
@@ -36,6 +52,7 @@ pinned: false
 
 <br>
 
+<<<<<<< HEAD
 ⚙️ 기술 스택 및 아키텍처
 구분	기술
 Backend	Python 3.10, Flask, Gunicorn
@@ -46,22 +63,44 @@ Version Control	Git, GitHub, Git LFS
 
 Sheets로 내보내기
 배포 아키텍처 (CI/CD Pipeline):
+=======
+# ⚙️ 기술 스택 및 아키텍처
+| 구분 | 기술 |
+| :--- | :--- |
+| **Backend** | python, Flask, Gunicorn |
+| **Frontend**| HTML, CSS, JavaScript |
+| **AI / Data**| PyTorch, Hugging Face Transformers, Scikit-learn, Pandas |
+| **Deployment**| Docker, GitHub Actions, Hugging Face Spaces |
+| **Version Control**| Git, GitHub, Git LFS |
+
+
+
+<br>
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 
 Git Push (main 브랜치) → GitHub Actions (CI/CD 트리거) → Dockerfile 빌드 → Hugging Face Spaces (자동 배포 및 서빙)
 
 <br>
 
+<<<<<<< HEAD
 🛠️ 시작하기: 로컬 환경 설정 및 실행
 사전 요구사항
 Python 3.10
+=======
+## 🚀 시작하기: 로컬 환경 설정 및 실행 (Getting Started)
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 
-Git
+이 프로젝트는 독립된 가상환경에서 실행하는 것을 강력하게 권장합니다. 가상환경은 PC의 다른 파이썬 프로젝트와 라이브러리가 충돌하는 것을 방지해주는 '독립된 작업 공간'입니다.
 
-1. 프로젝트 복제 (Clone)
-Bash
+### 🌍 방법 1: Anaconda 사용 (가장 안정적인 방법)
 
-git clone https://github.com/kootaeng2/Emotion-Chatbot-App.git
+AI/ML 프로젝트에 필요한 복잡한 라이브러리들을 가장 안정적으로 관리해주는 Anaconda 사용을 추천합니다.
+
+```
+# 1. GitHub에서 프로젝트 복제
+git clone [https://github.com/kootaeng2/Emotion-Chatbot-App.git](https://github.com/kootaeng2/Emotion-Chatbot-App.git)
 cd Emotion-Chatbot-App
+<<<<<<< HEAD
 2. 가상환경 생성 및 라이브러리 설치 (Anaconda 권장)
 Bash
 
@@ -71,12 +110,21 @@ conda activate sentiment_env
 
 # 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+=======
+
+# 2. 'sentiment_env'라는 이름으로 Python 3.10 Conda 가상환경 생성
+conda create -n sentiment_env python=3.10
+
+# 3. 새로 만든 가상환경 활성화
+conda activate sentiment_env
+
+# 4. 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
+pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cu118](https://download.pytorch.org/whl/cu118)
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 pip install -r requirements.txt
-3. AI 모델 직접 훈련하기 (최초 1회 필수)
-⚠️ 주의: 이 프로젝트는 훈련된 모델 파일을 포함하고 있지 않습니다. AI Hub '감성대화 말뭉치' 데이터셋을 다운로드하여 data/ 폴더에 위치시킨 후, 아래 명령어를 실행해야 합니다.
 
-Bash
 
+<<<<<<< HEAD
 python scripts/train_model.py
 4. 웹 애플리케이션 실행
 Bash
@@ -111,6 +159,20 @@ Emotion-Chatbot-App/
 ├── Dockerfile               # Hugging Face 배포용 Docker 설정
 ├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
 └── requirements.txt         # 필수 Python 라이브러리 목록
+=======
+# 📂 최종 폴더 구조
+프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
+
+```Emotion-Chatbot-App/
+└── src/
+    ├── app.py               # Flask 웹 서버 실행 파일
+    ├── emotion_engine.py    # 감정 분석 엔진 모듈
+    ├── recommender.py       # 추천 로직 모듈
+    ├── static/              # CSS, 클라이언트 JS 파일
+    └── templates/           # HTML 템플릿 파일```
+<br>
+... (기타 프로젝트 파일 및 폴더) ...
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
 <br>
 
 🧗‍♂️ 주요 개발 도전 과제 및 해결 과정 (Troubleshooting Journey)
@@ -132,6 +194,7 @@ Emotion-Chatbot-App/
 
 문제: Hugging Face Space 배포 과정에서 구식 인증 방식 오류, requirements.txt 누락, Python 모듈 탐색 경로 문제(ModuleNotFoundError), Flask 템플릿 경로 문제(TemplateNotFound) 등 다양한 런타임 오류 발생.
 
+<<<<<<< HEAD
 해결:
 
 **Dockerfile**을 작성하여 어떤 환경에서든 동일하게 실행될 수 있는 표준화된 환경을 구축.
@@ -141,3 +204,6 @@ GitHub Actions 워크플로우를 최신 공식 Action(huggingface/sync-to-hub)�
 서버 환경에서의 Python 임포트 방식을 이해하고 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결.
 
 Flask의 동작 원리에 맞춰 templates 폴더를 src 내부로 재배치하여 최종적으로 모든 런타임 오류를 해결하고 배포에 성공.
+=======
+해결: gunicorn의 작동 방식을 이해하고, Python의 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결. 또한 Flask의 기본 규칙에 맞게 templates 및 static 폴더를 app.py가 있는 src 폴더 내부로 재배치하여 문제를 최종 해결.
+>>>>>>> ab2ab5ffd4245a72b03da09445175c7aec11934c
