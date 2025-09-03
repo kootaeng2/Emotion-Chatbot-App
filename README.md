@@ -7,7 +7,7 @@ sdk: docker
 app_port: 7860
 pinned: false
 ---
-🤖 일기 기반 감정 분석 및 콘텐츠 추천 웹
+🤖 일기 기반 감정 분석 및 콘텐츠 추천 웹 (v2.0)
 하루를 마무리하며 쓰는 당신의 일기, 그 속에 숨겨진 진짜 감정은 무엇일까요?
 이 프로젝트는 AI를 통해 당신의 글을 이해하고, 감정에 몰입하거나 혹은 새로운 활력이 필요할 때 맞춤형 콘텐츠를 추천해주는 당신만의 감성 비서입니다.
 
@@ -17,7 +17,7 @@ pinned: false
 
 🚀 라이브 데모 (Live Demo)
 👉 https://huggingface.co/spaces/koons/emotion-chatbot
-(위 주소는 이전에 확인된 Space ID 기준이며, 실제 최종 배포된 주소로 수정해주세요.)
+(위 주소는 실제 배포된 Space ID 기준입니다.)
 
 <br>
 
@@ -25,8 +25,8 @@ pinned: false
 
 <br>
 
-✨ 핵심 기능
-🤖 텍스트 속 감정 탐색: klue/roberta-base 모델을 한국어 '감성대화 말뭉치' 데이터로 미세조정하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
+✨ 핵심 기능 (Key Features)
+🤖 AI 기반 감정 분석: klue/roberta-base 모델을 'AI Hub 감성대화 말뭉치' 데이터로 미세 조정(Fine-tuning)하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
 
 🎭 감성 맞춤 큐레이션: 분석된 감정을 더 깊이 음미하고 싶을 때(수용)와 새로운 기분으로 전환하고 싶을 때(전환), 두 가지 시나리오에 맞춰 영화, 음악, 책을 추천합니다.
 
@@ -41,19 +41,17 @@ pinned: false
 Backend	Python 3.10, Flask, Gunicorn
 Frontend	HTML, CSS, JavaScript
 AI / Data	PyTorch, Hugging Face Transformers, Scikit-learn, Pandas
-Deployment	Docker, GitHub Actions, Hugging Face Spaces
+Deployment	Docker, GitHub Actions (CI/CD), Hugging Face Spaces
 Version Control	Git, GitHub, Git LFS
 
 Sheets로 내보내기
-<br>
+배포 아키텍처 (CI/CD Pipeline):
 
-배포 아키텍처 (CI/CD Pipeline)
-이 프로젝트는 GitHub Actions를 이용한 자동화된 배포 파이프라인을 구축했습니다.
 Git Push (main 브랜치) → GitHub Actions (CI/CD 트리거) → Dockerfile 빌드 → Hugging Face Spaces (자동 배포 및 서빙)
 
 <br>
 
-🛠️ 시작하기: 로컬 환경에서 실행
+🛠️ 시작하기: 로컬 환경 설정 및 실행
 사전 요구사항
 Python 3.10
 
@@ -64,16 +62,14 @@ Bash
 
 git clone https://github.com/kootaeng2/Emotion-Chatbot-App.git
 cd Emotion-Chatbot-App
-(저장소 이름이 변경되었다면, 위 주소를 새로 만드신 주소로 수정해주세요.)
-
-2. 가상환경 생성 및 라이브러리 설치
+2. 가상환경 생성 및 라이브러리 설치 (Anaconda 권장)
 Bash
 
-# Python 3.10 가상환경 생성 및 활성화
-py -3.10 -m venv venv
-.\venv\Scripts\Activate
+# Anaconda 가상환경 생성 및 활성화
+conda create -n sentiment_env python=3.10
+conda activate sentiment_env
 
-# PyTorch 및 기타 라이브러리 설치
+# 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 3. AI 모델 직접 훈련하기 (최초 1회 필수)
@@ -90,36 +86,58 @@ python src/app.py
 
 <br>
 
-📂 최종 폴더 구조
-프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
-
+📂 프로젝트 폴더 구조
 Emotion-Chatbot-App/
-└── src/
-    ├── app.py               # Flask 웹 서버 실행 파일
-    ├── emotion_engine.py    # 감정 분석 엔진 모듈
-    ├── recommender.py       # 추천 로직 모듈
-    ├── static/              # CSS, 클라이언트 JS 파일
-    └── templates/           # HTML 템플릿 파일
-... (기타 프로젝트 파일 및 폴더) ...
+│
+├── .github/
+│   └── workflows/
+│       └── sync-to-hub.yml    # GitHub Actions 자동 배포 워크플로우
+│
+├── korean-emotion-classifier-final/ # 추론(Inference)용 최종 AI 모델
+│
+├── notebooks/
+│   └── 1_explore_data.py    # 데이터 탐색용 노트북
+│
+├── scripts/
+│   └── train_model.py       # AI 모델 훈련 스크립트
+│
+├── src/
+│   ├── app.py               # Flask 웹 서버 실행 파일
+│   ├── emotion_engine.py    # 감정 분석 엔진 모듈
+│   ├── recommender.py       # 콘텐츠 추천 모듈
+│   ├── static/              # CSS, Frontend JS 등 정적 파일
+│   └── templates/           # HTML 템플릿 파일
+│
+├── Dockerfile               # Hugging Face 배포용 Docker 설정
+├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
+└── requirements.txt         # 필수 Python 라이브러리 목록
 <br>
 
-🧗‍♂️ 주요 개발 도전 과제 및 해결 과정
-이 프로젝트는 단순 기능 구현을 넘어, 실제 서비스 배포 과정에서 발생하는 복잡한 문제들을 체계적으로 해결한 경험을 포함합니다.
+🧗‍♂️ 주요 개발 도전 과제 및 해결 과정 (Troubleshooting Journey)
+이 프로젝트의 가장 큰 성과는 단순 기능 구현을 넘어, 실제 서비스 배포 과정에서 발생하는 복잡하고 깊이 있는 문제들을 체계적으로 해결한 경험입니다.
 
-Git LFS 및 히스토리 문제 해결:
+원인 불명의 OS 레벨 오류 해결 (stat: ... not NoneType):
 
-문제: 1GB가 넘는 AI 모델 파일로 인해 git push 시 타임아웃 및 용량 제한 오류 발생.
+문제: 로컬 Windows 환경에서 transformers 라이브러리가 파일을 로드하지 못하는 원인 불명의 OS 수준 오류가 지속적으로 발생.
 
-해결: Git LFS를 도입하고, 과거 히스토리에 남은 대용량 파일의 흔적을 git filter-repo 명령어로 완전히 제거하여 저장소를 배포에 최적화. 문제가 해결되지 않자 저장소를 초기화하는 과감한 결정을 통해 근본 원인을 해결.
+해결: venv의 불안정성을 의심하고 Anaconda 환경으로 이전하여 환경 변수를 통제했으며, Windows와 Linux의 경로 차이를 해결하기 위해 절대 경로 사용 및 경로 구분자 정규화를 통해 문제를 최종 해결. 이를 통해 운영체제 간 호환성에 대한 깊은 이해를 얻음.
 
-Hugging Face 배포 자동화 (CI/CD):
+대용량 AI 모델의 버전 관리 (Git LFS & History Rewriting):
 
-문제: 수동 배포의 비효율성을 개선하고, GitHub와 배포 서버 간의 인증 및 동기화 오류 발생.
+문제: 1GB가 넘는 AI 모델 및 훈련 부산물 파일로 인해 git push 시 타임아웃(408) 및 GitHub 용량 제한(GH001) 오류 발생.
 
-해결: Dockerfile로 실행 환경을 표준화하고, GitHub Actions 워크플로우를 구축하여 main 브랜치에 push 할 때마다 자동으로 Hugging Face Spaces에 배포되도록 CI/CD 파이프라인을 완성.
+해결: Git LFS를 도입하여 대용량 파일을 관리하고, 과거 히스토리에 남은 불필요한 대용량 파일의 흔적을 git filter-repo 명령어로 완전히 제거. 최종적으로 문제가 지속되자 저장소를 초기화하고 깨끗한 버전만 푸시하는 과감한 결정을 통해 근본 원인을 해결.
 
-Flask 애플리케이션 구조 문제:
+클라우드 자동 배포 파이프라인 구축 (CI/CD):
 
-문제: 로컬에서는 정상 작동하던 앱이, Docker 및 Gunicorn 환경의 서버에 배포되자 ModuleNotFoundError, TemplateNotFound 등 경로 관련 런타임 오류 발생.
+문제: Hugging Face Space 배포 과정에서 구식 인증 방식 오류, requirements.txt 누락, Python 모듈 탐색 경로 문제(ModuleNotFoundError), Flask 템플릿 경로 문제(TemplateNotFound) 등 다양한 런타임 오류 발생.
 
-해결: gunicorn의 작동 방식을 이해하고, Python의 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결. 또한 Flask의 기본 규칙에 맞게 templates 및 static 폴더를 app.py가 있는 src 폴더 내부로 재배치하여 문제를 최종 해결.
+해결:
+
+**Dockerfile**을 작성하여 어떤 환경에서든 동일하게 실행될 수 있는 표준화된 환경을 구축.
+
+GitHub Actions 워크플로우를 최신 공식 Action(huggingface/sync-to-hub)으로 수정하여 인증 문제를 해결.
+
+서버 환경에서의 Python 임포트 방식을 이해하고 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결.
+
+Flask의 동작 원리에 맞춰 templates 폴더를 src 내부로 재배치하여 최종적으로 모든 런타임 오류를 해결하고 배포에 성공.
