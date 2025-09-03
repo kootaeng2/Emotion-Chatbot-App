@@ -99,7 +99,7 @@ python src/app.py
 
 <br>
 
-📂 프로젝트 폴더 구조
+# 📂 프로젝트 폴더 구조
 Emotion-Chatbot-App/
 │
 ├── .github/
@@ -125,16 +125,6 @@ Emotion-Chatbot-App/
 ├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
 └── requirements.txt         # 필수 Python 라이브러리 목록
 =======
-# 📂 최종 폴더 구조
-프로젝트의 가독성과 확장성을 위해 Flask 애플리케이션의 표준 구조를 따릅니다.
-
-```Emotion-Chatbot-App/
-└── src/
-    ├── app.py               # Flask 웹 서버 실행 파일
-    ├── emotion_engine.py    # 감정 분석 엔진 모듈
-    ├── recommender.py       # 추천 로직 모듈
-    ├── static/              # CSS, 클라이언트 JS 파일
-    └── templates/           # HTML 템플릿 파일```
 
 <br>
 
