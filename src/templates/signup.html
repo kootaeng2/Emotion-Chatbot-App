@@ -3,18 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
+    <style>
+        body {
+            font-family: "Spoqa Han Sans Neo", Arial, sans-serif;
+            padding: 50px;
+            background: linear-gradient(135deg, #ece9f7, #cacae0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px #0001;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #65e5c9; /* 홈페이지 h1과 동일한 색상 */
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 16px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #d0d0e0;
+            padding: 14px;
+            font-size: 16px;
+            background: #f7f7fb;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background: #6598e5;
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #5540a3;
+        }
+        p {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        a {
+            color: #6598e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>회원가입</h1>
-    <form method="post">
-        <label for="username">사용자 이름:</label>
-        <input type="text" id="username" name="username" required>
-        <br><br>
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" required>
-        <br><br>
-        <button type="submit">회원가입</button>
-    </form>
-    <p>이미 계정이 있으신가요? <a href="/login">로그인</a></p>
+    <div class="container">
+        <h1>회원가입</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="username">사용자 이름</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">회원가입</button>
+        </form>
+        <p>이미 계정이 있으신가요? <a href="/login">로그인</a></p>
+    </div>
 </body>
 </html>
