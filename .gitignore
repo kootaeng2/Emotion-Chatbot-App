@@ -17,3 +17,8 @@ results/
 
 # 기타 운영체제 파일
 .DS_Store
+
+# .gitignore 파일 맨 아래에 추가
+
+# Database file
+/src/database.db
