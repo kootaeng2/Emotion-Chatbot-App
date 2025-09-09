@@ -1,5 +1,4 @@
-# emotion_engine.py (수정 후 최종 버전)
-
+# emotion_engine.py 
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import os
@@ -9,7 +8,6 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 import os
 
 def load_emotion_classifier():
-    # --- 이 부분을 수정합니다 ---
     # 로컬 경로 대신, Hugging Face Hub의 모델 ID를 사용합니다.
     MODEL_PATH = "koons/korean-emotion-classifier-final" # "사용자이름/모델이름" 형식
 
@@ -30,7 +28,6 @@ def load_emotion_classifier():
     
     return emotion_classifier
 
-# predict_emotion 함수는 그대로 둡니다.
 def predict_emotion(classifier, text):
     if not text or not text.strip(): return "내용 없음"
     if classifier is None: return "오류: 감정 분석 엔진 준비 안됨."

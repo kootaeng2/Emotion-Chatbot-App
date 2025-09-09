@@ -1,4 +1,6 @@
 # save_complete_model.py
+# 훈련된 모델을 배포용으로 변환
+
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # 기존 훈련 결과물이 저장된 경로

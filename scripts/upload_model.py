@@ -1,4 +1,5 @@
 # upload_model.py
+# 배포용 모델을 Hugging Face Hub에 업로드
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
