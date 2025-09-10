@@ -8,14 +8,30 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # 1. GitHub 저장소의 코드를 가져옵니다. (LFS 파일 포함)
+      - uses: actions/checkout@v2 # 안정성을 위해 v2를 사용
         with:
           fetch-depth: 0
           lfs: true
 
-      - name: Sync to Hugging Face Hub
-        uses: huggingface/sync-to-hub@v0.5
-        with:
-          repo_id: "taehoon222/emotion-chatbot-app"
-          repo_type: "space"
-          token: ${{ secrets.HF_TOKEN }}
+      # 2. Git 명령어를 직접 사용하여 Hugging Face Hub에 푸시합니다.
+      - name: Push to Hugging Face Hub
+        env:
+          # GitHub Secrets에 저장된 HF_TOKEN 값을 가져옵니다.
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Git 사용자 정보를 설정합니다. (LFS 푸시 시 필요)
+          git config --global user.email "hf@example.com"
+          git config --global user.name "Hugging Face"
+
+          # Hugging Face Hub 저장소 주소를 'hf'라는 별명으로 추가합니다.
+          # 주소 형식에 토큰을 직접 넣는 대신, 아래에서 인증을 처리합니다.
+          git remote add hf "https://huggingface.co/spaces/taehoon222/emotion-chatbot-app"
+
+          # Git의 인증 정보 저장소에 토큰을 직접 써넣습니다.
+          # 이것이 '비밀번호 인증'이 아닌 '토큰 인증'을 사용하는 최신 방식입니다.
+          echo "https://user:${HF_TOKEN}@huggingface.co" > $HOME/.git-credentials
+          git config --global credential.helper store
+
+          # 'hf' 원격 저장소의 main 브랜치로 강제 푸시합니다.
+          git push --force hf main
