@@ -22,3 +22,5 @@ results/
 
 # Database file
 /src/database.db
+
+korean-emotion-classifier-final/
