@@ -13,12 +13,9 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - # ... (파일 윗부분은 동일) ...
-
-         - name: Sync to Hugging Face Hub
-    # VS Code의 경고는 무시하고, 안정성이 검증된 버전(@v0.5)을 사용합니다.
-          uses: huggingface/sync-to-hub@v0.5
-          with:
-            repo_id: "taehoon222/emotion-chatbot-app" # 실제 배포할 스페이스 ID
-            repo_type: "space"
-            token: ${{ secrets.HF_TOKEN }}
+      - name: Sync to Hugging Face Hub
+        uses: huggingface/sync-to-hub@v0.5
+        with:
+          repo_id: "taehoon222/emotion-chatbot-app"
+          repo_type: "space"
+          token: ${{ secrets.HF_TOKEN }}
