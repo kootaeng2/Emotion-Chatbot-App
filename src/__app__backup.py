@@ -1,8 +1,9 @@
-# src/app.py (최종 통합 버전)
+# src/app.py 백업용
 
 # ---------------------------------
 # 1. 라이브러리 및 모듈 임포트
 # ---------------------------------
+from .models import User,Diary  # db관련 모델
 import os
 import random
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
@@ -127,6 +128,22 @@ def api_recommend():
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     predicted_emotion = predict_emotion(emotion_classifier, user_diary)
+
+    # --- 여기에 DB 저장 로직 추가 ---
+    try:
+        user_id = session['user_id']
+        # 새로운 Diary 객체를 만들어 DB에 저장합니다.
+        new_diary_entry = Diary(content=user_diary, emotion=predicted_emotion, user_id=user_id)
+        db.session.add(new_diary_entry)
+        db.session.commit()
+    except Exception as e:
+        # DB 저장 중 오류가 발생하면 서버 로그에 기록합니다.
+        print(f"DB 저장 오류: {e}")
+        db.session.rollback() # 오류 발생 시 작업을 되돌립니다.
+   
+    accept_recs = recommender.recommend(predicted_emotion, "수용")
+    
+    return jsonify(response_data)
     
     accept_recs = recommender.recommend(predicted_emotion, "수용")
     change_recs = recommender.recommend(predicted_emotion, "전환")
