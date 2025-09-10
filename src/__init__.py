@@ -16,8 +16,11 @@ def create_app():
     db.init_app(app)
 
     from . import main, auth
-    app. register_blueprint(main.bp)
+    app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
 
 
+    with app.app_context():
+        from . import models
+        db
     return app

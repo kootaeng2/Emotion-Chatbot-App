@@ -11,6 +11,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 4. 프로젝트 전체 코드 복사
 COPY . .
 
+# Hugging Face 관련 라이브러리들이 사용할 캐시 폴더를
+# 권한이 있는 /app 폴더 내부로 지정합니다.
+ENV HF_HOME=/app/.cache
+ENV TRANSFORMERS_CACHE=/app/.cache
+
 # 5. Hugging Face Spaces가 사용할 포트(7860) 열기
 EXPOSE 7860
 
