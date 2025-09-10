@@ -14,5 +14,5 @@ COPY . .
 # 5. Hugging Face Spaces가 사용할 포트(7860) 열기
 EXPOSE 7860
 
-# 6. 최종 실행 명령어 (gunicorn으로 src 폴더 안의 app.py를 실행)
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "src.app:app"]
+# 6. 최종 실행 명령어 최상위 폴더 run.py실행
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "run:app"]
