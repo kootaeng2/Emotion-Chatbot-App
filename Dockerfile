@@ -8,6 +8,9 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 캐시 폴더 생성 및 사용자에게 권한 제공 
+RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
+
 # 4. 프로젝트 전체 코드 복사
 COPY . .
 
