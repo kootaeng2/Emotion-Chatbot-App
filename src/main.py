@@ -1,9 +1,21 @@
+# src/main.py
+# 감정 분석 메인 
+# app.py는 이제 사용안함 
+
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
-from . import db, emotion_classifier, recommender
+from . import db # 이제 __init__에서는 db만 가져옵니다.
 from .models import Diary, User
+from .emotion_engine import load_emotion_classifier, predict_emotion 
+from .recommender import Recommender
 import random
 
+
 bp = Blueprint('main', __name__)
+
+print("AI 엔진 및 추천기를 로드합니다...")
+emotion_classifier = load_emotion_classifier()
+recommender = Recommender()
+print("AI 엔진 및 추천기 로드 완료.")
 
 emotion_emoji_map = {
     '기쁨': '😄', '행복': '😊', '사랑': '❤️', '불안': '😟', '슬픔': '😢', '상처': '💔',
