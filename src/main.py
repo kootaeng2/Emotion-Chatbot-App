@@ -23,7 +23,7 @@ emotion_emoji_map={
 
 @bp.route('/')
 def home():
-    # ❗️ 로직을 "로그인하지 않았다면"으로 수정합니다.
+    # ❗️ 로직을 "로그인하지 않았다면"으로 수정니다.
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
     return render_template("emotion_homepage.html", username=session.get('username'))

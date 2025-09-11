@@ -104,7 +104,11 @@
 </head>
 <body>
     <div class="container">
-
+        
+        <div class="user-info">
+            <span>환영합니다, <strong>{{ username }}</strong>님!</span>
+            <a href="{{ url_for('auth.logout') }}">로그아웃</a>
+        </div>
         <!-- 테마 변경 버튼 -->
         <div class="theme-buttons">
             <button onclick="changeTheme('light')">🌞 밝은 모드</button>
