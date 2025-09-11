@@ -5,6 +5,7 @@ colorFrom: indigo
 colorTo: blue
 sdk: docker
 app_port: 7860
+persistent_storage: 1G 
 pinned: false
 ---
 
@@ -120,10 +121,9 @@ Emotion-Chatbot-App/
 │   ├── recommender.py       # 콘텐츠 추천 모듈
 │   ├── static/              # CSS, Frontend JS 등 정적 파일
 │   └── templates/           # HTML 템플릿 파일
-     └── emotion_homepage.html # 홈페이지
 │
 ├── Dockerfile               # Hugging Face 배포용 Docker 설정
-├── README.md                # 프로젝트 설명서 
+├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
 └── requirements.txt         # 필수 Python 라이브러리 목록
 ```
 
