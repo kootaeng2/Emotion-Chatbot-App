@@ -13,12 +13,12 @@ bp=Blueprint('main', __name__)
 emotion_classifier=load_emotion_classifier() # 'emotion_clssifier' -> 'emotion_classifier' 오타 수정
 recommender=Recommender()
 emotion_emoji_map={
-    '기쁨':'😄', '행복':'😊', '사랑':'❤️',
-    '불안':'😟', '슬픔':'😢', '상처':'💔',
-    '분노':'😠', '혐오':'🤢', '짜증':'😤',
+    '기쁨':'😄',
+    '불안':'😟', 
+    '분노':'😠', 
     '놀람':'😮',
     '중립':'😐',
-    '공포':'😱'
+    '슬픔':'😢'
 }
 
 @bp.route('/')
