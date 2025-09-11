@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 4. 프로젝트 전체 코드 복사 (이것을 먼저 수행)
 COPY . .
 
-RUN python download_model.py
+RUN python src/download_model.py
 # 5. 데이터베이스가 위치할 src 폴더와 캐시 폴더에 쓰기 권한 부여
 RUN chmod -R 777 /app/src
 RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
