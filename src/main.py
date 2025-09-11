@@ -1,31 +1,34 @@
 # src/main.py
+# 기존 app.py에서 main과 관련해서 분리
 
-from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
-# __init__.py에서 생성된 db, emotion_classifier, recommender 객체를 가져와서 사용합니다.
-from . import db, emotion_classifier, recommender
-from .emotion_engine import predict_emotion
-from .models import Diary, User
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+from . import db
+from .models import User, Diary
+from .emotion_engine import load_emotion_classifier, predict_emotion
+from .recommender import Recommender
 import random
 
-# 'main'이라는 이름의 블루프린트(부서)를 생성합니다.
-bp = Blueprint('main', __name__)
+bp=Blueprint('main', __name__)
 
-# 이모지 맵은 main.py 내에서만 사용되므로 여기에 둡니다.
-emotion_emoji_map = {
-    '기쁨': '😄', '행복': '😊', '사랑': '❤️', '불안': '😟', '슬픔': '😢', '상처': '💔',
-    '분노': '😠', '혐오': '🤢', '짜증': '😤', '놀람': '😮', '중립': '😐',
+emotion_classifier=load_emotion_classifier() # 'emotion_clssifier' -> 'emotion_classifier' 오타 수정
+recommender=Recommender()
+emotion_emoji_map={
+    '기쁨':'😄', '행복':'😊', '사랑':'❤️',
+    '불안':'😟', '슬픔':'😢', '상처':'💔',
+    '분노':'😠', '혐오':'🤢', '짜증':'😤',
+    '놀람':'😮',
+    '중립':'😐',
+    '공포':'😱'
 }
 
-@bp.route("/")
+@bp.route('/')
 def home():
-    """메인 페이지. 로그인하지 않은 사용자는 로그인 페이지로 리디렉션합니다."""
+    # ❗️ 로직을 "로그인하지 않았다면"으로 수정합니다.
     if 'user_id' not in session:
-        # 'auth' 블루프린트의 'login' 함수를 찾아가도록 주소를 생성합니다.
         return redirect(url_for('auth.login'))
-        
-    # 로그인한 사용자의 이름을 템플릿으로 전달합니다.
     return render_template("emotion_homepage.html", username=session.get('username'))
 
+# (api_recommend, my_diary 함수는 그대로 유지)
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
     """AJAX 요청을 통해 일기를 받아, 감정을 분석하고, DB에 저장한 뒤, 추천을 반환하는 API"""
