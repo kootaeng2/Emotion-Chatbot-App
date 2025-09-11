@@ -8,13 +8,13 @@ import sys
 import transformers
 import torch
 
-from transformers import AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 # --- 1. 데이터 로딩 및 전처리 ---
 
 print("--- [Phase 1] 데이터 로딩 및 전처리 시작 ---")
 # 파일 경로 설정
-file_path = './data/'
+file_path = 'E:/sentiment_analysis_project/data/'
 
 # 훈련/검증 데이터 로딩 (이전과 동일)
 with open(file_path + 'training-label.json', 'r', encoding='utf-8') as file:
@@ -51,7 +51,7 @@ print("✅ 데이터 로딩 및 전처리 완료!")
 # --- 2. AI 모델링 준비 ---
 print("\n--- [Phase 2] AI 모델링 준비 시작 ---")
 # 모델 및 토크나이저 불러오기
-MODEL_NAME = "klue/roberta-base"
+MODEL_NAME = "beomi/kcbert-base"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
 # 텍스트 토큰화
