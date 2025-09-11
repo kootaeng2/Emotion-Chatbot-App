@@ -27,7 +27,7 @@ ENV TRANSFORMERS_CACHE=/app/.cache
 ENV OMP_NUM_THREADS=1
 
 # 6. Hugging Face Spaces가 사용할 포트 열기
-EXPOSE 10000
+EXPOSE 7860
 
 # 7. 최종 실행 명령어 최상위 폴더 run.py실행
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "run:app"]
