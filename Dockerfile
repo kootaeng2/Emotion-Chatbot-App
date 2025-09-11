@@ -12,16 +12,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 4. 프로젝트 전체 코드 복사 (이것을 먼저 수행)
 COPY . .
 
-RUN python src/download_model.py
 # 5. 데이터베이스가 위치할 src 폴더와 캐시 폴더에 쓰기 권한 부여
 RUN chmod -R 777 /app/src
 RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
-# --- 수정/추가 부분 끝 ---
+
 
 # Hugging Face 관련 라이브러리들이 사용할 캐시 폴더를
 # 권한이 있는 /app 폴더 내부로 지정합니다.
 ENV HF_HOME=/app/.cache
 ENV TRANSFORMERS_CACHE=/app/.cache
+
+ENV OMP_NUM_THREADS=1
 
 # 6. Hugging Face Spaces가 사용할 포트 열기
 EXPOSE 10000
