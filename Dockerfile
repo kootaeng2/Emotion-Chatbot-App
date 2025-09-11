@@ -5,6 +5,8 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # 3. 필요한 라이브러리 설치
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
