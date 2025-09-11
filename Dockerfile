@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 캐시 폴더 생성 및 사용자에게 권한 제공 
 RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
 
+
 # 4. 프로젝트 전체 코드 복사
 COPY . .
 
@@ -20,7 +21,7 @@ ENV HF_HOME=/app/.cache
 ENV TRANSFORMERS_CACHE=/app/.cache
 
 # 5. Hugging Face Spaces가 사용할 포트(7860) 열기
-EXPOSE 7860
+EXPOSE 10000
 
 # 6. 최종 실행 명령어 최상위 폴더 run.py실행
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "run:app"]

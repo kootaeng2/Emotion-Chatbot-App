@@ -12,7 +12,7 @@ def load_emotion_classifier():
 
     try:
         # local_files_only 옵션을 제거하여 온라인에서 다운로드하도록 합니다.
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, force_download=True)
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH) 
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
         print("✅ Hugging Face Hub 모델 로딩 성공!")
 
