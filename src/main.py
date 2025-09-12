@@ -3,6 +3,7 @@
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
 from . import db
 from .models import User, Diary
+import logging
 from .emotion_engine import load_emotion_classifier, predict_emotion
 from .recommender import Recommender
 import random
@@ -97,3 +98,10 @@ def show_users():
     except Exception as e:
         # 오류 발생 시 오류 메시지를 출력합니다.
         return f"사용자 목록을 불러오는 중 오류 발생: {e}"
+    
+@bp.route('/test_log')
+def test_log():
+    """로깅 시스템이 정상 작동하는지 확인하기 위한 테스트 경로"""
+    message = "✅ 로깅 테스트 성공! 이 메시지가 보이면 logging 모듈은 정상 작동합니다."
+    logging.warning(message)
+    return message

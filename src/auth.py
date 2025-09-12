@@ -22,32 +22,28 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    # --- try 블록의 위치를 함수 시작 부분으로 이동 ---
+    try:
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
 
-        if User.query.filter_by(username=username).first():
-            return "이미 존재하는 사용자 이름입니다."
+            # DB 조회 작업도 try 블록 안으로 이동
+            if User.query.filter_by(username=username).first():
+                return "이미 존재하는 사용자 이름입니다."
 
-        new_user = User(username=username)
-        new_user.set_password(password)
-        
-        # --- 오류 추적을 위한 try...except 블록 추가 ---
-        try:
+            new_user = User(username=username)
+            new_user.set_password(password)
+            
             db.session.add(new_user)
             db.session.commit()
-            print("✅ DB 저장 성공: 사용자 '{}'가 추가되었습니다.".format(username)) # 성공 로그
+            logging.warning("✅ DB 저장 성공: 사용자 '{}'가 추가되었습니다.".format(username))
             return redirect(url_for('auth.login'))
 
-        except Exception as e:
-            # 실패 시 작업을 되돌리고, 오류 메시지를 서버 로그에 기록합니다.
-            db.session.rollback()
-            print("==========================================")
-            print(f"🔥 DB 저장 실패! 원인: {e}")
-            print("==========================================")
-            # 사용자에게는 기존과 동일한 서버 오류 메시지를 보여줍니다.
-            return "Internal Server Error", 500
-        # --- 오류 추적 코드 끝 ---
+    except Exception as e:
+        db.session.rollback()
+        logging.exception("🔥🔥🔥 signup 함수에서 DB 오류 발생! 🔥🔥🔥")
+        return "Internal Server Error", 500
 
     return render_template('signup.html')
 
