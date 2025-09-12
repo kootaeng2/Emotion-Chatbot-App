@@ -15,9 +15,6 @@ def create_app():
     # 데이터베이스 파일이 위치할 디렉터리 경로
     db_dir = os.path.dirname(db_path)
     
-    # 디렉터리가 존재하지 않으면 생성합니다.
-    os.makedirs(db_dir, exist_ok=True)
-    print(f"✅ Database directory '{db_dir}' is ready.")
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
