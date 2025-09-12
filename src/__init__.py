@@ -23,8 +23,6 @@ def create_app():
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
-
-    @app.before_first_request
     def create_tables():
 
         with app.app_context():
