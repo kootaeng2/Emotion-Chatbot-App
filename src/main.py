@@ -80,28 +80,3 @@ def my_diary():
     
     return render_template('my_diary.html', diaries=user_diaries)
 
-@bp.route('/show_users')
-def show_users():
-    """데이터베이스에 저장된 모든 사용자를 확인하기 위한 테스트용 페이지"""
-    try:
-        # User 테이블의 모든 사용자 정보를 가져옵니다.
-        all_users = User.query.all()
-        
-        # 사용자가 한 명도 없으면 메시지를 표시합니다.
-        if not all_users:
-            return "저장된 사용자가 아무도 없습니다."
-            
-        # 각 사용자의 이름을 리스트로 만들어 출력합니다.
-        usernames = [user.username for user in all_users]
-        return f"현재 저장된 사용자 목록: {', '.join(usernames)}"
-
-    except Exception as e:
-        # 오류 발생 시 오류 메시지를 출력합니다.
-        return f"사용자 목록을 불러오는 중 오류 발생: {e}"
-    
-@bp.route('/test_log')
-def test_log():
-    """로깅 시스템이 정상 작동하는지 확인하기 위한 테스트 경로"""
-    message = "✅ 로깅 테스트 성공! 이 메시지가 보이면 logging 모듈은 정상 작동합니다."
-    logging.warning(message)
-    return message

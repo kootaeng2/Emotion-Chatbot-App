@@ -20,6 +20,10 @@ def load_emotion_classifier():
         return None
     
     device = 0 if torch.cuda.is_available() else -1
+    if device == 0:
+        print("Device set to use cuda (GPU)")
+    else:
+        print("Device set to use cpu")
     emotion_classifier = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
     
     return emotion_classifier
