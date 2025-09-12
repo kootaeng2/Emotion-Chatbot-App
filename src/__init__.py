@@ -1,33 +1,37 @@
-# src/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
 
+# db 객체를 먼저 생성하되, 아직 앱에 연결하지 않습니다.
 db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
     
+    # 데이터베이스 경로 설정
     db_path = '/data/database.db'
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     
+    # 데이터베이스 파일이 위치할 디렉터리 경로
+    db_dir = os.path.dirname(db_path)
+    # 앱이 시작될 때 디렉터리가 존재하는지 확인하고 없으면 생성합니다.
+    # 이 작업은 파일I/O가 비교적 안전한 시점에 수행됩니다.
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
+    
+    # db 객체를 Flask 앱에 초기화(연결)합니다.
     db.init_app(app)
 
+    # 블루프린트 등록
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
 
-    # with app.app_context()를 사용하여 앱이 시작될 때 DB 테이블을 생성합니다.
+    # with app.app_context()를 사용하여 앱 컨텍스트 안에서 테이블을 생성합니다.
     with app.app_context():
-        # --- ▼▼▼▼▼ 수정 부분: 오류 방어 코드 추가 ▼▼▼▼▼ ---
-        try:
-            db.create_all()
-            print("✅ 데이터베이스 테이블 생성을 시도했습니다 (성공 또는 이미 존재).")
-        except Exception as e:
-            # 부팅 시점에 DB 오류가 발생하더라도 앱이 다운되지 않도록 로그만 남깁니다.
-            print(f"🔥🔥🔥 부팅 시 DB 테이블 생성 실패! 원인: {e}")
-        # --- ▲▲▲▲▲ 수정 부분 끝 ▲▲▲▲▲ ---
+        db.create_all()
         
     return app
