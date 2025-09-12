@@ -27,8 +27,11 @@ def create_app():
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
 
-    with app.app_context():
-        from . import models
+    @app.before_first_request
+    def create_tables():
+
+        with app.app_context():
+
         # ❗️ DB 테이블을 생성하는 코드를 추가합니다.
-        db.create_all()
+           db.create_all()
     return app
