@@ -20,9 +20,11 @@ def create_app():
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
 
-    # with app.app_context()를 사용하여 앱이 시작될 때 DB 테이블을 생성합니다.
-    # 이것이 가장 표준적이고 안정적인 방식입니다.
-    with app.app_context():
-        db.create_all()
+    # @app.before_first_request를 사용하여 첫 요청 직전에 DB 테이블을 생성합니다.
+    # 이렇게 하면 앱 시작 시점의 타이밍 문제를 피할 수 있습니다.
+    @app.before_first_request
+    def create_tables():
+        with app.app_context():
+            db.create_all()
         
     return app
