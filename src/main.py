@@ -1,20 +1,20 @@
-# src/main.py
-
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, current_app
 from . import db
 from .models import User, Diary
 import logging
-from .emotion_engine import load_emotion_classifier, predict_emotion
-from .recommender import Recommender
+from .emotion_engine import predict_emotion # load_emotion_classifier는 이제 필요 없습니다.
+# from .recommender import Recommender # Recommender도 여기서 직접 생성하지 않습니다.
 import random
 
-bp=Blueprint('main', __name__)
+bp = Blueprint('main', __name__)
 
-emotion_classifier=load_emotion_classifier()
-recommender=Recommender()
+# --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+# 아래 두 줄을 삭제합니다. __init__.py에서 처리하기 때문입니다.
+# emotion_classifier = load_emotion_classifier()
+# recommender = Recommender()
+# --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
 
-# 추천된 6개의 핵심 감정 코드에 대해서만 이모지를 정의합니다.
-# 모델이 이 6개 외의 다른 E코드를 출력하면 기본값 '🤔'가 사용됩니다.
+# emotion_emoji_map은 그대로 둡니다.
 emotion_emoji_map = {
     'E10': '😄', # 기쁨
     'E14': '😢', # 슬픔
@@ -39,7 +39,10 @@ def api_recommend():
     if not user_diary:
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
-    predicted_emotion = predict_emotion(emotion_classifier, user_diary)
+    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+    # current_app을 통해 안전하게 로드된 모델과 추천기를 가져옵니다.
+    predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
+    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
 
     try:
         user_id = session['user_id']
@@ -47,11 +50,13 @@ def api_recommend():
         db.session.add(new_diary_entry)
         db.session.commit()
     except Exception as e:
-        print(f"DB 저장 오류: {e}")
+        logging.exception("DB 저장 오류 발생!")
         db.session.rollback()
     
-    accept_recs = recommender.recommend(predicted_emotion, "수용")
-    change_recs = recommender.recommend(predicted_emotion, "전환")
+    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+    accept_recs = current_app.recommender.recommend(predicted_emotion, "수용")
+    change_recs = current_app.recommender.recommend(predicted_emotion, "전환")
+    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
     
     accept_choice = random.choice(accept_recs) if accept_recs else "추천 없음"
     change_choice = random.choice(change_recs) if change_recs else "추천 없음"
@@ -79,4 +84,3 @@ def my_diary():
     user_diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.created_at.desc()).all()
     
     return render_template('my_diary.html', diaries=user_diaries)
-
