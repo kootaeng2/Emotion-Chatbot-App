@@ -3,6 +3,7 @@
 # 로그인이나 회원가입 인증 관련한 스크립트
 
 from flask import Blueprint, render_template, request, redirect, url_for, session
+import logging
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .models import User
