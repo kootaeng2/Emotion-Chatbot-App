@@ -10,8 +10,8 @@ db=SQLAlchemy()
 
 def create_app():
     app=Flask(__name__)
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
+    db_path = '/data/database.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
     db.init_app(app)
@@ -21,6 +21,9 @@ def create_app():
     app.register_blueprint(auth.bp)
 
     with app.app_context():
+        if os.path.exists(db_path):
+            os.remove(db_path)
+            print(f"✅ 기존 데이터베이스 파일({db_path})을 성공적으로 삭제했습니다.")
         from . import models
         # ❗️ DB 테이블을 생성하는 코드를 추가합니다.
         db.create_all()
