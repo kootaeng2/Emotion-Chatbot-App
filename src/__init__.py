@@ -23,10 +23,10 @@ def create_app():
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
-    def create_tables():
+    
 
-        with app.app_context():
+    with app.app_context():
 
         # ❗️ DB 테이블을 생성하는 코드를 추가합니다.
-           db.create_all()
+        db.create_all()
     return app
