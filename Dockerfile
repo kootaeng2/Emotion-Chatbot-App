@@ -30,4 +30,4 @@ ENV OMP_NUM_THREADS=1
 EXPOSE 7860
 
 # 7. 최종 실행 명령어 최상위 폴더 run.py실행
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--log-level", "debug", "--log-file", "-", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--log-level", "info", "--log-file", "-", "run:app"]
