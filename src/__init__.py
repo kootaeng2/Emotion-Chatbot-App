@@ -1,3 +1,4 @@
+# src/__init__.py
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -11,8 +12,7 @@ def create_app():
     db_path = '/data/database.db'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
+    # ... (다른 설정은 동일) ...
     db.init_app(app)
 
     # 블루프린트 등록
@@ -21,7 +21,6 @@ def create_app():
     app.register_blueprint(auth.bp)
 
     # with app.app_context()를 사용하여 앱이 시작될 때 DB 테이블을 생성합니다.
-    # 이것이 가장 표준적이고 안정적인 방식입니다.
     with app.app_context():
         db.create_all()
         
