@@ -5,7 +5,7 @@ colorFrom: indigo
 colorTo: blue
 sdk: docker
 app_port: 7860
-persistent_storage: 1G 
+# persistent_storage: 1G 
 pinned: false
 ---
 
