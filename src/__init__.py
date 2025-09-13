@@ -7,7 +7,10 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
+    # Hugging Face Spaces Secret에서 DATABASE_URL을 읽어옵니다.
     db_uri = os.environ.get('DATABASE_URL')
+    
+    # Supabase URI의 'postgres://'를 SQLAlchemy가 인식하는 'postgresql://'로 변경합니다.
     if db_uri and db_uri.startswith("postgres://"):
         db_uri = db_uri.replace("postgres://", "postgresql://", 1)
     
@@ -15,7 +18,6 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
     db.init_app(app)
-
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
