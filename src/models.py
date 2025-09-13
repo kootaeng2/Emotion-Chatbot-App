@@ -19,9 +19,10 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)     
+        return check_password_hash(self.password_hash, password)
     
 class Diary(db.Model):
+    # (Diary 모델은 수정할 필요 없습니다.)
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
