@@ -5,29 +5,22 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # 3. 필요한 라이브러리 설치
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- 수정/추가 부분 시작 ---
-# 4. 프로젝트 전체 코드 복사 (이것을 먼저 수행)
+# --- 👇 이 줄을 추가해주세요 ---
+# 4. 캐시 및 데이터베이스 폴더를 미리 만들고 모든 사용자가 쓸 수 있도록 권한을 부여합니다.
+RUN mkdir -p /app/.cache /app/src && chmod -R 777 /app/.cache /app/src
+
+# 5. 프로젝트 전체 코드 복사
 COPY . .
 
-# 5. 데이터베이스가 위치할 src 폴더와 캐시 폴더에 쓰기 권한 부여
-RUN chmod -R 777 /app/src
-RUN mkdir -p /app/.cache && chmod -R 777 /app/.cache
-
-
-# Hugging Face 관련 라이브러리들이 사용할 캐시 폴더를
-# 권한이 있는 /app 폴더 내부로 지정합니다.
+# 6. Hugging Face 관련 라이브러리들이 사용할 캐시 폴더를 지정합니다.
 ENV HF_HOME=/app/.cache
 ENV TRANSFORMERS_CACHE=/app/.cache
 
-ENV OMP_NUM_THREADS=1
-
-# 6. Hugging Face Spaces가 사용할 포트 열기
+# 7. Hugging Face Spaces가 사용할 포트 열기
 EXPOSE 7860
 
-# 7. 최종 실행 명령어 최상위 폴더 run.py실행
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--log-level", "info", "--log-file", "-", "run:app"]
+# 8. 최종 실행 명령어 (gunicorn으로 run.py 안의 app을 실행)
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "run:app"]

@@ -1,30 +1,26 @@
 # src/main.py
-# 기존 app.py에서 main과 관련해서 분리
-
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
-from . import db
-from .models import User, Diary
-from .emotion_engine import load_emotion_classifier, predict_emotion
-from .recommender import Recommender
+from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
+# __init__에서 생성된 db, emotion_classifier, recommender 객체를 가져옵니다.
+from . import db, emotion_classifier, recommender
+from .models import Diary, User
+from .emotion_engine import predict_emotion
 import random
 
-bp=Blueprint('main', __name__)
+bp = Blueprint('main', __name__)
 
-emotion_classifier=load_emotion_classifier()
-recommender=Recommender()
-emotion_emoji_map={
+emotion_emoji_map = {
     '기쁨':'😄', '행복':'😊', '사랑':'❤️',
     '불안':'😟', '슬픔':'😢', '상처':'💔',
     '분노':'😠', '혐오':'🤢', '짜증':'😤',
-    '놀람':'😮',
-    '중립':'😐',
+    '놀람':'😮', '중립':'😐',
 }
 
-@bp.route('/')
+@bp.route("/")
 def home():
-    # ❗️ 로직을 "로그인하지 않았다면"으로 수정합니다.
+    # "로그인하지 않았다면" 로그인 페이지로 보냅니다.
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
+        
     return render_template("emotion_homepage.html", username=session.get('username'))
 
 @bp.route("/api/recommend", methods=["POST"])
@@ -75,4 +71,4 @@ def my_diary():
     user_id = session['user_id']
     user_diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.created_at.desc()).all()
     
-    return render_template('my_diary.html', diaries=user_diaries)   
+    return render_template('my_diary.html', diaries=user_diaries)
