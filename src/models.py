@@ -31,4 +31,4 @@ class Diary(db.Model):
     # ❗️ 컬럼 이름이 중복되므로 timestamp 대신 created_at을 사용합니다.
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-    # ❗️ User 모델에서 backref로 관계가 이미 설정되었으므로, 여기서는 삭제합니다.
+    
