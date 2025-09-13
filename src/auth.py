@@ -47,29 +47,34 @@ def signup():
 
     return render_template('signup.html')
 
-# (login, logout 함수는 그대로 둡니다)
-# ...
+
 # 로그인 파트
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+        logging.warning(f"--- 로그인 시도: 사용자명 '{username}' ---")
+
         # 데이터베이스에서 사용자 정보 조회
         user = User.query.filter_by(username=username).first()
 
-        # 사용자가 존재하고 비밀번호가 일치하는지 확인
-        if user and user.check_password(password):
-            # 세션에 사용자 정보 저장
+        # 1. 사용자가 DB에 존재하는지 확인
+        if not user:
+            logging.warning(f"로그인 실패: 사용자 '{username}'을(를) 찾을 수 없습니다.")
+            return "로그인 정보가 올바르지 않습니다."
+
+        # 2. 비밀번호가 일치하는지 확인
+        if user.check_password(password):
+            # 성공
+            logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
             session.clear()
             session['user_id'] = user.id
             session['username'] = user.username
-            
-            # 로그인 성공 후 메인 페이지로 이동
             return redirect(url_for('main.home'))
         else:
-            # (나중에는 플래시 메시지 등으로 사용자에게 알림)
+            # 실패
+            logging.warning(f"로그인 실패: 사용자 '{username}'의 비밀번호가 일치하지 않습니다.")
             return "로그인 정보가 올바르지 않습니다."
 
     # GET 요청 시 로그인 페이지를 보여줌
