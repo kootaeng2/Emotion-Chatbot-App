@@ -15,10 +15,11 @@ emotion_emoji_map = {
 
 @bp.route("/")
 def home():
+    # "로그인하지 않았다면" 로그인 페이지로 보냅니다.
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
+        
     return render_template("emotion_homepage.html", username=session.get('username'))
-
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
     if 'user_id' not in session:
