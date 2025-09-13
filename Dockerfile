@@ -8,7 +8,6 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- 👇 이 줄을 추가해주세요 ---
 # 4. 캐시 및 데이터베이스 폴더를 미리 만들고 모든 사용자가 쓸 수 있도록 권한을 부여합니다.
 RUN mkdir -p /app/.cache /app/src && chmod -R 777 /app/.cache /app/src
 
