@@ -12,17 +12,14 @@ __pycache__/
 # 훈련 로그 폴더
 logs/
 
-# 훈련된 모델이 저장된 폴더
+# 훈련 중간 결과물 폴더 (무시하는 것이 맞음)
 results/
 
 # 기타 운영체제 파일
 .DS_Store
 
-# .gitignore 파일 맨 아래에 추가
-
-# Database file
+# 데이터베이스 파일
 /src/database.db
 
-korean-emotion-classifier-final/
-
-git rm --cached korean-emotion-final/optimizer.pt
+# 훈련 과정 파일 (배포 불필요)
+*.pt
