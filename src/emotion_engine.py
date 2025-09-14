@@ -3,15 +3,19 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 import os
 
 def load_emotion_classifier():
-    MODEL_PATH = "korean-emotion-classifier-final"
-    print(f"Loading model from local path '{MODEL_PATH}'...")
+    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+    # 로컬 경로 대신, Hugging Face Hub의 모델 ID를 사용합니다.
+    MODEL_ID = "taehoon222/korean-emotion-classifier-final" # "사용자이름/모델이름" 형식
+    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
+
+    print(f"Hugging Face Hub 모델 '{MODEL_ID}'에서 모델을 불러옵니다...")
     try:
-        # 인터넷 연결을 시도하지 않도록 local_files_only=True 옵션을 추가합니다.
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, local_files_only=True)
-        model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, local_files_only=True)
-        print("✅ Local model loading successful!")
+        # local_files_only 옵션을 제거하여 온라인에서 다운로드하도록 합니다.
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_ID)
+        print("✅ Hugging Face Hub 모델 로딩 성공!")
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f"❌ 모델 로딩 중 오류: {e}")
         return None
     
     device = 0 if torch.cuda.is_available() else -1
