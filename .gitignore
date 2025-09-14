@@ -24,3 +24,5 @@ results/
 /src/database.db
 
 korean-emotion-classifier-final/
+
+git rm --cached korean-emotion-final/optimizer.pt
