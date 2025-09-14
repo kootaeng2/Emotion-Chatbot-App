@@ -1,9 +1,10 @@
+# src/main.py
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request, current_app
 from . import db
 from .models import Diary, User
 from .emotion_engine import predict_emotion 
 import random
-import logging
+import logging 
 
 bp = Blueprint('main', __name__)
 
@@ -15,11 +16,15 @@ emotion_emoji_map = {
 
 @bp.route("/")
 def home():
-    # "로그인하지 않았다면" 로그인 페이지로 보냅니다.
+    logging.warning(f"--- 메인 페이지 접속 시도: 현재 세션 상태: {session} ---")
     if 'user_id' not in session:
+        logging.warning("세션에 'user_id'가 없어 로그인 페이지로 리다이렉트합니다.")
         return redirect(url_for('auth.login'))
         
+    logging.warning("✅ 세션 확인 성공! 메인 페이지를 렌더링합니다.")
     return render_template("emotion_homepage.html", username=session.get('username'))
+
+
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
     if 'user_id' not in session:
