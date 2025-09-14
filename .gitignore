@@ -1,25 +1,16 @@
 # 가상환경 폴더
 venv/
 .venv/
-
 # 파이썬 캐시 파일
 __pycache__/
 *.pyc
-
 # VS Code 설정 폴더
 .vscode/
-
-# 훈련 로그 폴더
+# 훈련 로그/결과물 폴더
 logs/
-
-# 훈련 중간 결과물 폴더 (무시하는 것이 맞음)
 results/
-
-# 기타 운영체제 파일
+# 기타
 .DS_Store
-
-# 데이터베이스 파일
 /src/database.db
-
-# 훈련 과정 파일 (배포 불필요)
 *.pt
+*.bin
