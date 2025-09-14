@@ -7,37 +7,39 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
-    # --- ▼▼▼▼▼ 진단 코드 추가 ▼▼▼▼▼ ---
-    # 1. Secret에서 DATABASE_URL 값을 읽어옵니다.
+    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+    # 1. 시크릿 키를 가장 먼저 설정합니다.
+    app.config['SECRET_KEY'] = 'a-very-long-and-unique-secret-key-for-this-app'
+    
+    # 2. 세션 쿠키가 다른 도메인의 iframe에서도 작동하도록 설정합니다.
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+    app.config['SESSION_COOKIE_SECURE'] = True
+    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
+    
+    # 3. Supabase DB 설정
     db_uri = os.environ.get('DATABASE_URL')
-    
-    # 2. 읽어온 주소를 서버 로그에 그대로 출력하여 어떤 포트를 사용하는지 확인합니다.
-    print("==========================================================")
-    print(f"✅ HUGGING FACE SECRET에서 읽어온 DATABASE_URL: {db_uri}")
-    print("==========================================================")
-    # --- ▲▲▲▲▲ 진단 코드 추가 끝 ▲▲▲▲▲ ---
-    
-    # Supabase URI의 'postgres://'를 SQLAlchemy가 인식하는 'postgresql://'로 변경합니다.
     if db_uri and db_uri.startswith("postgres://"):
         db_uri = db_uri.replace("postgres://", "postgresql://", 1)
     
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SECRET_KEY'] = 'dev-secret-key-for-flask-session'
+    
+    # 4. DB 초기화
     db.init_app(app)
 
-    # 블루프린트 등록
+    # 5. 블루프린트 등록
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
 
-    # AI 모델과 추천기 로딩
+    # 6. AI 모델과 추천기를 앱 생성 마지막 단계에서 로드하여 app 객체에 저장합니다.
     from .emotion_engine import load_emotion_classifier
     from .recommender import Recommender
+    
     app.emotion_classifier = load_emotion_classifier()
     app.recommender = Recommender()
 
-    # DB 테이블 생성
+    # 7. 모든 것이 준비된 후 DB 테이블 생성
     with app.app_context():
         from . import models
         db.create_all()
