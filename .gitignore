@@ -14,3 +14,5 @@ results/
 /src/database.db
 *.pt
 *.bin
+
+korean-emotion-final/
