@@ -14,24 +14,29 @@ jobs:
           fetch-depth: 0
           lfs: false
 
-      # 2. Git 명령어를 직접 사용하여 Hugging Face Hub에 푸시합니다.
-      - name: Push to Hugging Face Hub
+      # 2. 깨끗한 버전의 내역을 만들어서 Hugging Face Hub에 푸시합니다.
+      - name: Push clean history to Hugging Face Hub
         env:
-          # GitHub Secrets에 저장된 HF_TOKEN 값을 가져옵니다.
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Git 사용자 정보를 설정합니다. (LFS 푸시 시 필요)
+          # Git 사용자 정보 및 원격 저장소 설정 (기존과 동일)
           git config --global user.email "hf@example.com"
           git config --global user.name "Hugging Face"
-
-          # Hugging Face Hub 저장소 주소를 'hf'라는 별명으로 추가합니다.
-          # 주소 형식에 토큰을 직접 넣는 대신, 아래에서 인증을 처리합니다.
           git remote add hf "https://huggingface.co/spaces/taehoon222/emotion-chatbot-app"
-
-          # Git의 인증 정보 저장소에 토큰을 직접 써넣습니다.
-          # 이것이 '비밀번호 인증'이 아닌 '토큰 인증'을 사용하는 최신 방식입니다.
-          echo "https://user:${HF_TOKEN}@huggingface.co" > $HOME/.git-credentials
           git config --global credential.helper store
+          echo "https://user:${HF_TOKEN}@huggingface.co" > $HOME/.git-credentials
 
-          # 'hf' 원격 저장소의 main 브랜치로 강제 푸시합니다.
-          git push --force hf main
+          # ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼
+          # 1. 현재 코드의 최종 상태만을 포함하는, 부모가 없는 새로운 브랜치(orphan branch)를 만듭니다.
+          #    이것은 모든 과거 기록을 끊어내는 효과가 있습니다.
+          git checkout --orphan clean-history
+
+          # 2. 모든 파일을 이 새로운 브랜치에 추가합니다.
+          git add -A
+
+          # 3. 모든 파일을 하나의 새로운 커밋으로 만듭니다.
+          git commit -m "Deploy clean snapshot of the repository"
+
+          # 4. '오염된' main 브랜치 대신, '깨끗한' clean-history 브랜치를
+          #    Hugging Face의 main 브랜치로 강제 푸시합니다.
+          git push --force hf clean-history:main
