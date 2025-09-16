@@ -20,8 +20,8 @@ pinned: false
 <br>
 
 ## 🚀 라이브 데모 (Live Demo)
-👉 https://huggingface.co/spaces/koons/emotion-chatbot
-(위 주소는 실제 배포된 Space ID 기준입니다.)
+👉 https://huggingface.co/spaces/taehoon222/emotion-chatbot-app
+
 
 <br>
 
@@ -40,18 +40,22 @@ pinned: false
 # ⚙️ 기술 스택 및 아키텍처
 | 구분 | 기술 |
 | :--- | :--- |
-| **Backend** | python, Flask, Gunicorn |
+| **Backend** | python, Flask, Gunicorn, SQAlchemy |
 | **Frontend**| HTML, CSS, JavaScript |
 | **AI / Data**| PyTorch, Hugging Face Transformers, Scikit-learn, Pandas |
-| **Deployment**| Docker, GitHub Actions, Hugging Face Spaces |
+| **Datebase**| Supabase(postgreSQL)
+| **Deployment**| Docker, GitHub Actions(CI/CD), Hugging Face Spaces |
 | **Version Control**| Git, GitHub, Git LFS |
 
 
 
 <br>
 
+# 🏛️ 아키텍처 및 배포 파이프라인
+가벼운 앱 코드와 무거운 AI 모델을 분리하여 효율적인 CI/CD 파이프라인을 구축했습니다.
 
-Git Push (main 브랜치) → GitHub Actions (CI/CD 트리거) → Dockerfile 빌드 → Hugging Face Spaces (자동 배포 및 서빙)
+[로컬 PC] git push → [GitHub] (main 브랜치) → [GitHub Actions 트리거] → [Hugging Face Spaces로 코드 배포] → [Spaces 서버 실행] → (실행 시) [Hugging Face Hub에서 모델 다운로드]
+
 
 <br>
 
@@ -66,7 +70,7 @@ AI/ML 프로젝트에 필요한 복잡한 라이브러리들을 가장 안정적
 
 ```
 # 1. GitHub에서 프로젝트 복제
-git clone [https://github.com/kootaeng2/Emotion-Chatbot-App.git](https://github.com/kootaeng2/Emotion-Chatbot-App.git)
+git clone https://github.com/kootaeng2/Emotion-Chatbot-App.git
 cd Emotion-Chatbot-App
 
 2. 가상환경 생성 및 라이브러리 설치 (Anaconda 권장)
@@ -76,26 +80,16 @@ conda create -n sentiment_env python=3.10
 conda activate sentiment_env
 
 # 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# 2. 'sentiment_env'라는 이름으로 Python 3.10 Conda 가상환경 생성
-conda create -n sentiment_env python=3.10
+pip install -r requirements.txt
 
 # 3. 새로 만든 가상환경 활성화
 conda activate sentiment_env
 
-# 4. 필수 라이브러리 설치 (PyTorch 먼저, 이후 requirements.txt)
-pip install torch torchvision torchaudio --index-url [https://download.pytorch.org/whl/cu118](https://download.pytorch.org/whl/cu118)
-
-pip install -r requirements.txt
-
-
-python scripts/train_model.py
 4. 웹 애플리케이션 실행
-Bash
-
 python src/app.py
+
 서버가 실행되면, 웹 브라우저 주소창에 http://127.0.0.1:5000 을 입력하여 접속하세요.
+
 ```
 <br>
 
@@ -105,26 +99,36 @@ Emotion-Chatbot-App/
 │
 ├── .github/
 │   └── workflows/
-│       └── sync-to-hub.yml    # GitHub Actions 자동 배포 워크플로우
-│
-├── korean-emotion-classifier-final/ # 추론(Inference)용 최종 AI 모델
+│       └── sync-to-hub.yml      # GitHub Actions 자동 배포 워크플로우
 │
 ├── notebooks/
-│   └── 1_explore_data.py    # 데이터 탐색용 노트북
+│   └── 1_explore_data.py        # 데이터 탐색용 노트북
 │
 ├── scripts/
-│   └── train_model.py       # AI 모델 훈련 스크립트
+│   └── train_model.py           # AI 모델 훈련 스크립트
+│   └── test.py                  # Huggingface 연결 확인
+│   └── upload_model.py          # huggingface 업로드 확인
+│
 │
 ├── src/
-│   ├── app.py               # Flask 웹 서버 실행 파일
-│   ├── emotion_engine.py    # 감정 분석 엔진 모듈
-│   ├── recommender.py       # 콘텐츠 추천 모듈
-│   ├── static/              # CSS, Frontend JS 등 정적 파일
-│   └── templates/           # HTML 템플릿 파일
+│   └── templastes               # 홈페이지 html정리
+│       └── emotion_homepage.py  # 메인 화면
+│       └── login.py             # 로그인 화면
+│       └── signup.py            # 회원가입 화면
 │
-├── Dockerfile               # Hugging Face 배포용 Docker 설정
-├── README.md                # 프로젝트 설명서 (현재 보고 있는 파일)
-└── requirements.txt         # 필수 Python 라이브러리 목록
+│   ├── __init__.py              # Flask Application Factory, 앱 생성 및 설정
+│   ├── main.py                  # 메인페이지, API 등 핵심 라우트
+│   ├── auth.py                  # 로그인, 회원가입 등 인증 라우트
+│   ├── models.py                # SQLAlchemy DB 모델 (User, Diary)
+│   ├── emotion_engine.py        # 감정 분석 엔진 (모델 로딩 및 추론)
+│   └── recommender.py           # 콘텐츠 추천 로직
+│
+├── run.py                       # 애플리케이션 실행 스크립트
+├── .gitattributes               # Git 이용시 주의사항
+├── .gitignore                   # Git 추적 제외 목록
+├── Dockerfile                   # Hugging Face 배포용 Docker 설정
+├── README.md                    # 프로젝트 설명서 (현재 보고 있는 파일)
+└── requirements.txt             # 필수 Python 라이브러리 목록
 ```
 
 <br>
@@ -132,31 +136,38 @@ Emotion-Chatbot-App/
 🧗‍♂️ 주요 개발 도전 과제 및 해결 과정 (Troubleshooting Journey)
 이 프로젝트의 가장 큰 성과는 단순 기능 구현을 넘어, 실제 서비스 배포 과정에서 발생하는 복잡하고 깊이 있는 문제들을 체계적으로 해결한 경험입니다.
 
-원인 불명의 OS 레벨 오류 해결 (stat: ... not NoneType):
+1. 대용량 AI 모델 관리 및 배포 전략 수립
+🔍 문제: 1GB가 넘는 AI 모델 파일을 Git LFS로 관리했으나, Hugging Face Spaces의 1GB 저장 공간 한계(Storage limit reached)와 LFS 파일-포인터 불일치(LFS pointer does not exist) 등 배포 과정에서 지속적인 오류 발생.
 
-문제: 로컬 Windows 환경에서 transformers 라이브러리가 파일을 로드하지 못하는 원인 불명의 OS 수준 오류가 지속적으로 발생.
+💡 해결: 모델과 앱 코드의 완전한 분리 전략을 채택.
 
-해결: venv의 불안정성을 의심하고 Anaconda 환경으로 이전하여 환경 변수를 통제했으며, Windows와 Linux의 경로 차이를 해결하기 위해 절대 경로 사용 및 경로 구분자 정규화를 통해 문제를 최종 해결. 이를 통해 운영체제 간 호환성에 대한 깊은 이해를 얻음.
+대용량 모델은 Hugging Face Hub에 별도로 업로드하여 버전 관리.
 
-대용량 AI 모델의 버전 관리 (Git LFS & History Rewriting):
+GitHub 저장소에서는 LFS 추적을 완전히 제거하고 순수 앱 코드만 관리.
 
-문제: 1GB가 넘는 AI 모델 및 훈련 부산물 파일로 인해 git push 시 타임아웃(408) 및 GitHub 용량 제한(GH001) 오류 발생.
+**GitHub Actions 워크플로우(lfs: false)**를 수정하여 배포 시에는 앱 코드만 Spaces로 푸시하도록 변경.
 
-해결: Git LFS를 도입하여 대용량 파일을 관리하고, 과거 히스토리에 남은 불필요한 대용량 파일의 흔적을 git filter-repo 명령어로 완전히 제거. 최종적으로 문제가 지속되자 저장소를 초기화하고 깨끗한 버전만 푸시하는 과감한 결정을 통해 근본 원인을 해결.
+Spaces 앱 실행 시점에서 emotion_engine.py가 Hub로부터 모델을 다운로드하도록 하여, 저장 공간 문제를 근본적으로 해결하고 효율적인 배포 파이프라인을 완성.
 
-클라우드 자동 배포 파이프라인 구축 (CI/CD):
+2. CI/CD 파이프라인의 분산 환경 인증 문제 해결
+🔍 문제: git push로 트리거된 GitHub Actions가 Hugging Face Spaces에 접근할 때 Invalid credentials 인증 오류 발생. Spaces의 Secret과 GitHub의 Secret 역할에 대한 혼동.
 
-문제: Hugging Face Space 배포 과정에서 구식 인증 방식 오류, requirements.txt 누락, Python 모듈 탐색 경로 문제(ModuleNotFoundError), Flask 템플릿 경로 문제(TemplateNotFound) 등 다양한 런타임 오류 발생.
+💡 해결: **'배포 로봇(GitHub Actions)'**과 **'빌드 로봇(Spaces)'**의 개념으로 역할을 명확히 분리.
 
-해결:
+GitHub Actions Secret (HF_TOKEN): '배포 로봇'이 Hugging Face에 코드를 푸시할 때 필요한 write 권한 토큰을 등록.
 
-**Dockerfile**을 작성하여 어떤 환경에서든 동일하게 실행될 수 있는 표준화된 환경을 구축.
+Hugging Face Spaces Secret (HF_TOKEN): '빌드 로봇'이 내부적으로 LFS 파일 등을 처리할 때 필요한 write 권한 토큰을 등록.
 
-GitHub Actions 워크플로우를 최신 공식 Action(huggingface/sync-to-hub)으로 수정하여 인증 문제를 해결.
+이를 통해 각기 다른 환경에서 필요한 인증을 명확히 분리하여 CI/CD 파이프라인의 인증 문제를 해결.
 
-서버 환경에서의 Python 임포트 방식을 이해하고 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결.
+3. Flask 애플리케이션 구조 설계 및 런타임 오류 디버깅
+🔍 문제: 개발 초기, 단일 파일 구조로 인해 모듈 경로 탐색 오류(ModuleNotFoundError)가 발생하고, AI 모델을 매번 API 호출 시마다 로딩하여 극심한 성능 저하.
 
-Flask의 동작 원리에 맞춰 templates 폴더를 src 내부로 재배치하여 최종적으로 모든 런타임 오류를 해결하고 배포에 성공.
+💡 해결: Flask의 Application Factory 패턴을 도입하여 프로젝트 구조를 체계적으로 재설계.
 
-해결: gunicorn의 작동 방식을 이해하고, Python의 **상대 경로 임포트(relative import)**를 적용하여 모듈 경로 문제를 해결. 또한 Flask의 기본 규칙에 맞게 templates 및 static 폴더를 app.py가 있는 src 폴더 내부로 재배치하여 문제를 최종 해결.
+__init__.py에서 create_app 함수를 통해 앱의 모든 구성요소(DB, 블루프린트, 설정)를 조립.
+
+앱 시작 시점에서 AI 모델을 단 한 번만 로드하여 app 객체에 저장(app.emotion_classifier).
+
+각 API 요청에서는 current_app을 통해 미리 로드된 모델을 참조하게 하여, 메모리 효율성과 응답 속도를 극대화. 이를 통해 확장 가능하고 안정적인 백엔드 구조를 완성.
 
