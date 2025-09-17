@@ -107,6 +107,7 @@
         
         <div class="user-info">
             <span>환영합니다, <strong>{{ username }}</strong>님!</span>
+            <a href="{{ url_for('main.my_diary') }}">나의 일기</a>
             <a href="{{ url_for('auth.logout') }}">로그아웃</a>
         </div>
         <!-- 테마 변경 버튼 -->

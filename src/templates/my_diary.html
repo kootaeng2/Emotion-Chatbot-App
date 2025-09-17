@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>나의 일기</title>
+    <style>
+        body {
+            font-family: "Spoqa Han Sans Neo", Arial, sans-serif;
+            padding: 50px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .diary-entry {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .diary-date {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .diary-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6598e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>나의 일기</h1>
+        {% for diary in diaries %}
+        <div class="diary-entry">
+            <div class="diary-date">{{ diary.created_at.strftime('%Y년 %m월 %d일 %H시 %M분') }}</div>
+            <div class="diary-content">{{ diary.content }}</div>
+            <div class="diary-emotion"><strong>감정:</strong> {{ diary.emotion }}</div>
+        </div>
+        {% else %}
+        <p>작성된 일기가 없습니다.</p>
+        {% endfor %}
+        <a href="{{ url_for('main.diary') }}" class="back-link">일기 쓰러가기</a>
+    </div>
+</body>
+</html>

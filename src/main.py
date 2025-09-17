@@ -64,6 +64,36 @@ def api_recommend():
     return jsonify(response_data)
 
 
+@bp.route('/diary')
+def diary():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('save_diary.html')
+
+@bp.route('/diary/save', methods=['POST'])
+def save_diary():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+
+    user_id = session['user_id']
+    diary_content = request.form.get('diary')
+
+    if not diary_content:
+        # 일기 내용이 없을 경우, 다시 일기 작성 페이지로 리다이렉트하거나 에러 메시지를 표시할 수 있습니다.
+        return redirect(url_for('main.diary'))
+
+    # 감정 분석
+    predicted_emotion = predict_emotion(current_app.emotion_classifier, diary_content)
+
+    # 데이터베이스에 일기 저장
+    new_diary = Diary(content=diary_content, emotion=predicted_emotion, user_id=user_id)
+    db.session.add(new_diary)
+    db.session.commit()
+
+    # 저장 후 '나의 일기' 페이지로 리다이렉트
+    return redirect(url_for('main.my_diary'))
+
+
 @bp.route('/my_diary')
 def my_diary():
     if 'user_id' not in session:
