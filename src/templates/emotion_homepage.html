@@ -325,6 +325,7 @@
         }
 
         function clearHistory() {
+            
             if (confirm('정말 모두 삭제하시겠어요?')) {
                 localStorage.removeItem(diaryHistoryKey);
                 renderHistory();

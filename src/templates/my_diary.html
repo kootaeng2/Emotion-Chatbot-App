@@ -66,7 +66,7 @@
         <h1>나의 일기</h1>
         {% for diary in diaries %}
         <div class="diary-entry" id="diary-{{ diary.id }}">
-            <button class="delete-btn" onclick="deleteDiary({{ diary.id }})">삭제</button>
+            <button class="delete-btn" onclick="deleteDiary('{{ diary.id }}')">삭제</button>
             <div class="diary-date">{{ diary.created_at.strftime('%Y년 %m월 %d일 %H시 %M분') }}</div>
             <div class="diary-content">{{ diary.content }}</div>
             <div class="diary-emotion"><strong>감정:</strong> {{ diary.emotion }}</div>
