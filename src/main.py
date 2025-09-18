@@ -102,7 +102,7 @@ def my_diary():
     user_diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.created_at.desc()).all()
     return render_template('my_diary.html', diaries=user_diaries)
 
-@bp.route('/diary/delete/<int:diary_id>', methods=['POST', 'DELETE'])
+@bp.route('/diary/delete/<string:diary_id>', methods=['DELETE'])
 def delete_diary(diary_id):
     logging.info(f"Attempting to delete diary with id: {diary_id}")
     if 'user_id' not in session:
