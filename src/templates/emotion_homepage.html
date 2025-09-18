@@ -197,7 +197,7 @@
     </div>
 
     <script>
-        const diaryHistoryKey = `diaryHistory_${ "{{ username }}" }`;
+        const diaryHistoryKey = "diaryHistory_" + {{ username | tojson }};
 
         document.getElementById('logout-btn').addEventListener('click', function() {
             localStorage.removeItem(diaryHistoryKey);
