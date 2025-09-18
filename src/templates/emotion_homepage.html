@@ -95,15 +95,13 @@
         .menu-section {
             display: flex;
             justify-content: flex-end;
-            align-items: flex-end;
-            flex-direction: column;
+            align-items: center;
             margin-bottom: 20px;
         }
         .menu-btn {
             font-size: 16px !important;
             padding: 8px 12px !important;
             margin-left: 5px;
-            margin-top: 5px;
         }
         .logout-section {
             text-align: right;
@@ -133,9 +131,7 @@
             min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
-            left: 100%;
-            top: 0;
-            flex-direction: row;
+            right: 0;
         }
         .dropdown-content button {
             color: black;
@@ -148,7 +144,18 @@
             font-size: 12px !important;
         }
         .dropdown-content.show {
-            display: flex;
+            display: block;
+        }
+        .delete-history-btn {
+            background: #e25b66;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            float: right;
+            transition: 0.2s;
         }
     </style>
 </head>
@@ -160,6 +167,7 @@
         </div>
         
         <div class="menu-section">
+            <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
             <div class="dropdown">
                 <button class="menu-btn" onclick="toggleDropdown(event)">모드 변경</button>
                 <div id="theme-dropdown" class="dropdown-content">
@@ -167,9 +175,6 @@
                     <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
                     <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
                 </div>
-            </div>
-            <div class="category-buttons">
-                <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
             </div>
         </div>
 
@@ -199,11 +204,13 @@
 
         // Close the dropdown if the user clicks outside of it
         window.onclick = function(event) {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
+            if (!event.target.matches('.menu-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
                 }
             }
         }
@@ -287,8 +294,9 @@
                 return;
             }
 
-            historyDiv.innerHTML = diaryHistory.map(item => `
+            historyDiv.innerHTML = diaryHistory.map((item, index) => `
                 <div class="history-item">
+                    <button class="delete-history-btn" onclick="deleteFromHistory(${index})">삭제</button>
                     <span class="history-date">
                         ${new Date(item.date).toLocaleString('ko-KR', { 
                             year: 'numeric', month: '2-digit', day: '2-digit', 
@@ -298,6 +306,16 @@
                     <span>${item.emoji} <strong>[${item.emotion}]</strong> : ${item.text}</span>
                 </div>
             `).join('');
+        }
+
+        function deleteFromHistory(index) {
+            if (!confirm("정말 이 히스토리를 삭제하시겠습니까?")) {
+                return;
+            }
+            let diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+            diaryHistory.splice(index, 1);
+            localStorage.setItem('diaryHistory', JSON.stringify(diaryHistory));
+            renderHistory();
         }
 
         function clearHistory() {
