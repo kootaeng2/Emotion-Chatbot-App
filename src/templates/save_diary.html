@@ -42,15 +42,53 @@
             transition: 0.2s;
         }
         button:hover { background: #5540a3; }
+        #result { margin-top: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>일기 저장</h1>
-        <form action="/diary/save" method="post">
-            <textarea name="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요."></textarea><br>
+        <form id="diary-form">
+            <textarea id="diary-content" name="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요."></textarea><br>
             <button type="submit">저장하기</button>
         </form>
+        <div id="result"></div>
     </div>
+
+    <script>
+        document.getElementById('diary-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const diaryContent = document.getElementById('diary-content').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (!diaryContent) {
+                resultDiv.innerHTML = "일기 내용을 입력해 주세요.";
+                return;
+            }
+
+            try {
+                const response = await fetch('/diary/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `diary=${encodeURIComponent(diaryContent)}`
+                });
+
+                if (response.ok) {
+                    resultDiv.innerHTML = "일기가 성공적으로 저장되었습니다. '나의 일기' 페이지로 이동합니다.";
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('main.my_diary') }}";
+                    }, 2000);
+                } else {
+                    resultDiv.innerHTML = "일기 저장에 실패했습니다.";
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                resultDiv.innerHTML = '서버 통신 중 오류가 발생했습니다.';
+            }
+        });
+    </script>
 </body>
 </html>
