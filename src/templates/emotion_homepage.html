@@ -94,14 +94,16 @@
         
         .menu-section {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: flex-end;
+            align-items: flex-end;
+            flex-direction: column;
             margin-bottom: 20px;
         }
         .menu-btn {
-            font-size: 14px !important;
+            font-size: 12px !important;
             padding: 5px 10px !important;
             margin-left: 5px;
+            margin-top: 5px;
         }
         .logout-section {
             text-align: right;
@@ -131,7 +133,9 @@
             min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
-            right: 0;
+            left: 100%;
+            top: 0;
+            flex-direction: row;
         }
         .dropdown-content button {
             color: black;
@@ -141,9 +145,10 @@
             width: 100%;
             text-align: left;
             background: none;
+            font-size: 12px !important;
         }
         .dropdown-content.show {
-            display: block;
+            display: flex;
         }
     </style>
 </head>
@@ -155,16 +160,16 @@
         </div>
         
         <div class="menu-section">
-            <div class="category-buttons">
-                <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
-            </div>
             <div class="dropdown">
-                <button class="menu-btn" onclick="toggleDropdown()">모드 변경</button>
+                <button class="menu-btn" onclick="toggleDropdown(event)">모드 변경</button>
                 <div id="theme-dropdown" class="dropdown-content">
                     <button onclick="changeTheme('light')">🌞 밝은 모드</button>
                     <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
                     <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
                 </div>
+            </div>
+            <div class="category-buttons">
+                <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
             </div>
         </div>
 
@@ -187,19 +192,18 @@
     </div>
 
     <script>
-        function toggleDropdown() {
+        function toggleDropdown(event) {
+            event.stopPropagation();
             document.getElementById("theme-dropdown").classList.toggle("show");
         }
 
         // Close the dropdown if the user clicks outside of it
         window.onclick = function(event) {
-            if (!event.target.matches('.menu-btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
                 }
             }
         }
