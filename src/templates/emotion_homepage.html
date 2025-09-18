@@ -30,6 +30,7 @@
             margin-bottom: 12px;
             background: #f7f7fb;
             resize: vertical;
+            box-sizing: border-box;
         }
         button {
             background: #6598e5;
@@ -90,16 +91,32 @@
             transition: 0.2s;
         }
         .clear-btn:hover { background: #c73442; }
-        /* 테마 변경 버튼 스타일 */
-        .theme-buttons {
-            text-align: right;
-            margin-bottom: 15px;
+        
+        .menu-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
         .theme-buttons button {
             font-size: 14px;
             padding: 5px 10px;
             margin-left: 5px;
         }
+        .logout-section {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .logout-btn {
+            background-color: #e25b66;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .logout-btn:hover { background: #c73442; }
     </style>
 </head>
 <body>
@@ -107,14 +124,17 @@
         
         <div class="user-info">
             <span>환영합니다, <strong>{{ username }}</strong>님!</span>
-            <a href="{{ url_for('auth.logout') }}">로그아웃</a>
         </div>
-        <!-- 테마 변경 버튼 -->
-        <div class="theme-buttons">
-            <button onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
-            <button onclick="changeTheme('light')">🌞 밝은 모드</button>
-            <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
-            <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
+        
+        <div class="menu-section">
+            <div class="category-buttons">
+                <button onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
+            </div>
+            <div class="theme-buttons">
+                <button onclick="changeTheme('light')">🌞 밝은 모드</button>
+                <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
+                <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
+            </div>
         </div>
 
         <h1>오늘의 일기 입력</h1>
@@ -127,6 +147,10 @@
             <button class="clear-btn" onclick="clearHistory()">모두 지우기</button>
         </div>
         <div id="history"></div>
+
+        <div class="logout-section">
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">로그아웃</a>
+        </div>
     </div>
 
     <script>
