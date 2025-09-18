@@ -2,18 +2,8 @@
 # 기존 app.py에서 auth와 관련해서 분리
 # 로그인이나 회원가입 인증 관련한 스크립트
 
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 import logging
-from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
-from .models import User
-
-bp = Blueprint('auth', __name__, url_prefix='/auth')
-
-# 회원가입 파트
-# src/ auth.py
-
-from flask import Blueprint, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from .models import User
@@ -30,7 +20,8 @@ def signup():
 
             # DB 조회 작업도 try 블록 안으로 이동
             if User.query.filter_by(username=username).first():
-                return "이미 존재하는 사용자 이름입니다."
+                flash('이미 존재하는 사용자입니다.')
+                return redirect(url_for('auth.signup'))
 
             new_user = User(username=username)
             new_user.set_password(password)
@@ -59,23 +50,18 @@ def login():
         # 데이터베이스에서 사용자 정보 조회
         user = User.query.filter_by(username=username).first()
 
-        # 1. 사용자가 DB에 존재하는지 확인
-        if not user:
-            logging.warning(f"로그인 실패: 사용자 '{username}'을(를) 찾을 수 없습니다.")
-            return "로그인 정보가 올바르지 않습니다."
+        # 사용자가 없거나 비밀번호가 틀린 경우
+        if not user or not user.check_password(password):
+            logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
+            flash('로그인 정보가 올바르지 않습니다.')
+            return redirect(url_for('auth.login'))
 
-        # 2. 비밀번호가 일치하는지 확인
-        if user.check_password(password):
-            # 성공
-            logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
-            session.clear()
-            session['user_id'] = user.id
-            session['username'] = user.username
-            return redirect(url_for('main.home'))
-        else:
-            # 실패
-            logging.warning(f"로그인 실패: 사용자 '{username}'의 비밀번호가 일치하지 않습니다.")
-            return "로그인 정보가 올바르지 않습니다."
+        # 로그인 성공
+        logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
+        session.clear()
+        session['user_id'] = user.id
+        session['username'] = user.username
+        return redirect(url_for('main.home'))
 
     # GET 요청 시 로그인 페이지를 보여줌
     return render_template('login.html')

@@ -95,5 +95,13 @@
         </form>
         <p>계정이 없으신가요? <a href="{{ url_for('auth.signup') }}">회원가입</a></p>
     </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          alert("{{ messages[0] }}");
+        </script>
+      {% endif %}
+    {% endwith %}
 </body>
 </html>
