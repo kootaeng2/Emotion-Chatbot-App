@@ -98,9 +98,9 @@
             align-items: center;
             margin-bottom: 20px;
         }
-        .theme-buttons button {
-            font-size: 14px;
-            padding: 5px 10px;
+        .menu-btn {
+            font-size: 14px !important;
+            padding: 5px 10px !important;
             margin-left: 5px;
         }
         .logout-section {
@@ -117,6 +117,34 @@
             transition: 0.2s;
         }
         .logout-btn:hover { background: #c73442; }
+
+        .recommend-section { text-align: right; }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+        }
+        .dropdown-content button {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: none;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -128,18 +156,23 @@
         
         <div class="menu-section">
             <div class="category-buttons">
-                <button onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
+                <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
             </div>
-            <div class="theme-buttons">
-                <button onclick="changeTheme('light')">🌞 밝은 모드</button>
-                <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
-                <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
+            <div class="dropdown">
+                <button class="menu-btn" onclick="toggleDropdown()">모드 변경</button>
+                <div id="theme-dropdown" class="dropdown-content">
+                    <button onclick="changeTheme('light')">🌞 밝은 모드</button>
+                    <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
+                    <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
+                </div>
             </div>
         </div>
 
         <h1>오늘의 일기 입력</h1>
         <textarea id="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요."></textarea><br>
-        <button onclick="recommend()">추천 받기</button>
+        <div class="recommend-section">
+            <button onclick="recommend()">추천 받기</button>
+        </div>
         <div id="result"></div>
 
         <div class="history-title">
@@ -154,6 +187,23 @@
     </div>
 
     <script>
+        function toggleDropdown() {
+            document.getElementById("theme-dropdown").classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
         // 테마 변경 함수 + 로컬스토리지 저장
         function changeTheme(mode) {
             if (mode === 'light') {
