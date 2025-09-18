@@ -192,11 +192,17 @@
         <div id="history"></div>
 
         <div class="logout-section">
-            <a href="{{ url_for('auth.logout') }}" class="logout-btn">로그아웃</a>
+            <a id="logout-btn" href="{{ url_for('auth.logout') }}" class="logout-btn">로그아웃</a>
         </div>
     </div>
 
     <script>
+        const diaryHistoryKey = `diaryHistory_${ "{{ username }}" }`;
+
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem(diaryHistoryKey);
+        });
+
         function toggleDropdown(event) {
             event.stopPropagation();
             document.getElementById("theme-dropdown").classList.toggle("show");
@@ -279,15 +285,15 @@
         }
 
         function saveDiary(entry) {
-            let diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+            let diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
             diaryHistory.unshift(entry);
             if (diaryHistory.length > 20) diaryHistory = diaryHistory.slice(0, 20);
-            localStorage.setItem('diaryHistory', JSON.stringify(diaryHistory));
+            localStorage.setItem(diaryHistoryKey, JSON.stringify(diaryHistory));
         }
 
         function renderHistory() {
             const historyDiv = document.getElementById('history');
-            const diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+            const diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
 
             if (!diaryHistory.length) {
                 historyDiv.innerHTML = "저장된 일기가 없습니다.";
@@ -312,15 +318,15 @@
             if (!confirm("정말 이 히스토리를 삭제하시겠습니까?")) {
                 return;
             }
-            let diaryHistory = JSON.parse(localStorage.getItem('diaryHistory') || '[]');
+            let diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
             diaryHistory.splice(index, 1);
-            localStorage.setItem('diaryHistory', JSON.stringify(diaryHistory));
+            localStorage.setItem(diaryHistoryKey, JSON.stringify(diaryHistory));
             renderHistory();
         }
 
         function clearHistory() {
             if (confirm('정말 모두 삭제하시겠어요?')) {
-                localStorage.removeItem('diaryHistory');
+                localStorage.removeItem(diaryHistoryKey);
                 renderHistory();
                 document.getElementById('result').innerHTML = '';
             }
