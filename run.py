@@ -1,5 +1,9 @@
-# src/run.py
-# run.py - 애플리케이션 실행 파일
+# run.py
+
+from dotenv import load_dotenv
+
+# create_app() 보다 먼저 실행되어야 합니다.
+load_dotenv() 
 
 from src import create_app
 
@@ -7,5 +11,3 @@ app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    
