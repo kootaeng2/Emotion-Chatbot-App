@@ -211,9 +211,9 @@
         // Close the dropdown if the user clicks outside of it
         window.onclick = function(event) {
             if (!event.target.matches('.menu-btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
+                let dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
                     if (openDropdown.classList.contains('show')) {
                         openDropdown.classList.remove('show');
                     }
@@ -294,24 +294,38 @@
         function renderHistory() {
             const historyDiv = document.getElementById('history');
             const diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
+            
+            historyDiv.innerHTML = ''; // Clear previous content
 
             if (!diaryHistory.length) {
                 historyDiv.innerHTML = "저장된 일기가 없습니다.";
                 return;
             }
 
-            historyDiv.innerHTML = diaryHistory.map((item, index) => `
-                <div class="history-item">
-                    <button class="delete-history-btn" onclick="deleteFromHistory(${index})">삭제</button>
-                    <span class="history-date">
-                        ${new Date(item.date).toLocaleString('ko-KR', { 
-                            year: 'numeric', month: '2-digit', day: '2-digit', 
-                            hour: '2-digit', minute: '2-digit' 
-                        })}
-                    </span>
-                    <span>${item.emoji} <strong>[${item.emotion}]</strong> : ${item.text}</span>
-                </div>
-            `).join('');
+            diaryHistory.forEach((item, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-history-btn';
+                deleteBtn.textContent = '삭제';
+                deleteBtn.onclick = () => deleteFromHistory(index); // Using arrow function for simplicity
+
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'history-date';
+                dateSpan.textContent = new Date(item.date).toLocaleString('ko-KR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                const contentSpan = document.createElement('span');
+                contentSpan.innerHTML = `${item.emoji} <strong>[${item.emotion}]</strong> : ${item.text}`;
+
+                historyItem.appendChild(deleteBtn);
+                historyItem.appendChild(dateSpan);
+                historyItem.appendChild(contentSpan);
+                historyDiv.appendChild(historyItem);
+            });
         }
 
         function deleteFromHistory(index) {
