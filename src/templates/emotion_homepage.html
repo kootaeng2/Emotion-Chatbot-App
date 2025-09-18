@@ -107,11 +107,11 @@
         
         <div class="user-info">
             <span>환영합니다, <strong>{{ username }}</strong>님!</span>
-            <a href="{{ url_for('main.my_diary') }}">나의 일기</a>
             <a href="{{ url_for('auth.logout') }}">로그아웃</a>
         </div>
         <!-- 테마 변경 버튼 -->
         <div class="theme-buttons">
+            <button onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
             <button onclick="changeTheme('light')">🌞 밝은 모드</button>
             <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
             <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
