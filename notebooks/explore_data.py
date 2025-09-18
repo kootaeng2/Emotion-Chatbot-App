@@ -8,7 +8,7 @@ import re
 file_path = './data/'
 
 # 훈련 라벨 JSON 파일 불러오기
-with open(file_path + 'training-label.json', 'r', encoding='utf-8') as file:
+with open(training_data_path, 'r', encoding='cp949') as file:
     training_data_raw = json.load(file)
 
 # 필요한 데이터만 추출하여 리스트에 저장

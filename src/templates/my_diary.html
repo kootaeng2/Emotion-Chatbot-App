@@ -78,6 +78,27 @@
     </div>
 
     <script>
+        // 테마 변경 함수
+        function changeTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = 'linear-gradient(135deg, #ffffff, #f0f0f0)';
+            } 
+            else if (mode === 'dark') {
+                document.body.style.background = 'linear-gradient(135deg, #2c2c3e, #1a1a28)';
+            } 
+            else if (mode === 'pastel') {
+                document.body.style.background = 'linear-gradient(135deg, #ffefd5, #ffe4e1)';
+            }
+        }
+
+        // 페이지 로드시 저장된 테마 불러오기
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme) {
+                changeTheme(savedTheme);
+            }
+        };
+
         async function deleteDiary(diaryId) {
             if (!confirm("정말 이 일기를 삭제하시겠습니까?")) {
                 return;
