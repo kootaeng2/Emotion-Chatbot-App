@@ -102,23 +102,29 @@ def my_diary():
     user_diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.created_at.desc()).all()
     return render_template('my_diary.html', diaries=user_diaries)
 
-@bp.route('/diary/delete/<int:diary_id>', methods=['DELETE'])
+@bp.route('/diary/delete/<int:diary_id>', methods=['POST', 'DELETE'])
 def delete_diary(diary_id):
+    logging.info(f"Attempting to delete diary with id: {diary_id}")
     if 'user_id' not in session:
+        logging.warning("Delete failed: User not logged in.")
         return jsonify({"error": "로그인이 필요합니다."}), 401
 
     diary_to_delete = Diary.query.get(diary_id)
 
     if not diary_to_delete:
+        logging.warning(f"Delete failed: Diary with id {diary_id} not found.")
         return jsonify({"error": "일기를 찾을 수 없습니다."}), 404
 
     if diary_to_delete.user_id != session['user_id']:
+        logging.warning(f"Delete failed: User {session['user_id']} does not have permission to delete diary {diary_id}.")
         return jsonify({"error": "삭제 권한이 없습니다."}), 403
 
     try:
         db.session.delete(diary_to_delete)
         db.session.commit()
+        logging.info(f"Successfully deleted diary with id: {diary_id}")
         return jsonify({"success": "일기가 삭제되었습니다."}), 200
     except Exception as e:
         db.session.rollback()
+        logging.error(f"Delete failed: An exception occurred while deleting diary {diary_id}: {e}")
         return jsonify({"error": "삭제 중 오류가 발생했습니다."}), 500
