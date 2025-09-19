@@ -22,7 +22,7 @@ def home():
         return redirect(url_for('auth.login'))
         
     logging.warning("✅ 세션 확인 성공! 메인 페이지를 렌더링합니다.")
-    return render_template("emotion_homepage.html", username=session.get('username'))
+    return render_template("main.html", username=session.get('username'))
 
 
 @bp.route("/api/recommend", methods=["POST"])
