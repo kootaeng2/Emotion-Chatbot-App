@@ -20,7 +20,7 @@
             max-width: 600px;
             margin: 40px auto;
         }
-        h1 { color: #65e5c9; margin-bottom: 18px; }
+        h1 { color: #6598e5; margin-bottom: 18px; }
         textarea {
             width: 100%;
             border-radius: 8px;
@@ -178,7 +178,7 @@
             </div>
         </div>
 
-        <h1>오늘의 일기 입력</h1>
+        <h1>오늘의 일기</h1>
         <textarea id="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요."></textarea><br>
         <div class="recommend-section">
             <button onclick="recommend()">추천 받기</button>
@@ -224,7 +224,7 @@
         // 테마 변경 함수 + 로컬스토리지 저장
         function changeTheme(mode) {
             if (mode === 'light') {
-                document.body.style.background = 'linear-gradient(135deg, #ffffff, #f0f0f0)';
+                document.body.style.background = 'linear-gradient(135deg, #ece9f7, #cacae0)';
             } 
             else if (mode === 'dark') {
                 document.body.style.background = 'linear-gradient(135deg, #2c2c3e, #1a1a28)';
