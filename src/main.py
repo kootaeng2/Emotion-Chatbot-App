@@ -16,33 +16,30 @@ emotion_emoji_map = {
 
 @bp.route("/")
 def home():
-    logging.warning(f"--- 메인 페이지 접속 시도: 현재 세션 상태: {session} ---")
-    if 'user_id' not in session:
-        logging.warning("세션에 'user_id'가 없어 로그인 페이지로 리다이렉트합니다.")
-        return redirect(url_for('auth.login'))
-        
-    logging.warning("✅ 세션 확인 성공! 메인 페이지를 렌더링합니다.")
-    return render_template("main.html", username=session.get('username'))
+    logged_in = 'user_id' in session
+    username = session.get('username') if logged_in else None
+    logging.info(f"메인 페이지 접속: 로그인 상태: {logged_in}, 사용자: {username}")
+    return render_template("main.html", logged_in=logged_in, username=username)
 
 
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
-    if 'user_id' not in session:
-        return jsonify({"error": "로그인이 필요합니다."}), 401
     user_diary = request.json.get("diary")
     if not user_diary:
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
 
-    try:
-        user_id = session['user_id']
-        new_diary_entry = Diary(content=user_diary, emotion=predicted_emotion, user_id=user_id)
-        db.session.add(new_diary_entry)
-        db.session.commit()
-    except Exception as e:
-        logging.exception("DB 저장 오류 발생!")
-        db.session.rollback()
+    # 사용자가 로그인했을 경우에만 DB에 저장
+    if 'user_id' in session:
+        try:
+            user_id = session['user_id']
+            new_diary_entry = Diary(content=user_diary, emotion=predicted_emotion, user_id=user_id)
+            db.session.add(new_diary_entry)
+            db.session.commit()
+        except Exception as e:
+            logging.exception("DB 저장 오류 발생!")
+            db.session.rollback()
     
     accept_recs = current_app.recommender.recommend(predicted_emotion, "수용")
     change_recs = current_app.recommender.recommend(predicted_emotion, "전환")

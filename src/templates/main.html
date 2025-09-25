@@ -1,259 +1,228 @@
-<!-- 홈페이지 -->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title> 일기 기반 추천 웹페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>감정 일기</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #f0f2f5;
+            --text-color: #333;
+            --light-text-color: #777;
+            --border-color: #e0e0e0;
+            --white-color: #fff;
+            --danger-color: #e74c3c;
+            --font-family: 'Noto Sans KR', sans-serif;
+        }
+
         body {
-            font-family: "Spoqa Han Sans Neo", Arial, sans-serif;
-            padding: 50px;
-            background: linear-gradient(135deg, #ece9f7, #cacae0); /* 기본 배경 */
-            transition: background 0.5s ease;
+            font-family: var(--font-family);
+            margin: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: var(--white-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-item {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .nav-item:hover {
+            background-color: var(--secondary-color);
+        }
+        .nav-item.primary {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+        .nav-item.primary:hover {
+            background-color: #5750d6;
+        }
+        .user-greeting {
+            color: var(--light-text-color);
+            font-weight: 500;
+        }
+
+        /* --- Main Content --- */
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px #0001;
-            max-width: 600px;
-            margin: 40px auto;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
         }
-        h1 { color: #6598e5; margin-bottom: 18px; }
+        .chat-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--white-color);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            text-align: center;
+        }
+
         textarea {
             width: 100%;
-            border-radius: 8px;
-            border: 1px solid #d0d0e0;
-            padding: 16px;
-            font-size: 18px;
-            margin-bottom: 12px;
-            background: #f7f7fb;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            font-size: 1rem;
+            font-family: var(--font-family);
+            background: #f9f9f9;
             resize: vertical;
             box-sizing: border-box;
+            min-height: 120px;
         }
-        button {
-            background: #6598e5;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-right: 8px;
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
         }
-        button:hover { background: #5540a3; }
-        #result {
-            margin-top: 24px;
-            font-size: 17px;
-            color: #444a70;
-            background: #f2f2f7;
-            border-radius: 8px;
-            padding: 18px;
-            box-shadow: 0 2px 8px #cfcfe0;
-            min-height: 40px;
-        }
-        .history-title {
-            margin: 32px 0 12px 0;
-            color: #8855b0;
-            font-size: 20px;
-        }
-        #history {
-            background: #fff9;
-            border-radius: 10px;
-            padding: 14px 12px;
-            font-size: 15px;
-            min-height: 40px;
-            box-shadow: 0 2px 8px #edebf5;
-            margin-bottom: 15px;
-        }
-        .history-item {
-            margin-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 6px;
-        }
-        .history-date {
-            color: #b2a4d4;
-            font-size: 13px;
-            margin-bottom: 3px;
-            display: block;
-        }
-        .clear-btn {
-            background: #e25b66;
-            color: white;
-            font-size: 14px;
-            padding: 7px 13px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            float: right;
-            transition: 0.2s;
-        }
-        .clear-btn:hover { background: #c73442; }
-        
-        .menu-section {
+
+        .button-container {
             display: flex;
             justify-content: flex-end;
-            align-items: center;
-            margin-bottom: 20px;
         }
-        .menu-btn {
-            font-size: 16px !important;
-            padding: 8px 12px !important;
-            margin-left: 5px;
-        }
-        .logout-section {
-            text-align: right;
-            margin-top: 20px;
-        }
-        .logout-btn {
-            background-color: #e25b66;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-        .logout-btn:hover { background: #c73442; }
-
-        .recommend-section { text-align: right; }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            right: 0;
-        }
-        .dropdown-content button {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            width: 100%;
-            text-align: left;
-            background: none;
-            font-size: 12px !important;
-        }
-        .dropdown-content.show {
-            display: block;
-        }
-        .delete-history-btn {
-            background: #e25b66;
-            color: white;
-            font-size: 10px;
-            padding: 2px 5px;
-            border-radius: 4px;
+        .submit-btn {
+            background: var(--primary-color);
+            color: var(--white-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             border: none;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            float: right;
-            transition: 0.2s;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background: #5750d6;
+        }
+        .submit-btn:disabled {
+            background-color: #a5a0f3;
+            cursor: not-allowed;
+        }
+
+        #result {
+            background: var(--secondary-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            min-height: 50px;
+            line-height: 1.6;
+        }
+        .login-prompt {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--light-text-color);
+        }
+        .login-prompt a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: var(--light-text-color);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        
-        <div class="user-info">
-            <span>환영합니다, <strong>{{ username }}</strong>님!</span>
+
+    <header class="navbar">
+        <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
+        <div class="navbar-menu">
+            {% if logged_in %}
+                <span class="user-greeting">환영합니다, <strong>{{ username }}</strong>님!</span>
+                <a href="{{ url_for('main.my_diary') }}" class="nav-item">내 일기</a>
+                <a href="{{ url_for('auth.logout') }}" class="nav-item">로그아웃</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="nav-item">로그인</a>
+                <a href="{{ url_for('auth.signup') }}" class="nav-item primary">회원가입</a>
+            {% endif %}
         </div>
-        
-        <div class="menu-section">
-            <button class="menu-btn" onclick="location.href='{{ url_for('main.my_diary') }}'">나의 일기</button>
-            <div class="dropdown">
-                <button class="menu-btn" onclick="toggleDropdown(event)">모드 변경</button>
-                <div id="theme-dropdown" class="dropdown-content">
-                    <button onclick="changeTheme('light')">🌞 밝은 모드</button>
-                    <button onclick="changeTheme('dark')">🌙 어두운 모드</button>
-                    <button onclick="changeTheme('pastel')">🎨 파스텔 모드</button>
-                </div>
+    </header>
+
+    <main class="container">
+        <div class="chat-container">
+            <h1>오늘 하루는 어떠셨나요?</h1>
+            <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6"></textarea>
+            <div class="button-container">
+                <button id="submit-btn" onclick="analyzeEmotion()">감정 분석하기</button>
             </div>
+            <div id="result">
+                <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
+            </div>
+            {% if not logged_in %}
+            <div class="login-prompt">
+                <a href="{{ url_for('auth.login') }}">로그인</a>하고 일기를 저장해 보세요!
+            </div>
+            {% endif %}
         </div>
+    </main>
 
-        <h1>오늘의 일기</h1>
-        <textarea id="diary" placeholder="오늘 있었던 일을 자유롭게 입력해 보세요." rows="6"></textarea><br>
-        <div class="recommend-section">
-            <button onclick="recommend()">추천 받기</button>
-        </div>
-        <div id="result"></div>
-
-        <div class="history-title">
-            나의 일기 히스토리
-            <button class="clear-btn" onclick="clearHistory()">모두 지우기</button>
-        </div>
-        <div id="history"></div>
-
-        <div class="logout-section">
-            <a id="logout-btn" href="{{ url_for('auth.logout') }}" class="logout-btn">로그아웃</a>
-        </div>
-    </div>
+    <footer>
+        <p>&copy; 2025 Emotion Diary. All rights reserved.</p>
+    </footer>
 
     <script>
-        const diaryHistoryKey = "diaryHistory_" + {{ username | tojson }};
-
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            localStorage.removeItem(diaryHistoryKey);
-        });
-
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            document.getElementById("theme-dropdown").classList.toggle("show");
-        }
-
-        // Close the dropdown if the user clicks outside of it
-        window.onclick = function(event) {
-            if (!event.target.matches('.menu-btn')) {
-                let dropdowns = document.getElementsByClassName("dropdown-content");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    let openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-
-        // 테마 변경 함수 + 로컬스토리지 저장
-        function changeTheme(mode) {
-            if (mode === 'light') {
-                document.body.style.background = 'linear-gradient(135deg, #ece9f7, #cacae0)';
-            } 
-            else if (mode === 'dark') {
-                document.body.style.background = 'linear-gradient(135deg, #2c2c3e, #1a1a28)';
-            } 
-            else if (mode === 'pastel') {
-                document.body.style.background = 'linear-gradient(135deg, #ffefd5, #ffe4e1)';
-            }
-            localStorage.setItem('selectedTheme', mode); // 선택한 테마 저장
-        }
-
-        // 페이지 로드시 저장된 테마 불러오기
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                changeTheme(savedTheme);
-            }
-            renderHistory();
-        };
-
-        async function recommend() {
+        async function analyzeEmotion() {
             const diary = document.getElementById('diary').value.trim();
             const resultDiv = document.getElementById('result');
+            const submitBtn = document.getElementById('submit-btn');
 
             if (!diary) {
-                resultDiv.innerHTML = "일기 내용을 입력해 주세요.";
+                resultDiv.innerHTML = "<p style='color: var(--danger-color);'>일기 내용을 입력해 주세요.</p>";
                 return;
             }
 
-            resultDiv.innerHTML = "추천 콘텐츠를 생성 중입니다. 잠시만 기다려주세요...";
+            resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
+            submitBtn.disabled = true;
+            submitBtn.textContent = '분석 중...';
 
             try {
                 const response = await fetch('/api/recommend', {
@@ -264,88 +233,25 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    resultDiv.innerHTML = `오류: ${data.error}`;
+                    resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
                 } else {
                     resultDiv.innerHTML = `
-                        <strong>감정분석:</strong> ${data.emotion} ${data.emoji}<br>
-                        <strong>추천:</strong> ${data.recommendation}
+                        <p style="font-weight: 500; font-size: 1.1rem;">
+                            <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
+                        </p>
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+                        <div>${data.recommendation}</div>
                     `;
-                    saveDiary({
-                        text: diary,
-                        emotion: data.emotion,
-                        emoji: data.emoji,
-                        date: new Date().toISOString()
-                    });
-                    renderHistory();
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
-                resultDiv.innerHTML = '서버 통신 중 오류가 발생했습니다.';
-            }
-        }
-
-        function saveDiary(entry) {
-            let diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
-            diaryHistory.unshift(entry);
-            if (diaryHistory.length > 20) diaryHistory = diaryHistory.slice(0, 20);
-            localStorage.setItem(diaryHistoryKey, JSON.stringify(diaryHistory));
-        }
-
-        function renderHistory() {
-            const historyDiv = document.getElementById('history');
-            const diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
-            
-            historyDiv.innerHTML = ''; // Clear previous content
-
-            if (!diaryHistory.length) {
-                historyDiv.innerHTML = "저장된 일기가 없습니다.";
-                return;
-            }
-
-            diaryHistory.forEach((item, index) => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-history-btn';
-                deleteBtn.textContent = '삭제';
-                deleteBtn.onclick = () => deleteFromHistory(index); // Using arrow function for simplicity
-
-                const dateSpan = document.createElement('span');
-                dateSpan.className = 'history-date';
-                dateSpan.textContent = new Date(item.date).toLocaleString('ko-KR', {
-                    year: 'numeric', month: '2-digit', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit'
-                });
-
-                const contentSpan = document.createElement('span');
-                contentSpan.innerHTML = `${item.emoji} <strong>[${item.emotion}]</strong> : ${item.text}`;
-
-                historyItem.appendChild(deleteBtn);
-                historyItem.appendChild(dateSpan);
-                historyItem.appendChild(contentSpan);
-                historyDiv.appendChild(historyItem);
-            });
-        }
-
-        function deleteFromHistory(index) {
-            if (!confirm("정말 이 히스토리를 삭제하시겠습니까?")) {
-                return;
-            }
-            let diaryHistory = JSON.parse(localStorage.getItem(diaryHistoryKey) || '[]');
-            diaryHistory.splice(index, 1);
-            localStorage.setItem(diaryHistoryKey, JSON.stringify(diaryHistory));
-            renderHistory();
-        }
-
-        function clearHistory() {
-            
-            if (confirm('정말 모두 삭제하시겠어요?')) {
-                localStorage.removeItem(diaryHistoryKey);
-                renderHistory();
-                document.getElementById('result').innerHTML = '';
+                resultDiv.innerHTML = '<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '감정 분석하기';
             }
         }
     </script>
+
 </body>
 </html>

@@ -16,6 +16,7 @@ results/
 *.bin
 .env
 korean-emotion-final/
+data/
 
 # Node.js dependencies
 node_modules/
