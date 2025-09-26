@@ -26,6 +26,9 @@ jobs:
           git config --global credential.helper store
           echo "https://user:${HF_TOKEN}@huggingface.co" > $HOME/.git-credentials
 
+          # .env 파일이 존재할 경우 강제 삭제하여 커밋에 포함되지 않도록 함
+          rm -f .env
+
           # ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼
           # 1. 현재 코드의 최종 상태만을 포함하는, 부모가 없는 새로운 브랜치(orphan branch)를 만듭니다.
           #    이것은 모든 과거 기록을 끊어내는 효과가 있습니다.
