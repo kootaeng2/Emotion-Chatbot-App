@@ -201,7 +201,7 @@
     <main class="container">
         <div class="chat-container">
             <h1>오늘 하루는 어떠셨나요?</h1>
-            <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6"></textarea>
+            <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6" oninput="validateInput()"></textarea>
             <div class="button-container">
                 <button id="submit-btn" onclick="analyzeEmotion()" disabled>감정 분석하기</button>
             </div>
@@ -221,24 +221,17 @@
     </footer>
 
     <script>
-        // DOM이 완전히 로드된 후에 스크립트를 실행합니다.
-        document.addEventListener('DOMContentLoaded', function () {
+        function validateInput() {
             const diaryTextarea = document.getElementById('diary');
             const submitBtn = document.getElementById('submit-btn');
-
-            if (diaryTextarea && submitBtn) {
-                // 텍스트 입력에 따라 버튼 활성화/비활성화를 제어하는 이벤트 리스너
-                diaryTextarea.addEventListener('input', () => {
-                    if (diaryTextarea.value.trim() !== '') {
-                        submitBtn.disabled = false;
-                    } else {
-                        submitBtn.disabled = true;
-                    }
-                });
+            
+            if (diaryTextarea.value.trim() !== '') {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
             }
-        });
+        }
 
-        // 감정 분석 함수 (onclick 이벤트에서 호출)
         async function analyzeEmotion() {
             const diaryTextarea = document.getElementById('diary');
             const resultDiv = document.getElementById('result');
@@ -246,7 +239,7 @@
             const diary = diaryTextarea.value.trim();
 
             if (!diary) {
-                return; // 버튼이 비활성화 상태이므로 이 코드는 실행되지 않아야 함
+                return;
             }
 
             resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
@@ -277,12 +270,7 @@
                 resultDiv.innerHTML = '<p style=\'color: var(--danger-color);\'>서버와 통신하는 중 오류가 발생했습니다.</p>';
             } finally {
                 submitBtn.textContent = '감정 분석하기';
-                // 분석이 끝난 후, 텍스트 영역의 내용에 따라 버튼 상태를 다시 결정합니다.
-                if (diaryTextarea.value.trim() !== '') {
-                    submitBtn.disabled = false;
-                } else {
-                    submitBtn.disabled = true;
-                }
+                validateInput(); // 분석 후 버튼 상태를 다시 확인합니다.
             }
         }
     </script>
