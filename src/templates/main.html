@@ -29,7 +29,7 @@
             min-height: 100vh;
         }
 
-        /* --- Navbar --- */
+        /* ---Navbar --- */
         .navbar {
             background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
             backdrop-filter: blur(10px); /* 블러 효과 */
@@ -143,7 +143,7 @@
             background: var(--primary-hover-color);
         }
         #submit-btn:disabled {
-            background-color: #cccccc; /* 비활성화 시 색상 변경 */
+            background-color: #cccccc;
             cursor: not-allowed;
         }
 
@@ -221,24 +221,32 @@
     </footer>
 
     <script>
-        const diaryTextarea = document.getElementById('diary');
-        const submitBtn = document.getElementById('submit-btn');
+        // DOM이 완전히 로드된 후에 스크립트를 실행합니다.
+        document.addEventListener('DOMContentLoaded', function () {
+            const diaryTextarea = document.getElementById('diary');
+            const submitBtn = document.getElementById('submit-btn');
 
-        diaryTextarea.addEventListener('input', () => {
-            if (diaryTextarea.value.trim() !== '') {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
+            if (diaryTextarea && submitBtn) {
+                // 텍스트 입력에 따라 버튼 활성화/비활성화를 제어하는 이벤트 리스너
+                diaryTextarea.addEventListener('input', () => {
+                    if (diaryTextarea.value.trim() !== '') {
+                        submitBtn.disabled = false;
+                    } else {
+                        submitBtn.disabled = true;
+                    }
+                });
             }
         });
 
+        // 감정 분석 함수 (onclick 이벤트에서 호출)
         async function analyzeEmotion() {
-            const diary = diaryTextarea.value.trim();
+            const diaryTextarea = document.getElementById('diary');
             const resultDiv = document.getElementById('result');
+            const submitBtn = document.getElementById('submit-btn');
+            const diary = diaryTextarea.value.trim();
 
             if (!diary) {
-                resultDiv.innerHTML = "<p style='color: var(--danger-color);'>일기 내용을 입력해 주세요.</p>";
-                return;
+                return; // 버튼이 비활성화 상태이므로 이 코드는 실행되지 않아야 함
             }
 
             resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
@@ -256,22 +264,24 @@
                 if (data.error) {
                     resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
                 } else {
-                    resultDiv.innerHTML = `
-                        <p style="font-weight: 500; font-size: 1.1rem;">
+                    resultDiv.innerHTML = " 
+                        <p style=\"font-weight: 500; font-size: 1.1rem;">
                             <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
                         </p>
-                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+                        <hr style=\"border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
                         <div>${data.recommendation}</div>
-                    `;
+                    ";
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
-                resultDiv.innerHTML = '<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>';
+                resultDiv.innerHTML = '<p style=\'color: var(--danger-color);\'>서버와 통신하는 중 오류가 발생했습니다.</p>';
             } finally {
                 submitBtn.textContent = '감정 분석하기';
-                // 분석 후에도 텍스트가 있으면 버튼을 다시 활성화합니다.
+                // 분석이 끝난 후, 텍스트 영역의 내용에 따라 버튼 상태를 다시 결정합니다.
                 if (diaryTextarea.value.trim() !== '') {
                     submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
                 }
             }
         }
