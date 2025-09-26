@@ -83,14 +83,13 @@
             align-items: center;
             padding: 2rem;
         }
-        /* login.html의 .container 스타일과 유사하게 변경 */
         .chat-container {
             width: 100%;
             max-width: 700px;
             background-color: var(--white-color);
-            border-radius: 20px; /* 변경 */
-            box-shadow: 0 8px 32px #0001; /* 변경 */
-            padding: 40px; /* 변경 */
+            border-radius: 20px;
+            box-shadow: 0 8px 32px #0001;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -98,21 +97,21 @@
         }
 
         h1 {
-            font-size: 28px; /* 변경 */
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary-color); /* 변경 */
-            margin: 0 0 25px 0; /* 변경 */
+            color: var(--primary-color);
+            margin: 0 0 25px 0;
             text-align: center;
         }
 
         textarea {
             width: 100%;
-            border-radius: 8px; /* 변경 */
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            padding: 14px; /* 변경 */
-            font-size: 16px; /* 변경 */
+            padding: 14px;
+            font-size: 16px;
             font-family: var(--font-family);
-            background: #f7f7fb; /* 변경 */
+            background: #f7f7fb;
             resize: vertical;
             box-sizing: border-box;
             min-height: 120px;
@@ -120,48 +119,47 @@
         textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(101, 152, 229, 0.2); /* 변경 */
+            box-shadow: 0 0 0 2px rgba(101, 152, 229, 0.2);
         }
 
         .button-container {
             display: flex;
             justify-content: flex-end;
-            margin-top: 10px; /* 추가 */
+            margin-top: 10px;
         }
-        /* login.html의 button 스타일과 유사하게 변경 */
         #submit-btn {
-            width: 100%; /* 변경 */
+            width: 100%;
             background: var(--primary-color);
             color: var(--white-color);
-            padding: 14px; /* 변경 */
+            padding: 14px;
             border-radius: 8px;
             border: none;
-            font-size: 18px; /* 변경 */
-            font-weight: bold; /* 변경 */
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.2s;
         }
         #submit-btn:hover {
-            background: var(--primary-hover-color); /* 변경 */
+            background: var(--primary-hover-color);
         }
         #submit-btn:disabled {
-            background-color: #a5a0f3;
+            background-color: #cccccc; /* 비활성화 시 색상 변경 */
             cursor: not-allowed;
         }
 
         #result {
-            background: #f7f7fb; /* 변경 */
-            border-radius: 8px; /* 변경 */
+            background: #f7f7fb;
+            border-radius: 8px;
             padding: 1.5rem;
             font-size: 1rem;
             color: var(--text-color);
             min-height: 50px;
             line-height: 1.6;
-            border: 1px solid var(--border-color); /* 테두리 추가 */
+            border: 1px solid var(--border-color);
         }
         .login-prompt {
             text-align: center;
-            margin-top: 20px; /* 변경 */
+            margin-top: 20px;
             font-size: 0.9rem;
             color: var(--light-text-color);
         }
@@ -180,7 +178,7 @@
             padding: 1rem;
             font-size: 0.9rem;
             color: var(--light-text-color);
-            background: transparent; /* 배경 투명 */
+            background: transparent;
         }
     </style>
 </head>
@@ -205,7 +203,7 @@
             <h1>오늘 하루는 어떠셨나요?</h1>
             <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6"></textarea>
             <div class="button-container">
-                <button id="submit-btn" onclick="analyzeEmotion()">감정 분석하기</button>
+                <button id="submit-btn" onclick="analyzeEmotion()" disabled>감정 분석하기</button>
             </div>
             <div id="result">
                 <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
@@ -223,10 +221,20 @@
     </footer>
 
     <script>
+        const diaryTextarea = document.getElementById('diary');
+        const submitBtn = document.getElementById('submit-btn');
+
+        diaryTextarea.addEventListener('input', () => {
+            if (diaryTextarea.value.trim() !== '') {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        });
+
         async function analyzeEmotion() {
-            const diary = document.getElementById('diary').value.trim();
+            const diary = diaryTextarea.value.trim();
             const resultDiv = document.getElementById('result');
-            const submitBtn = document.getElementById('submit-btn');
 
             if (!diary) {
                 resultDiv.innerHTML = "<p style='color: var(--danger-color);'>일기 내용을 입력해 주세요.</p>";
@@ -260,8 +268,11 @@
                 console.error('Fetch error:', error);
                 resultDiv.innerHTML = '<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>';
             } finally {
-                submitBtn.disabled = false;
                 submitBtn.textContent = '감정 분석하기';
+                // 분석 후에도 텍스트가 있으면 버튼을 다시 활성화합니다.
+                if (diaryTextarea.value.trim() !== '') {
+                    submitBtn.disabled = false;
+                }
             }
         }
     </script>
