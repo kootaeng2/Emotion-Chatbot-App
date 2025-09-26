@@ -1,22 +1,112 @@
-# 가상환경 폴더
-venv/
-.venv/
-# 파이썬 캐시 파일
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-# VS Code 설정 폴더
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
 .vscode/
-# 훈련 로그/결과물 폴더
-logs/
-results/
-# 기타
-.DS_Store
+.idea/
+.project
+.pydevproject
+.settings/
+*.swp
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Cursor
+cursor/
+
+# Supabase
+supabase/.temp/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Database files
+*.db
+*.sqlite3
 /src/database.db
+
+# Model files
 *.pt
 *.bin
-.env
 korean-emotion-final/
-data/
 
-# Node.js dependencies
-node_modules/
+# Logs and results
+logs/
+results/
+
+# OS-generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Data files
+# 주의: data/ 디렉토리의 모든 파일이 무시됩니다.
+# 만약 프로젝트 실행에 필요한 데이터 파일이 있다면,
+# 해당 파일은 버전 관리에 포함시켜야 합니다.
+# 예: !data/required_data.csv
+data/

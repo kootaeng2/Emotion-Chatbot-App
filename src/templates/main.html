@@ -5,23 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>감정 일기</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        /* login.html의 스타일을 적용 */
+        @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
 
         :root {
-            --primary-color: #6c63ff;
-            --secondary-color: #f0f2f5;
+            --primary-color: #6598e5;
+            --primary-hover-color: #5540a3;
             --text-color: #333;
-            --light-text-color: #777;
-            --border-color: #e0e0e0;
+            --light-text-color: #666;
+            --border-color: #d0d0e0;
             --white-color: #fff;
             --danger-color: #e74c3c;
-            --font-family: 'Noto Sans KR', sans-serif;
+            --font-family: 'Spoqa Han Sans Neo', sans-serif;
         }
 
         body {
             font-family: var(--font-family);
             margin: 0;
-            background-color: var(--secondary-color);
+            background: linear-gradient(135deg, #ece9f7, #cacae0);
             color: var(--text-color);
             display: flex;
             flex-direction: column;
@@ -30,13 +31,15 @@
 
         /* --- Navbar --- */
         .navbar {
-            background-color: var(--white-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
+            backdrop-filter: blur(10px); /* 블러 효과 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 60px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         .navbar-brand {
             font-size: 1.5rem;
@@ -54,18 +57,18 @@
             text-decoration: none;
             font-weight: 500;
             padding: 0.5rem 1rem;
-            border-radius: 5px;
+            border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
         }
         .nav-item:hover {
-            background-color: var(--secondary-color);
+            background-color: rgba(255, 255, 255, 0.5);
         }
         .nav-item.primary {
             background-color: var(--primary-color);
             color: var(--white-color);
         }
         .nav-item.primary:hover {
-            background-color: #5750d6;
+            background-color: var(--primary-hover-color);
         }
         .user-greeting {
             color: var(--light-text-color);
@@ -80,34 +83,36 @@
             align-items: center;
             padding: 2rem;
         }
+        /* login.html의 .container 스타일과 유사하게 변경 */
         .chat-container {
             width: 100%;
             max-width: 700px;
             background-color: var(--white-color);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            padding: 2rem;
+            border-radius: 20px; /* 변경 */
+            box-shadow: 0 8px 32px #0001; /* 변경 */
+            padding: 40px; /* 변경 */
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            box-sizing: border-box;
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 28px; /* 변경 */
             font-weight: 700;
-            color: var(--text-color);
-            margin: 0;
+            color: var(--primary-color); /* 변경 */
+            margin: 0 0 25px 0; /* 변경 */
             text-align: center;
         }
 
         textarea {
             width: 100%;
-            border-radius: 10px;
+            border-radius: 8px; /* 변경 */
             border: 1px solid var(--border-color);
-            padding: 1rem;
-            font-size: 1rem;
+            padding: 14px; /* 변경 */
+            font-size: 16px; /* 변경 */
             font-family: var(--font-family);
-            background: #f9f9f9;
+            background: #f7f7fb; /* 변경 */
             resize: vertical;
             box-sizing: border-box;
             min-height: 120px;
@@ -115,51 +120,58 @@
         textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(101, 152, 229, 0.2); /* 변경 */
         }
 
         .button-container {
             display: flex;
             justify-content: flex-end;
+            margin-top: 10px; /* 추가 */
         }
-        .submit-btn {
+        /* login.html의 button 스타일과 유사하게 변경 */
+        #submit-btn {
+            width: 100%; /* 변경 */
             background: var(--primary-color);
             color: var(--white-color);
-            padding: 0.75rem 1.5rem;
+            padding: 14px; /* 변경 */
             border-radius: 8px;
             border: none;
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 18px; /* 변경 */
+            font-weight: bold; /* 변경 */
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
         }
-        .submit-btn:hover {
-            background: #5750d6;
+        #submit-btn:hover {
+            background: var(--primary-hover-color); /* 변경 */
         }
-        .submit-btn:disabled {
+        #submit-btn:disabled {
             background-color: #a5a0f3;
             cursor: not-allowed;
         }
 
         #result {
-            background: var(--secondary-color);
-            border-radius: 10px;
+            background: #f7f7fb; /* 변경 */
+            border-radius: 8px; /* 변경 */
             padding: 1.5rem;
             font-size: 1rem;
             color: var(--text-color);
             min-height: 50px;
             line-height: 1.6;
+            border: 1px solid var(--border-color); /* 테두리 추가 */
         }
         .login-prompt {
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 20px; /* 변경 */
             font-size: 0.9rem;
             color: var(--light-text-color);
         }
         .login-prompt a {
             color: var(--primary-color);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: bold;
+        }
+        .login-prompt a:hover {
+            text-decoration: underline;
         }
 
         /* --- Footer --- */
@@ -168,6 +180,7 @@
             padding: 1rem;
             font-size: 0.9rem;
             color: var(--light-text-color);
+            background: transparent; /* 배경 투명 */
         }
     </style>
 </head>
