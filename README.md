@@ -171,4 +171,4 @@ __init__.py에서 create_app 함수를 통해 앱의 모든 구성요소(DB, 블
 
 각 API 요청에서는 current_app을 통해 미리 로드된 모델을 참조하게 하여, 메모리 효율성과 응답 속도를 극대화. 이를 통해 확장 가능하고 안정적인 백엔드 구조를 완성.
 
-- Triggering GitHub Action workflow.
+

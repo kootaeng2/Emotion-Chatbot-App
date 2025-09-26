@@ -17,14 +17,14 @@ jobs:
       # 2. 깨끗한 버전의 내역을 만들어서 Hugging Face Hub에 푸시합니다.
       - name: Push clean history to Hugging Face Hub
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN: ${{ secrets.TOKEN }}
         run: |
           # Git 사용자 정보 및 원격 저장소 설정 (기존과 동일)
           git config --global user.email "hf@example.com"
           git config --global user.name "Hugging Face"
           git remote add hf "https://huggingface.co/spaces/taehoon222/emotion-chatbot-app"
           git config --global credential.helper store
-          echo "https://user:${HF_TOKEN}@huggingface.co" > $HOME/.git-credentials
+          echo "https://user:${OKEN}@huggingface.co" > $HOME/.git-credentials
 
           # .env 파일이 존재할 경우 강제 삭제하여 커밋에 포함되지 않도록 함
           rm -f .env
