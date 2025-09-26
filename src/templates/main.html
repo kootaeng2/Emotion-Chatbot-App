@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>감정 일기</title>
     <style>
-        /* login.html의 스타일을 적용 */
         @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
 
         :root {
@@ -13,8 +12,6 @@
             --primary-hover-color: #5540a3;
             --text-color: #333;
             --light-text-color: #666;
-            --border-color: #d0d0e0;
-            --white-color: #fff;
             --danger-color: #e74c3c;
             --font-family: 'Spoqa Han Sans Neo', sans-serif;
         }
@@ -25,68 +22,45 @@
             background: linear-gradient(135deg, #ece9f7, #cacae0);
             color: var(--text-color);
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* 수직 방향으로 배치 */
             min-height: 100vh;
         }
 
-        /* ---Navbar --- */
+        /* --- 헤더(네비게이션 바) 스타일 --- */
         .navbar {
-            background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
-            backdrop-filter: blur(10px); /* 블러 효과 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            padding: 0 2rem;
+            background-color: white;
+            padding: 10px 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 60px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .navbar-brand {
+            color: var(--primary-color);
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-color);
             text-decoration: none;
         }
-        .navbar-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .nav-item {
-            color: var(--text-color);
+        .navbar-menu a, .navbar-menu span {
+            color: #333;
             text-decoration: none;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .nav-item:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-        .nav-item.primary {
-            background-color: var(--primary-color);
-            color: var(--white-color);
-        }
-        .nav-item.primary:hover {
-            background-color: var(--primary-hover-color);
-        }
-        .user-greeting {
-            color: var(--light-text-color);
-            font-weight: 500;
+            margin-left: 1rem;
         }
 
-        /* --- Main Content --- */
+        /* --- 메인 콘텐츠 스타일 --- */
         .container {
-            flex: 1;
+            flex-grow: 1; /* 헤더를 제외한 나머지 공간을 모두 차지 */
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2rem;
         }
+
         .chat-container {
             width: 100%;
             max-width: 700px;
-            background-color: var(--white-color);
+            background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
             padding: 40px;
@@ -107,7 +81,7 @@
         textarea {
             width: 100%;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid #d0d0e0;
             padding: 14px;
             font-size: 16px;
             font-family: var(--font-family);
@@ -116,21 +90,17 @@
             box-sizing: border-box;
             min-height: 120px;
         }
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(101, 152, 229, 0.2);
-        }
 
         .button-container {
             display: flex;
             justify-content: flex-end;
             margin-top: 10px;
         }
+
         #submit-btn {
             width: 100%;
-            background: var(--primary-color);
-            color: var(--white-color);
+            background-color: var(--primary-color);
+            color: white;
             padding: 14px;
             border-radius: 8px;
             border: none;
@@ -140,7 +110,7 @@
             transition: background-color 0.2s;
         }
         #submit-btn:hover {
-            background: var(--primary-hover-color);
+            background-color: var(--primary-hover-color);
         }
         #submit-btn:disabled {
             background-color: #cccccc;
@@ -155,31 +125,9 @@
             color: var(--text-color);
             min-height: 50px;
             line-height: 1.6;
-            border: 1px solid var(--border-color);
-        }
-        .login-prompt {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: var(--light-text-color);
-        }
-        .login-prompt a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .login-prompt a:hover {
-            text-decoration: underline;
+            border: 1px solid #d0d0e0;
         }
 
-        /* --- Footer --- */
-        footer {
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.9rem;
-            color: var(--light-text-color);
-            background: transparent;
-        }
     </style>
 </head>
 <body>
@@ -188,12 +136,12 @@
         <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
         <div class="navbar-menu">
             {% if logged_in %}
-                <span class="user-greeting">환영합니다, <strong>{{ username }}</strong>님!</span>
-                <a href="{{ url_for('main.my_diary') }}" class="nav-item">내 일기</a>
-                <a href="{{ url_for('auth.logout') }}" class="nav-item">로그아웃</a>
+                <span>환영합니다, <strong>{{ username }}</strong>님!</span>
+                <a href="{{ url_for('main.my_diary') }}">내일기</a>
+                <a href="{{ url_for('auth.logout') }}">로그아웃</a>
             {% else %}
-                <a href="{{ url_for('auth.login') }}" class="nav-item">로그인</a>
-                <a href="{{ url_for('auth.signup') }}" class="nav-item primary">회원가입</a>
+                <a href="{{ url_for('auth.login') }}">로그인</a>
+                <a href="{{ url_for('auth.signup') }}">회원가입</a>
             {% endif %}
         </div>
     </header>
@@ -201,78 +149,78 @@
     <main class="container">
         <div class="chat-container">
             <h1>오늘 하루는 어떠셨나요?</h1>
-            <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6" oninput="validateInput()"></textarea>
+            <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="6"></textarea>
             <div class="button-container">
-                <button id="submit-btn" onclick="analyzeEmotion()" disabled>감정 분석하기</button>
+                <button id="submit-btn" disabled>감정 분석하기</button>
             </div>
             <div id="result">
                 <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
             </div>
-            {% if not logged_in %}
-            <div class="login-prompt">
-                <a href="{{ url_for('auth.login') }}">로그인</a>하고 일기를 저장해 보세요!
-            </div>
-            {% endif %}
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2025 Emotion Diary. All rights reserved.</p>
-    </footer>
-
     <script>
-        function validateInput() {
-            const diaryTextarea = document.getElementById('diary');
+        // 전체 기능이 포함된 최종 스크립트
+        document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = document.getElementById('submit-btn');
-            
-            if (diaryTextarea.value.trim() !== '') {
-                submitBtn.disabled = false;
-            } else {
-                submitBtn.disabled = true;
-            }
-        }
-
-        async function analyzeEmotion() {
             const diaryTextarea = document.getElementById('diary');
             const resultDiv = document.getElementById('result');
-            const submitBtn = document.getElementById('submit-btn');
-            const diary = diaryTextarea.value.trim();
 
-            if (!diary) {
+            if (!submitBtn || !diaryTextarea || !resultDiv) {
+                console.error("필수 요소를 찾지 못했습니다.");
                 return;
             }
 
-            resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
-            submitBtn.disabled = true;
-            submitBtn.textContent = '분석 중...';
-
-            try {
-                const response = await fetch('/api/recommend', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ diary })
-                });
-                const data = await response.json();
-
-                if (data.error) {
-                    resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
+            function updateButtonState() {
+                if (diaryTextarea.value.trim() !== '') {
+                    submitBtn.disabled = false;
                 } else {
-                    resultDiv.innerHTML = " 
-                        <p style=\"font-weight: 500; font-size: 1.1rem;">
-                            <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
-                        </p>
-                        <hr style=\"border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
-                        <div>${data.recommendation}</div>
-                    ";
+                    submitBtn.disabled = true;
                 }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                resultDiv.innerHTML = '<p style=\'color: var(--danger-color);\'>서버와 통신하는 중 오류가 발생했습니다.</p>';
-            } finally {
-                submitBtn.textContent = '감정 분석하기';
-                validateInput(); // 분석 후 버튼 상태를 다시 확인합니다.
             }
-        }
+            diaryTextarea.addEventListener('input', updateButtonState);
+            updateButtonState();
+
+            submitBtn.addEventListener('click', runAnalysisFlow);
+
+            async function runAnalysisFlow() {
+                const diary = diaryTextarea.value.trim();
+                if (!diary) return;
+
+                submitBtn.style.backgroundColor = 'red';
+                submitBtn.textContent = '감정 분석중';
+                submitBtn.disabled = true;
+                resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
+
+                try {
+                    const response = await fetch('/api/recommend', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ diary })
+                    });
+                    const data = await response.json();
+
+                    if (data.error) {
+                        resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <p style="font-weight: 500; font-size: 1.1rem;">
+                                <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
+                            </p>
+                            <hr style="border: 0; border-top: 1px solid #d0d0e0; margin: 1rem 0;">
+                            <div>${data.recommendation}</div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    resultDiv.innerHTML = `<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>`;
+                } finally {
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.textContent = '감정 분석하기';
+                    updateButtonState();
+                }
+            }
+        });
     </script>
 
 </body>

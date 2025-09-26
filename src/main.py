@@ -16,6 +16,8 @@ emotion_emoji_map = {
 
 @bp.route("/")
 def home():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
     logged_in = 'user_id' in session
     username = session.get('username') if logged_in else None
     logging.info(f"메인 페이지 접속: 로그인 상태: {logged_in}, 사용자: {username}")
