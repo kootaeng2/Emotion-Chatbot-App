@@ -3,14 +3,10 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipe
 import os
 
 def load_emotion_classifier():
-    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
-    # 로컬 경로 대신, Hugging Face Hub의 모델 ID를 사용합니다.
-    MODEL_ID = "taehoon222/korean-emotion-classifier-final" # "사용자이름/모델이름" 형식
-    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
+    MODEL_ID = "taehoon222/korean-emotion-classifier-final"
 
     print(f"Hugging Face Hub 모델 '{MODEL_ID}'에서 모델을 불러옵니다...")
     try:
-        # local_files_only 옵션을 제거하여 온라인에서 다운로드하도록 합니다.
         tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_ID)
         print("✅ Hugging Face Hub 모델 로딩 성공!")
