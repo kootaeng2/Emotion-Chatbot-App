@@ -7,14 +7,14 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
-    # --- ▼▼▼▼▼ 핵심 수정 부분 ▼▼▼▼▼ ---
+    
     # 1. 시크릿 키를 가장 먼저 설정합니다.
     app.config['SECRET_KEY'] = 'a-very-long-and-unique-secret-key-for-this-app'
     
     # 2. 세션 쿠키가 다른 도메인의 iframe에서도 작동하도록 설정합니다.
     app.config['SESSION_COOKIE_SAMESITE'] = 'None'
     app.config['SESSION_COOKIE_SECURE'] = True
-    # --- ▲▲▲▲▲ 핵심 수정 부분 끝 ▲▲▲▲▲ ---
+    
     
     # 3. Supabase DB 설정
     db_uri = os.environ.get('DATABASE_URL')

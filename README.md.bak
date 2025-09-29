@@ -97,50 +97,38 @@ python src/app.py
 ```
 Emotion-Chatbot-App/
 │
-├── .github/                     # GitHub Actions 워크플로우 (CI/CD)
+├── .github/
 │   └── workflows/
-│       └── sync-to-hub.yml
+│       └── sync-to-hub.yml      # GitHub Actions 자동 배포 워크플로우
 │
-├── data/                        # AI 모델 학습에 사용된 원본 및 레이블링 데이터
-│   ├── training-label.json
-│   ├── training-origin.xlsx
-│   ├── validation-label.json
-│   └── validation-origin.xlsx
+├── notebooks/
+│   └── 1_explore_data.py        # 데이터 탐색용 노트북
 │
-├── notebooks/                   # 데이터 탐색 및 전처리용 Jupyter Notebook
-│   └── explore_data.py
+├── scripts/
+│   └── train_model.py           # AI 모델 훈련 스크립트
+│   └── test.py                  # Huggingface 연결 확인
+│   └── upload_model.py          # huggingface 업로드 확인
 │
-├── scripts/                     # 모델 훈련, 테스트, 업로드용 스크립트
-│   ├── test.py
-│   ├── train_model.py
-│   └── upload_model.py
 │
-├── src/                         # 핵심 애플리케이션 소스 코드
-│   ├── templates/               # 사용자에게 보여지는 HTML 템플릿
-│   │   ├── login.html
-│   │   ├── main.html
-│   │   ├── my_diary.html
-│   │   ├── save_diary.html
-│   │   └── signup.html
-│   │
-│   ├── __init__.py              # Flask 앱 초기화 (Application Factory)
-│   ├── auth.py                  # 회원가입, 로그인/아웃 등 인증 관련 로직
-│   ├── emotion_engine.py        # 감정 분석 모델 로딩 및 예측
-│   ├── main.py                  # 메인 페이지, 일기 저장/조회 등 핵심 기능
-│   ├── models.py                # 데이터베이스 테이블 모델 (사용자, 일기)
-│   └── recommender.py           # 감정 기반 콘텐츠 추천 로직
+├── src/
+│   └── templastes               # 홈페이지 html정리
+│       └── emotion_homepage.py  # 메인 화면
+│       └── login.py             # 로그인 화면
+│       └── signup.py            # 회원가입 화면
 │
-├── supabase/                    # Supabase 클라우드 데이터베이스 설정
-│   └── migrations/
-│       └── 20250918153724_remote_schema.sql
+│   ├── __init__.py              # Flask Application Factory, 앱 생성 및 설정
+│   ├── main.py                  # 메인페이지, API 등 핵심 라우트
+│   ├── auth.py                  # 로그인, 회원가입 등 인증 라우트
+│   ├── models.py                # SQLAlchemy DB 모델 (User, Diary)
+│   ├── emotion_engine.py        # 감정 분석 엔진 (모델 로딩 및 추론)
+│   └── recommender.py           # 콘텐츠 추천 로직
 │
-├── .gitattributes               # Git 파일 속성 설정
-├── .gitignore                   # Git 추적 제외 파일/폴더 목록
-├── Dockerfile                   # 배포용 Docker 컨테이너 설정
-├── package.json                 # Node.js 의존성 관리 (Supabase CLI 등)
-├── README.md                    # 프로젝트 설명서
-├── requirements.txt             # Python 의존성 라이브러리 목록
-└── run.py                       # 애플리케이션 실행 스크립트
+├── run.py                       # 애플리케이션 실행 스크립트
+├── .gitattributes               # Git 이용시 주의사항
+├── .gitignore                   # Git 추적 제외 목록
+├── Dockerfile                   # Hugging Face 배포용 Docker 설정
+├── README.md                    # 프로젝트 설명서 (현재 보고 있는 파일)
+└── requirements.txt             # 필수 Python 라이브러리 목록
 ```
 
 <br>
@@ -168,6 +156,8 @@ Spaces 앱 실행 시점에서 emotion_engine.py가 Hub로부터 모델을 다�
 
 GitHub Actions Secret (HF_TOKEN): '배포 로봇'이 Hugging Face에 코드를 푸시할 때 필요한 write 권한 토큰을 등록.
 
+
+
 Hugging Face Spaces Secret (HF_TOKEN): '빌드 로봇'이 내부적으로 LFS 파일 등을 처리할 때 필요한 write 권한 토큰을 등록.
 
 이를 통해 각기 다른 환경에서 필요한 인증을 명확히 분리하여 CI/CD 파이프라인의 인증 문제를 해결.
@@ -182,4 +172,3 @@ __init__.py에서 create_app 함수를 통해 앱의 모든 구성요소(DB, 블
 앱 시작 시점에서 AI 모델을 단 한 번만 로드하여 app 객체에 저장(app.emotion_classifier).
 
 각 API 요청에서는 current_app을 통해 미리 로드된 모델을 참조하게 하여, 메모리 효율성과 응답 속도를 극대화. 이를 통해 확장 가능하고 안정적인 백엔드 구조를 완성.
-
