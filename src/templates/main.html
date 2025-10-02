@@ -1,66 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>감정 일기</title>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
-
         :root {
+            /* # CSS 변수로 색상/폰트를 관리, 유지보수/스타일 변경 편리 */
             --primary-color: #6598e5;
             --primary-hover-color: #5540a3;
             --text-color: #333;
             --light-text-color: #666;
+            --border-color: #d0d0e0;
+            --white-color: #fff;
             --danger-color: #e74c3c;
             --font-family: 'Spoqa Han Sans Neo', sans-serif;
         }
-
         body {
+            /* # 화면 전체 배경 그라데이션과 기본 폰트 설정 */
             font-family: var(--font-family);
             margin: 0;
             background: linear-gradient(135deg, #ece9f7, #cacae0);
             color: var(--text-color);
             display: flex;
-            flex-direction: column; /* 수직 방향으로 배치 */
+            flex-direction: column;
             min-height: 100vh;
         }
-
-        /* --- 헤더(네비게이션 바) 스타일 --- */
+        /* --- Navbar --- */
         .navbar {
-            background-color: white;
-            padding: 10px 2rem;
+            /* # 투명 배경에 블러 효과 적용, 고급스러운 헤더 디자인 */
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 60px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         .navbar-brand {
-            color: var(--primary-color);
+            /* # 브랜드명 강조 스타일 */
             font-size: 1.5rem;
             font-weight: 700;
+            color: var(--primary-color);
             text-decoration: none;
         }
-        .navbar-menu a, .navbar-menu span {
-            color: #333;
+        .navbar-menu {
+            /* # 메뉴를 가로배치하고 간격 유지 */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-item {
+            /* # 메뉴 항목 스타일 */
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
-            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
         }
-
-        /* --- 메인 콘텐츠 스타일 --- */
+        .nav-item:hover {
+            /* # 마우스 오버 시 배경색 변경 */
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .nav-item.primary {
+            /* # 회원가입 · 주요 버튼 스타일 */
+            background-color: var(--primary-color);
+            color: var(--white-color);
+        }
+        .nav-item.primary:hover {
+            /* # 주요 버튼 호버 스타일 */
+            background-color: var(--primary-hover-color);
+        }
+        .user-greeting {
+            /* # 로그인 사용자 환영문구 연한 텍스트 */
+            color: var(--light-text-color);
+            font-weight: 500;
+        }
+        /* --- Main Content --- */
         .container {
-            flex-grow: 1; /* 헤더를 제외한 나머지 공간을 모두 차지 */
+            /* # 컨텐츠 중앙 정렬 및 여백 */
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2rem;
         }
-
         .chat-container {
+            /* # 중앙의 흰색 카드 형태 박스, 최대 너비, 그림자 */
             width: 100%;
             max-width: 700px;
-            background-color: white;
+            background-color: var(--white-color);
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
             padding: 40px;
@@ -69,19 +102,19 @@
             gap: 1.5rem;
             box-sizing: border-box;
         }
-
         h1 {
+            /* # 타이틀 스타일, 포인트 컬러 */
             font-size: 28px;
             font-weight: 700;
             color: var(--primary-color);
             margin: 0 0 25px 0;
             text-align: center;
         }
-
         textarea {
+            /* # 일기 입력창 스타일 */
             width: 100%;
             border-radius: 8px;
-            border: 1px solid #d0d0e0;
+            border: 1px solid var(--border-color);
             padding: 14px;
             font-size: 16px;
             font-family: var(--font-family);
@@ -90,17 +123,23 @@
             box-sizing: border-box;
             min-height: 120px;
         }
-
+        textarea:focus {
+            /* # 포커스 시 테두리 및 그림자 강조 */
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(101, 152, 229, 0.2);
+        }
         .button-container {
+            /* # 버튼을 오른쪽 끝 정렬 */
             display: flex;
             justify-content: flex-end;
             margin-top: 10px;
         }
-
         #submit-btn {
+            /* # 감정 분석 버튼, 풀 너비, 컬러 강조, 커서 변경 */
             width: 100%;
-            background-color: var(--primary-color);
-            color: white;
+            background: var(--primary-color);
+            color: var(--white-color);
             padding: 14px;
             border-radius: 8px;
             border: none;
@@ -110,14 +149,16 @@
             transition: background-color 0.2s;
         }
         #submit-btn:hover {
-            background-color: var(--primary-hover-color);
+            /* # 버튼 호버 시 색상 변경 */
+            background: var(--primary-hover-color);
         }
         #submit-btn:disabled {
+            /* # 버튼 비활성화 스타일 */
             background-color: #cccccc;
             cursor: not-allowed;
         }
-
         #result {
+            /* # 감정 분석 결과 박스, 배경과 테두리, 최소 높이 지정 */
             background: #f7f7fb;
             border-radius: 8px;
             padding: 1.5rem;
@@ -125,103 +166,208 @@
             color: var(--text-color);
             min-height: 50px;
             line-height: 1.6;
-            border: 1px solid #d0d0e0;
+            border: 1px solid var(--border-color);
         }
-
+        #feedback-section {
+            /* # 피드백 버튼 영역, 기본 숨김, 중앙 정렬 */
+            text-align: center;
+            margin-top: 14px;
+            display: none;
+        }
+        #feedback-section span {
+            /* # 피드백 안내 텍스트 */
+            font-size: 15px;
+            margin-right: 8px;
+        }
+        #feedback-section button {
+            /* # 피드백 아이콘 버튼 스타일 */
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 20px;
+            margin: 0 5px;
+            transition: transform 0.2s;
+        }
+        #feedback-section button:hover {
+            /* # 피드백 버튼 호버 시 확대 효과 */
+            transform: scale(1.2);
+        }
+        #feedback-msg {
+            /* # 피드백 클릭 후 메시지 */
+            margin-top: 8px;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 14px;
+            min-height: 18px;
+        }
+        .login-prompt {
+            /* # 로그인이 안 된 사용자에 대한 권유문구 */
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--light-text-color);
+        }
+        .login-prompt a {
+            /* # 로그인 링크 강조 */
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .login-prompt a:hover {
+            /* # 로그인 링크 호버 시 밑줄 */
+            text-decoration: underline;
+        }
+        footer {
+            /* # 푸터 텍스트 중앙 정렬, 연한 컬러 */
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: var(--light-text-color);
+            background: transparent;
+        }
     </style>
 </head>
 <body>
-
     <header class="navbar">
         <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
         <div class="navbar-menu">
             {% if logged_in %}
-                <span>환영합니다, <strong>{{ username }}</strong>님!</span>
-                <a href="{{ url_for('main.my_diary') }}">내일기</a>
-                <a href="{{ url_for('auth.logout') }}">로그아웃</a>
+                <!-- # 로그인 시 환영 메시지와 내 일기, 로그아웃 메뉴 노출 -->
+                <span class="user-greeting">환영합니다, <strong>{{ username }}</strong>님!</span>
+                <a href="{{ url_for('main.my_diary') }}" class="nav-item">내 일기</a>
+                <a href="{{ url_for('auth.logout') }}" class="nav-item">로그아웃</a>
             {% else %}
-                <a href="{{ url_for('auth.login') }}">로그인</a>
-                <a href="{{ url_for('auth.signup') }}">회원가입</a>
+                <!-- # 로그인 안 된 경우 로그인·회원가입 링크 표시 -->
+                <a href="{{ url_for('auth.login') }}" class="nav-item">로그인</a>
+                <a href="{{ url_for('auth.signup') }}" class="nav-item primary">회원가입</a>
             {% endif %}
         </div>
     </header>
-
     <main class="container">
         <div class="chat-container">
             <h1>오늘 하루는 어떠셨나요?</h1>
-            <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="6"></textarea>
+            <!-- # 일기 입력 필드, placeholder로 안내문 제공 -->
+            <textarea id="diary" placeholder="당신의 이야기를 들려주세요. AI가 당신의 감정을 분석하고 위로와 응원을 보내드립니다." rows="6"></textarea>
             <div class="button-container">
-                <button id="submit-btn" disabled>감정 분석하기</button>
+                <!-- # 감정 분석 버튼 -->
+                <button id="submit-btn" onclick="analyzeEmotion()">감정 분석하기</button>
             </div>
+            <!-- # 결과가 표시될 영역 -->
             <div id="result">
                 <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
             </div>
+            <!-- # 피드백 섹션, 기본 숨김 -->
+            <div id="feedback-section">
+                <span>추천이 도움이 되었나요?</span>
+                <button id="feedback-yes" title="도움이 되었어요">👍</button>
+                <button id="feedback-no" title="아쉬워요">👎</button>
+            </div>
+            <!-- # 피드백 메시지 영역 -->
+            <div id="feedback-msg"></div>
+            {% if not logged_in %}
+            <!-- # 비로그인 시 로그인 권유 문구 및 링크 -->
+            <div class="login-prompt">
+                <a href="{{ url_for('auth.login') }}">로그인</a>하고 일기를 저장해 보세요!
+            </div>
+            {% endif %}
         </div>
     </main>
-
+    <footer>
+        <p>&copy; 2025 Emotion Diary. All rights reserved.</p>
+    </footer>
     <script>
-        // 전체 기능이 포함된 최종 스크립트
-        document.addEventListener('DOMContentLoaded', function() {
-            const submitBtn = document.getElementById('submit-btn');
-            const diaryTextarea = document.getElementById('diary');
-            const resultDiv = document.getElementById('result');
+        const DIARY_DRAFT_KEY = "emotionDiaryDraft";
 
-            if (!submitBtn || !diaryTextarea || !resultDiv) {
-                console.error("필수 요소를 찾지 못했습니다.");
+        window.addEventListener('DOMContentLoaded', function() {
+            /* # 페이지 로드 시 localStorage에서 임시 저장된 일기 복원 */
+            const savedDraft = localStorage.getItem(DIARY_DRAFT_KEY);
+            if (savedDraft) {
+                document.getElementById('diary').value = savedDraft;
+            }
+        });
+
+        const diaryTextarea = document.getElementById('diary');
+        const resultDiv = document.getElementById('result');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedbackSection = document.getElementById('feedback-section');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const feedbackYesBtn = document.getElementById('feedback-yes');
+        const feedbackNoBtn = document.getElementById('feedback-no');
+
+        /* # 입력할 때마다 localStorage에 임시 저장 */
+        diaryTextarea.addEventListener('input', function() {
+            localStorage.setItem(DIARY_DRAFT_KEY, diaryTextarea.value);
+        });
+
+        async function analyzeEmotion() {
+            const diary = diaryTextarea.value.trim();
+
+            /* # 입력값 없으면 경고문구와 피드백 숨김 */
+            if (!diary) {
+                resultDiv.innerHTML = "<p style='color: var(--danger-color);'>일기 내용을 입력해 주세요.</p>";
+                feedbackSection.style.display = 'none';
+                feedbackMsg.textContent = "";
                 return;
             }
 
-            function updateButtonState() {
-                if (diaryTextarea.value.trim() !== '') {
-                    submitBtn.disabled = false;
+            /* # 분석 중 UI 상태 변경 */
+            resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
+            submitBtn.disabled = true;
+            submitBtn.textContent = '분석 중...';
+            feedbackSection.style.display = 'none';
+            feedbackMsg.textContent = "";
+
+            try {
+                /* # 서버에 POST로 일기 내용 전달 후 감정 및 추천 요청 */
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ diary })
+                });
+                const data = await response.json();
+
+                /* # 오류 처리 */
+                if (data.error) {
+                    resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
+                    feedbackSection.style.display = 'none';
                 } else {
-                    submitBtn.disabled = true;
-                }
-            }
-            diaryTextarea.addEventListener('input', updateButtonState);
-            updateButtonState();
-
-            submitBtn.addEventListener('click', runAnalysisFlow);
-
-            async function runAnalysisFlow() {
-                const diary = diaryTextarea.value.trim();
-                if (!diary) return;
-
-                submitBtn.style.backgroundColor = 'red';
-                submitBtn.textContent = '감정 분석중';
-                submitBtn.disabled = true;
-                resultDiv.innerHTML = "<p>감정을 분석하고 있어요. 잠시만 기다려주세요...</p>";
-
-                try {
-                    const response = await fetch('/api/recommend', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ diary })
+                    /* # 여러 추천을 ul 리스트 형태로 순서 없이 출력 */
+                    let recommendHtml = '<ul style="list-style:none; padding-left:0;">';
+                    (data.recommendations || []).forEach(rec => {
+                        recommendHtml += `<li style="margin-bottom:10px;">${rec}</li>`;
                     });
-                    const data = await response.json();
-
-                    if (data.error) {
-                        resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
-                    } else {
-                        resultDiv.innerHTML = `
-                            <p style="font-weight: 500; font-size: 1.1rem;">
-                                <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
-                            </p>
-                            <hr style="border: 0; border-top: 1px solid #d0d0e0; margin: 1rem 0;">
-                            <div>${data.recommendation}</div>
-                        `;
-                    }
-                } catch (error) {
-                    console.error('Fetch error:', error);
-                    resultDiv.innerHTML = `<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>`;
-                } finally {
-                    submitBtn.style.backgroundColor = '';
-                    submitBtn.textContent = '감정 분석하기';
-                    updateButtonState();
+                    recommendHtml += '</ul>';
+                    /* # 결과 영역에 감정 결과와 추천 목록 표시 */
+                    resultDiv.innerHTML = `
+                        <p style="font-weight: 500; font-size: 1.1rem;">
+                            <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
+                        </p>
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+                        <div><strong>추천:</strong>${recommendHtml}</div>
+                    `;
+                    /* # 추천 후 피드백 영역을 한 번만 보여줌 */
+                    feedbackSection.style.display = 'block';
                 }
+            } catch (error) {
+                /* # 서버 통신 실패 시 메시지와 피드백 숨김 */
+                resultDiv.innerHTML = "<p style='color: var(--danger-color);'>서버와 통신하는 중 오류가 발생했습니다.</p>";
+                feedbackSection.style.display = 'none';
+            } finally {
+                /* # 버튼 상태 기본으로 복구, 임시 저장 삭제 */
+                submitBtn.textContent = '감정 분석하기';
+                submitBtn.disabled = false;
+                localStorage.removeItem(DIARY_DRAFT_KEY);
             }
-        });
-    </script>
+        }
 
+        /* # 피드백 버튼 클릭 시 메시지 표시 */
+        feedbackYesBtn.onclick = function() {
+            feedbackMsg.textContent = "소중한 피드백 감사합니다 😊";
+        };
+        feedbackNoBtn.onclick = function() {
+            feedbackMsg.textContent = "더 나은 추천을 위해 노력할게요!";
+        };
+    </script>
 </body>
 </html>
+
