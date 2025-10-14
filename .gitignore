@@ -94,6 +94,7 @@ korean-emotion-final/
 # Logs and results
 logs/
 results/
+results1/
 
 # OS-generated files
 .DS_Store

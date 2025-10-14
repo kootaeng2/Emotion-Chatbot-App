@@ -9,9 +9,9 @@ def load_emotion_classifier():
     try:
         tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
         model = AutoModelForSequenceClassification.from_pretrained(MODEL_ID)
-        print("✅ Hugging Face Hub 모델 로딩 성공!")
+        print("Hugging Face Hub 모델 로딩 성공!")
     except Exception as e:
-        print(f"❌ 모델 로딩 중 오류: {e}")
+        print(f"모델 로딩 중 오류: {e}")
         return None
     
     device = 0 if torch.cuda.is_available() else -1
