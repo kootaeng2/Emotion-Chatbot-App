@@ -48,19 +48,19 @@ def login():
         logging.warning(f"--- 로그인 시도: 사용자명 '{username}' ---")
 
         # 데이터베이스에서 사용자 정보 조회
-        user = User.query.filter_by(username=username).first()
+        # user = User.query.filter_by(username=username).first()
 
         # 사용자가 없거나 비밀번호가 틀린 경우
-        if not user or not user.check_password(password):
-            logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
-            flash('로그인 정보가 올바르지 않습니다.')
-            return redirect(url_for('auth.login'))
+        # if not user or not user.check_password(password):
+        #     logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
+        #     flash('로그인 정보가 올바르지 않습니다.')
+        #     return redirect(url_for('auth.login'))
 
         # 로그인 성공
-        logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
-        session.clear()
-        session['user_id'] = user.id
-        session['username'] = user.username
+        # logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
+        # session.clear()
+        # session['user_id'] = user.id
+        # session['username'] = user.username
         return redirect(url_for('main.home'))
 
     # GET 요청 시 로그인 페이지를 보여줌

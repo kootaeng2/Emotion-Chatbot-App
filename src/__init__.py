@@ -40,9 +40,9 @@ def create_app():
     app.recommender = Recommender()
 
     # 7. 모든 것이 준비된 후 DB 테이블 생성
-    with app.app_context():
-        from . import models
-        db.create_all()
+    # with app.app_context():
+    #     from . import models
+    #     db.create_all()
        
         
     return app
