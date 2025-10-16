@@ -48,6 +48,66 @@
             margin-left: 1rem;
         }
 
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .copyright-dropdown {
+            position: relative;
+            margin-left: 1rem;
+        }
+
+        .copyright-toggle {
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--light-text-color);
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        .copyright-toggle:hover {
+            background-color: #f5f5f5;
+        }
+
+        .copyright-content {
+            display: none;
+            position: absolute;
+            top: 120%;
+            left: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 1rem;
+            z-index: 1001; /* Onboarding is 1000 */
+            width: 220px;
+            border: 1px solid #eee;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+
+        .copyright-content p {
+            margin: 0.5rem 0;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .copyright-content p:first-child {
+            margin-top: 0;
+        }
+        .copyright-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .copyright-dropdown:hover .copyright-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
         /* --- 메인 콘텐츠 스타일 --- */
         .container {
             flex-grow: 1; /* 헤더를 제외한 나머지 공간을 모두 차지 */
@@ -241,6 +301,46 @@
             transform: scale(1.1);
         }
 
+        .theme-option-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .sub-options {
+            display: none;
+            position: absolute;
+            right: 60px; /* theme-btn width + gap */
+            top: 50%;
+            transform: translateY(-50%);
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 10px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .theme-option-wrapper.active .sub-options {
+            display: flex;
+        }
+
+        .sub-options img, .sub-option-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+        .sub-option-btn {
+            background-color: white;
+            font-size: 12px;
+            padding: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -273,7 +373,24 @@
     </div>
 
     <header class="navbar">
-        <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
+        <div class="navbar-left">
+            <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
+            <div class="copyright-dropdown">
+                <span class="copyright-toggle">저작권</span>
+                <div class="copyright-content">
+                    <p>도시 1: freepik</p>
+                    <p>도시 2: freepik</p>
+                    <p>숲 1: wirestock</p>
+                    <p>숲 2: wirestock</p>
+                    <p>바다 1: lifeforstock</p>
+                    <p>바다 2: tawatchai07</p>
+                    <p>하늘 1: mrsiraphol</p>
+                    <p>하늘 2: lifeforstock</p>
+                    <p>노을 1: mrsiraphol</p>
+                    <p>노을 2: frimufilms</p>
+                </div>
+            </div>
+        </div>
         <div class="navbar-menu">
             {% if logged_in %}
                 <span>환영합니다, <strong>{{ username }}</strong>님!</span>
@@ -287,11 +404,42 @@
 
     <!-- 테마 색상 변경 팔레트 -->
     <div class="theme-palette">
-        <button class="theme-btn" data-color="default" title="기본 테마">🎨</button>
-        <button class="theme-btn" data-color="sunset" title="저녁 노을">🌇</button>
-        <button class="theme-btn" data-color="forest" title="고요한 숲">🌳</button>
-        <button class="theme-btn" data-color="ocean" title="푸른 바다">🌊</button>
-        <button class="theme-btn" data-color="night" title="별빛 밤">🌃</button>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="default" data-theme-group="default" title="기본 테마">🎨</button>
+            <div class="sub-options" data-theme-group="default">
+                <button class="sub-option-btn" data-color="current" title="현재색">현재색</button>
+                <button class="sub-option-btn" data-color="blue" title="파랑색">파랑색</button>
+                <button class="sub-option-btn" data-color="lightyellow" title="연한 노랑색">연한 노랑색</button>
+            </div>
+        </div>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="sunset" data-theme-group="sunset" title="저녁 노을">🌇</button>
+            <div class="sub-options" data-theme-group="sunset">
+                <img src="{{ url_for('static', filename='images/sun1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sun1.jpg') }}" title="저녁 노을 1">
+                <img src="{{ url_for('static', filename='images/sun2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sun2.jpg') }}" title="저녁 노을 2">
+            </div>
+        </div>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="forest" data-theme-group="forest" title="고요한 숲">🌳</button>
+            <div class="sub-options" data-theme-group="forest">
+                <img src="{{ url_for('static', filename='images/forest1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/forest1.jpg') }}" title="고요한 숲 1">
+                <img src="{{ url_for('static', filename='images/forest2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/forest2.jpg') }}" title="고요한 숲 2">
+            </div>
+        </div>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="sky" data-theme-group="sky" title="하늘 테마">☁️</button>
+            <div class="sub-options" data-theme-group="sky">
+                <img src="{{ url_for('static', filename='images/sky1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sky1.jpg') }}" title="하늘 1">
+                <img src="{{ url_for('static', filename='images/sky2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sky2.jpg') }}" title="하늘 2">
+            </div>
+        </div>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="night" data-theme-group="night" title="별빛 밤">🌃</button>
+            <div class="sub-options" data-theme-group="night">
+                <img src="{{ url_for('static', filename='images/city1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/city1.jpg') }}" title="별빛 밤 1">
+                <img src="{{ url_for('static', filename='images/city2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/city2.jpg') }}" title="별빛 밤 2">
+            </div>
+        </div>
     </div>
 
     <main class="container">
@@ -430,28 +578,103 @@
     <script>
         // 테마 변경 스크립트
         document.addEventListener('DOMContentLoaded', function() {
-            const themeButtons = document.querySelectorAll('.theme-btn');
             const body = document.body;
+            const root = document.documentElement;
+            const themePalette = document.querySelector('.theme-palette');
+            const themeWrappers = document.querySelectorAll('.theme-option-wrapper');
 
+            // --- 테마 설정 ---
             const themes = {
-                default: 'linear-gradient(135deg, #ece9f7, #cacae0)',
-                sunset: 'linear-gradient(135deg, #ff7e5f, #feb47b)',
-                forest: 'linear-gradient(135deg, #5a3f37, #2c7744)',
-                ocean: 'linear-gradient(135deg, #00c6ff, #0072ff)',
-                night: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)'
+                // 그라디언트 테마
+                default: { bg: 'linear-gradient(135deg, #ece9f7, #cacae0)', primary: '#6598e5' },
+                sunset: { bg: 'linear-gradient(135deg, #ff7e5f, #feb47b)', primary: '#e5533b' },
+                forest: { bg: 'linear-gradient(135deg, #5a3f37, #2c7744)', primary: '#92b57a' },
+                sky: { bg: 'linear-gradient(135deg, #a1c4fd, #c2e9fb)', primary: '#6a89cc' },
+                night: { bg: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)', primary: '#a3b1c6' },
+
+                // 단색 테마
+                current: { bg: getComputedStyle(body).background, primary: getComputedStyle(root).getPropertyValue('--primary-color')},
+                blue: { bg: 'linear-gradient(135deg, #a1c4fd, #c2e9fb)', primary: '#6a89cc' }, // 하늘 테마 색상으로 변경
+                lightyellow: { bg: '#fff9e6', primary: '#d4a237' },
             };
 
-            // 페이지 로드 시 저장된 테마 적용
-            const savedTheme = localStorage.getItem('theme') || 'default';
-            body.style.background = themes[savedTheme];
+            function applyTheme(theme) {
+                body.style.background = theme.bg;
+                root.style.setProperty('--primary-color', theme.primary);
+            }
 
-            themeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const themeName = button.dataset.color;
-                    body.style.background = themes[themeName];
-                    // 사용자의 테마 선택을 localStorage에 저장
-                    localStorage.setItem('theme', themeName);
-                });
+            function saveTheme(themeName, themeData) {
+                localStorage.setItem('themeName', themeName);
+                if (themeName.startsWith('image-')) {
+                    localStorage.setItem('themeIsImage', 'true');
+                    localStorage.setItem('themeValue', themeData.bg);
+                } else {
+                    localStorage.setItem('themeIsImage', 'false');
+                    localStorage.setItem('themeValue', themeName);
+                }
+            }
+
+            // --- 페이지 로드 시 저장된 테마 적용 ---
+            const savedThemeName = localStorage.getItem('themeName') || 'default';
+            const savedThemeIsImage = localStorage.getItem('themeIsImage') === 'true';
+            const savedThemeValue = localStorage.getItem('themeValue');
+
+            if (savedThemeIsImage && savedThemeValue) {
+                body.style.background = `url(${savedThemeValue}) no-repeat center center / cover`;
+            } else if (themes[savedThemeName]) {
+                applyTheme(themes[savedThemeName]);
+            }
+
+            // --- 이벤트 리스너 ---
+            themePalette.addEventListener('click', (e) => {
+                const target = e.target;
+                const wrapper = target.closest('.theme-option-wrapper');
+
+                // 메인 버튼(.theme-btn) 클릭 시 메뉴 토글
+                if (target.classList.contains('theme-btn')) {
+                    e.stopPropagation();
+                    themeWrappers.forEach(w => {
+                        if (w !== wrapper) w.classList.remove('active');
+                    });
+                    wrapper.classList.toggle('active');
+                    return; // 메인 버튼 클릭 시 테마 적용 로직을 실행하지 않음
+                }
+
+                const subOptions = target.closest('.sub-options');
+                if (subOptions) {
+                    // --- 테마 적용 로직 ---
+                    let themeName, themeData;
+
+                    // 이미지 버튼 클릭 시
+                    if (target.tagName === 'IMG' && target.dataset.themeBg) {
+                        themeName = 'image-' + target.dataset.themeBg;
+                        themeData = { bg: target.dataset.themeBg };
+                        body.style.background = `url(${themeData.bg}) no-repeat center center / cover`;
+                        saveTheme(themeName, themeData);
+                    }
+                    // 색상 버튼 (서브) 클릭 시
+                    else if (target.classList.contains('sub-option-btn') && target.dataset.color) {
+                        themeName = target.dataset.color;
+                        if (themes[themeName]) {
+                            if (themeName === 'current') {
+                                themes.current.bg = getComputedStyle(body).background;
+                                themes.current.primary = getComputedStyle(root).getPropertyValue('--primary-color');
+                            }
+                            themeData = themes[themeName];
+                            applyTheme(themeData);
+                            saveTheme(themeName, themeData);
+                        }
+                    }
+                    // 테마 적용 후 모든 메뉴 닫기
+                    themeWrappers.forEach(w => w.classList.remove('active'));
+                }
+            });
+
+            // 팔레트 바깥 영역 클릭 시 모든 메뉴 닫기
+            document.addEventListener('click', (e) => {
+                if (!themePalette.contains(e.target)) {
+                    themeWrappers.forEach(w => w.classList.remove('active'));
+                }
             });
         });
     </script>
