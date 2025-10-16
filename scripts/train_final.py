@@ -47,7 +47,7 @@ class TrainingConfig:
     base_model_name: str = "klue/roberta-base"
     eval_batch_size: int = 64
     num_train_epochs: int = 3
-    learning_rate: float = 1e-5
+    learning_rate: float = 2e-5
     train_batch_size: int = 16
     weight_decay: float = 0.01
     max_length: int = 128
@@ -106,25 +106,28 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame]:
       return train_test_split(df, test_size=0.2, random_state=42, stratify=df['label'])
 
     elif config.mode == 'emotion':
-        print("--- 감정 데이터 로딩 및 4클래스 레이블로 통합 ---")
+        print("--- 감정 데이터 로딩 및 6클래스 레이블로 통합 ---")
         
-        # E코드 숫자를 기준으로 4개의 새로운 대분류로 매핑하는 함수
+        # E코드 숫자를 기준으로 6개의 대분류로 매핑하는 함수
         def map_ecode_to_major_emotion(ecode):
             try:
                 code_num = int(ecode[1:])
             except (ValueError, TypeError):
                 return None
 
-            # 4클래스 분류 기준 적용
+            # 6클래스 분류 기준으로 변경
             if 10 <= code_num <= 19:
                 return '분노'
-            elif 60 <= code_num <= 69:
-                return '기쁨'
+            elif 20 <= code_num <= 29:
+                return '슬픔'
+            elif 30 <= code_num <= 39:
+                return '불안'
+            elif 40 <= code_num <= 49:
+                return '상처'
             elif 50 <= code_num <= 59:
                 return '당황'
-            # 슬픔(20s), 불안(30s), 상처(40s)를 '부정적'으로 통합
-            elif 20 <= code_num <= 49:
-                return '부정적' 
+            elif 60 <= code_num <= 69:
+                return '기쁨'
             else:
                 return None
 
@@ -142,7 +145,7 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame]:
     df_train = load_and_map_labels("training-label.json")
     df_val = load_and_map_labels("validation-label.json")
     
-    print("\n--- 4클래스 레이블 통합 후 클래스 분포 ---")
+    print("\n--- 6클래스 레이블 통합 후 클래스 분포 ---")
     if not df_train.empty:
         print(df_train['major_emotion'].value_counts())
     else:
