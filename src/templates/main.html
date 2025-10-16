@@ -277,7 +277,6 @@
         <div class="navbar-menu">
             {% if logged_in %}
                 <span>환영합니다, <strong>{{ username }}</strong>님!</span>
-                <!-- <a href="{{ url_for('main.my_diary') }}">내일기</a> -->
                 <a href="{{ url_for('auth.logout') }}">로그아웃</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">로그인</a>
