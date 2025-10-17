@@ -25,6 +25,15 @@ emotion_emoji_map = {
     '당황': '😮', '기쁨': '😄', '상처': '💔',
 }
 
+default_recommendations = {
+    '분노': '화가 날 때는 신나는 음악을 듣거나, 가벼운 코미디 영화를 보며 기분을 전환해 보세요.',
+    '불안': '불안할 때는 차분한 클래식 음악을 듣거나, 따뜻한 차를 마시며 명상을 해보는 건 어떨까요?',
+    '슬픔': '슬플 때는 위로가 되는 영화나 책을 보며 감정을 충분히 느껴보는 것도 좋아요. 혹은 친구와 대화를 나눠보세요.',
+    '당황': '당황스러울 때는 잠시 숨을 고르고, 좋아하는 음악을 들으며 마음을 진정시켜 보세요.',
+    '기쁨': '기쁠 때는 신나는 댄스 음악과 함께 춤을 추거나, 친구들과 만나 즐거움을 나눠보세요!',
+    '상처': '마음의 상처를 받았을 때는, 위로가 되는 음악을 듣거나, 조용한 곳에서 책을 읽으며 마음을 달래보세요.'
+}
+
 @bp.route("/")
 def home():
     if 'user_id' not in session:
@@ -58,7 +67,7 @@ def api_recommend():
     # 3. Gemini API를 통한 문화생활 추천
     recommendation_text = "추천 내용을 생성하지 못했습니다."
     try:
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         # 제미나이 API에 전달할 프롬프트
         prompt = f"""
@@ -83,7 +92,7 @@ def api_recommend():
 
     except Exception as e:
         logging.error(f"🔥🔥🔥 Gemini API 호출 중 오류 발생: {e} 🔥🔥🔥")
-        recommendation_text = "추천을 생성하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        recommendation_text = default_recommendations.get(predicted_emotion, "오늘은 좋아하는 음악을 들으며 편안한 하루를 보내는 건 어떠세요?")
 
 
     # 4. 프론트엔드로 결과 전송

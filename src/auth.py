@@ -18,16 +18,16 @@ def signup():
             username = request.form['username']
             password = request.form['password']
 
-            # DB 조회 작업도 try 블록 안으로 이동
-            # if User.query.filter_by(username=username).first():
-            #     flash('이미 존재하는 사용자입니다.')
-            #     return redirect(url_for('auth.signup'))
+            
+            if User.query.filter_by(username=username).first():
+                 flash('이미 존재하는 사용자입니다.')
+                 return redirect(url_for('auth.signup'))
 
             new_user = User(username=username)
             new_user.set_password(password)
             
-            # db.session.add(new_user)
-            # db.session.commit()
+            db.session.add(new_user)
+            db.session.commit()
             logging.warning("✅ DB 저장 성공: 사용자 '{}'가 추가되었습니다.".format(username))
             return redirect(url_for('auth.login'))
 
@@ -48,19 +48,19 @@ def login():
         logging.warning(f"--- 로그인 시도: 사용자명 '{username}' ---")
 
         # 데이터베이스에서 사용자 정보 조회
-        # user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first()
 
         # 사용자가 없거나 비밀번호가 틀린 경우
-        # if not user or not user.check_password(password):
-        #     logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
-        #     flash('로그인 정보가 올바르지 않습니다.')
-        #     return redirect(url_for('auth.login'))
+        if not user or not user.check_password(password):
+             logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
+             flash('로그인 정보가 올바르지 않습니다.')
+             return redirect(url_for('auth.login'))
 
         # 로그인 성공
         logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
         session.clear()
-        session['user_id'] = 1 # Dummy user_id
-        session['username'] = username
+        session['user_id'] = user.id # Dummy user_id
+        session['username'] = user.username
         return redirect(url_for('main.home'))
 
     # GET 요청 시 로그인 페이지를 보여줌

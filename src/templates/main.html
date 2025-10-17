@@ -394,6 +394,7 @@
         <div class="navbar-menu">
             {% if logged_in %}
                 <span>환영합니다, <strong>{{ username }}</strong>님!</span>
+                <a href="{{ url_for('main.my_diary') }}">나의 일기</a>
                 <a href="{{ url_for('auth.logout') }}">로그아웃</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">로그인</a>
@@ -407,9 +408,9 @@
         <div class="theme-option-wrapper">
             <button class="theme-btn" data-color="default" data-theme-group="default" title="기본 테마">🎨</button>
             <div class="sub-options" data-theme-group="default">
-                <button class="sub-option-btn" data-color="current" title="현재색">현재색</button>
+                <button class="sub-option-btn" data-color="current" title="보라색">보라색</button>
                 <button class="sub-option-btn" data-color="blue" title="파랑색">파랑색</button>
-                <button class="sub-option-btn" data-color="lightyellow" title="연한 노랑색">연한 노랑색</button>
+                <button class="sub-option-btn" data-color="lightyellow" title="연한 노랑색">노랑색</button>
             </div>
         </div>
         <div class="theme-option-wrapper">
@@ -601,7 +602,7 @@
                 sea: { bg: 'linear-gradient(135deg, #2c7744, #6598e5)', primary: '#92b57a' },
 
                 // 단색 테마
-                current: { bg: getComputedStyle(body).background, primary: getComputedStyle(root).getPropertyValue('--primary-color')},
+                current: { bg: 'linear-gradient(135deg, #ece9f7, #cacae0)', primary: '#6598e5' },
                 blue: { bg: 'linear-gradient(135deg, #a1c4fd, #c2e9fb)', primary: '#6a89cc' }, // 하늘 테마 색상으로 변경
                 lightyellow: { bg: '#fff9e6', primary: '#d4a237' },
             };
@@ -664,10 +665,6 @@
                     else if (target.classList.contains('sub-option-btn') && target.dataset.color) {
                         themeName = target.dataset.color;
                         if (themes[themeName]) {
-                            if (themeName === 'current') {
-                                themes.current.bg = getComputedStyle(body).background;
-                                themes.current.primary = getComputedStyle(root).getPropertyValue('--primary-color');
-                            }
                             themeData = themes[themeName];
                             applyTheme(themeData);
                             saveTheme(themeName, themeData);
