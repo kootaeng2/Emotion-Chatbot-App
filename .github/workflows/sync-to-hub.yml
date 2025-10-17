@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2 # 안정성을 위해 v2를 사용
         with:
           fetch-depth: 0
-          lfs: false
+          lfs: true
 
       # 2. 깨끗한 버전의 내역을 만들어서 Hugging Face Hub에 푸시합니다.
       - name: Push clean history to Hugging Face Hub
