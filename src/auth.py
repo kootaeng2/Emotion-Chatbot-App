@@ -50,20 +50,20 @@ def login():
         # 데이터베이스에서 사용자 정보 조회
         user = User.query.filter_by(username=username).first()
 
-        # 사용자가 없거나 비밀번호가 틀린 경우
         if not user or not user.check_password(password):
-             logging.warning(f"로그인 실패: 사용자 '{username}'의 정보가 올바르지 않습니다.")
-             flash('로그인 정보가 올바르지 않습니다.')
-             return redirect(url_for('auth.login'))
+            # ... (생략) ...
+            return redirect(url_for('auth.login'))
 
         # 로그인 성공
-        logging.warning(f"✅ 로그인 성공: 사용자 '{username}'")
         session.clear()
-        session['user_id'] = user.id # Dummy user_id
+        
+        # --- 바로 이 부분을 수정해야 합니다 ---
+        # session['user_id'] = 1  <- 이 줄 대신에
+        session['user_id'] = user.id  # <- 이 코드를 사용해야 합니다.
         session['username'] = user.username
+        
         return redirect(url_for('main.home'))
 
-    # GET 요청 시 로그인 페이지를 보여줌
     return render_template('login.html')
 
 # 로그아웃 part

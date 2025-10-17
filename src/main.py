@@ -67,7 +67,7 @@ def api_recommend():
     # 3. Gemini API를 통한 문화생활 추천
     recommendation_text = "추천 내용을 생성하지 못했습니다."
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-flash-latest')
         
         # 제미나이 API에 전달할 프롬프트
         prompt = f"""
