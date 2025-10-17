@@ -111,3 +111,4 @@ Thumbs.db
 # 해당 파일은 버전 관리에 포함시켜야 합니다.
 # 예: !data/required_data.csv
 data/
+src/static/images/
