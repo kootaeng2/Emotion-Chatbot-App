@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>감정 일기</title>
-    <style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>    
         @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
 
         :root {
@@ -110,16 +111,24 @@
 
         /* --- 메인 콘텐츠 스타일 --- */
         .container {
-            flex-grow: 1; /* 헤더를 제외한 나머지 공간을 모두 차지 */
+            flex-grow: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: flex-start; /* 왼쪽 정렬 */
+            align-items: flex-start;
             padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 3rem; /* 간격 늘리기 */
+            width: 100%;
+            max-width: 1100px; /* 최대 너비 줄이기 */
         }
 
         .chat-container {
-            width: 100%;
-            max-width: 700px;
+            flex: 0.8; /* 너비 줄이기 */
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
@@ -127,6 +136,15 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            box-sizing: border-box;
+        }
+
+        #result-container {
+            flex: 1.2; /* 너비 늘리기 */
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px #0001;
+            padding: 40px;
             box-sizing: border-box;
         }
 
@@ -340,6 +358,38 @@
             font-size: 12px;
             padding: 0;
         }
+        .rec-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .rec-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        #result table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+        #result th, #result td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        #result th {
+            background-color: #f7f7fb;
+            font-weight: 600;
+        }
+        #result tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
 
     </style>
 </head>
@@ -451,14 +501,18 @@
     </div>
 
     <main class="container">
-        <div class="chat-container">
-            <h1>오늘 하루는 어떠셨나요?</h1>
-            <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="6"></textarea>
-            <div class="button-container">
-                <button id="submit-btn" disabled>감정 분석하기</button>
+        <div class="main-content">
+            <div class="chat-container">
+                <h1>오늘 하루는 어떠셨나요?</h1>
+                <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="15"></textarea>
+                <div class="button-container">
+                    <button id="submit-btn" disabled>감정 분석하기</button>
+                </div>
             </div>
-            <div id="result">
-                <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
+            <div id="result-container">
+                <div id="result">
+                    <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
+                </div>
             </div>
         </div>
     </main>
@@ -563,13 +617,53 @@
                     if (data.error) {
                         resultDiv.innerHTML = `<p style='color: var(--danger-color);'>오류: ${data.error}</p>`;
                     } else {
+                        const recommendationHtml = marked.parse(data.recommendation);
+                        const parts = recommendationHtml.split('<h2>');
+
+                        let immersionContent = '';
+                        let transitionContent = '';
+
+                        parts.forEach(part => {
+                            if (part.includes('감정 몰입 (수용)')) {
+                                immersionContent = '<h2>' + part;
+                            } else if (part.includes('감정 전환')) {
+                                transitionContent = '<h2>' + part;
+                            }
+                        });
+
                         resultDiv.innerHTML = `
                             <p style="font-weight: 500; font-size: 1.1rem;">
                                 <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
                             </p>
                             <hr style="border: 0; border-top: 1px solid #d0d0e0; margin: 1rem 0;">
-                            <div>${data.recommendation}</div>
+                            <div id="recommendation-controls" style="margin-bottom: 1rem;">
+                                <button id="immersion-btn" class="rec-btn active">감정 몰입</button>
+                                <button id="transition-btn" class="rec-btn">감정 전환</button>
+                            </div>
+                            <div id="recommendation-content">
+                                <div id="immersion-content">${immersionContent}</div>
+                                <div id="transition-content" style="display: none;">${transitionContent}</div>
+                            </div>
                         `;
+
+                        const immersionBtn = document.getElementById('immersion-btn');
+                        const transitionBtn = document.getElementById('transition-btn');
+                        const immersionContentDiv = document.getElementById('immersion-content');
+                        const transitionContentDiv = document.getElementById('transition-content');
+
+                        immersionBtn.addEventListener('click', () => {
+                            immersionBtn.classList.add('active');
+                            transitionBtn.classList.remove('active');
+                            immersionContentDiv.style.display = 'block';
+                            transitionContentDiv.style.display = 'none';
+                        });
+
+                        transitionBtn.addEventListener('click', () => {
+                            transitionBtn.classList.add('active');
+                            immersionBtn.classList.remove('active');
+                            transitionContentDiv.style.display = 'block';
+                            immersionContentDiv.style.display = 'none';
+                        });
                     }
                 } catch (error) {
                     console.error('Fetch error:', error);
