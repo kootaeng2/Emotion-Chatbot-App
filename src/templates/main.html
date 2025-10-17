@@ -415,29 +415,36 @@
         <div class="theme-option-wrapper">
             <button class="theme-btn" data-color="sunset" data-theme-group="sunset" title="저녁 노을">🌇</button>
             <div class="sub-options" data-theme-group="sunset">
-                <img src="{{ url_for('static', filename='images/sun1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sun1.jpg') }}" title="저녁 노을 1">
-                <img src="{{ url_for('static', filename='images/sun2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sun2.jpg') }}" title="저녁 노을 2">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun1.jpg" title="저녁 노을 1">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" title="저녁 노을 2">
             </div>
         </div>
         <div class="theme-option-wrapper">
             <button class="theme-btn" data-color="forest" data-theme-group="forest" title="고요한 숲">🌳</button>
             <div class="sub-options" data-theme-group="forest">
-                <img src="{{ url_for('static', filename='images/forest1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/forest1.jpg') }}" title="고요한 숲 1">
-                <img src="{{ url_for('static', filename='images/forest2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/forest2.jpg') }}" title="고요한 숲 2">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/forest1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/forest1.jpg" title="고요한 숲 1">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/forest2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/forest2.jpg" title="고요한 숲 2">
             </div>
         </div>
         <div class="theme-option-wrapper">
             <button class="theme-btn" data-color="sky" data-theme-group="sky" title="하늘 테마">☁️</button>
             <div class="sub-options" data-theme-group="sky">
-                <img src="{{ url_for('static', filename='images/sky1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sky1.jpg') }}" title="하늘 1">
-                <img src="{{ url_for('static', filename='images/sky2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/sky2.jpg') }}" title="하늘 2">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sky1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sky1.jpg" title="하늘 1">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sky2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sky2.jpg" title="하늘 2">
             </div>
         </div>
         <div class="theme-option-wrapper">
             <button class="theme-btn" data-color="night" data-theme-group="night" title="별빛 밤">🌃</button>
             <div class="sub-options" data-theme-group="night">
-                <img src="{{ url_for('static', filename='images/city1.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/city1.jpg') }}" title="별빛 밤 1">
-                <img src="{{ url_for('static', filename='images/city2.jpg') }}" data-theme-bg="{{ url_for('static', filename='images/city2.jpg') }}" title="별빛 밤 2">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/city1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/city1.jpg" title="별빛 밤 1">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/city2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/city2.jpg" title="별빛 밤 2">
+            </div>
+        </div>
+        <div class="theme-option-wrapper">
+            <button class="theme-btn" data-color="sea" data-theme-group="sea" title="푸른 바다">🌊</button>
+            <div class="sub-options" data-theme-group="sea">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sea1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sea1.jpg" title="푸른 바다 1">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sea2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sea2.jpg" title="푸른 바다 2">
             </div>
         </div>
     </div>
@@ -591,6 +598,7 @@
                 forest: { bg: 'linear-gradient(135deg, #5a3f37, #2c7744)', primary: '#92b57a' },
                 sky: { bg: 'linear-gradient(135deg, #a1c4fd, #c2e9fb)', primary: '#6a89cc' },
                 night: { bg: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)', primary: '#a3b1c6' },
+                sea: { bg: 'linear-gradient(135deg, #2c7744, #6598e5)', primary: '#92b57a' },
 
                 // 단색 테마
                 current: { bg: getComputedStyle(body).background, primary: getComputedStyle(root).getPropertyValue('--primary-color')},
