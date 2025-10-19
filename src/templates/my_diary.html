@@ -158,7 +158,7 @@
                     right: 'dayGridMonth'
                 },
                 events: function(fetchInfo, successCallback, failureCallback) {
-                    fetch(`/api/diaries?year=${fetchInfo.start.getFullYear()}&month=${fetchInfo.start.getMonth() + 1}`)
+                    fetch(`/api/diaries?year=${fetchInfo.start.getFullYear()}&month=${fetchInfo.start.getMonth() + 1}&_=${new Date().getTime()}`)
                         .then(response => response.json())
                         .then(data => {
                             const events = data.map(diary => {
