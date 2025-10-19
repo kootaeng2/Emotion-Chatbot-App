@@ -177,6 +177,7 @@ def diary_save():
     diary_content = request.form.get('diary')
     predicted_emotion = request.form.get('emotion')
 
+    logging.warning(f"--- DIARY SAVE DATA --- Content: '{diary_content}', Emotion: '{predicted_emotion}'")
     if not diary_content or not predicted_emotion:
         return jsonify({"error": "일기 내용이나 감정이 없습니다."}), 400
 

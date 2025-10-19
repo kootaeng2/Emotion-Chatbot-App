@@ -23,7 +23,7 @@ def load_emotion_classifier():
         print(f"모델 로딩 중 오류: {e}")
         return None
     
-    device = 0 if torch.cuda.is_available() else -1
+    device = -1
     if device == 0:
         print("Device set to use cuda (GPU)")
     else:
