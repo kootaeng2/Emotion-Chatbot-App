@@ -46,6 +46,20 @@ def home():
     return render_template("main.html", logged_in=logged_in, username=username)
 
 
+@bp.route("/api/predict", methods=["POST"])
+def api_predict():
+    user_diary = request.json.get("diary")
+    if not user_diary:
+        return jsonify({"error": "일기 내용이 없습니다."}), 400
+
+    try:
+        predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
+        return jsonify({"emotion": predicted_emotion})
+    except Exception as e:
+        logging.error(f"감정 분석 중 오류 발생: {e}")
+        return jsonify({"error": "감정 분석 중 오류가 발생했습니다."}), 500
+
+
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
     user_diary = request.json.get("diary")
@@ -162,14 +176,12 @@ def diary_save():
 
     user_id = session['user_id']
     diary_content = request.form.get('diary')
+    predicted_emotion = request.form.get('emotion')
 
-    if not diary_content:
-        return jsonify({"error": "일기 내용이 없습니다."}), 400
+    if not diary_content or not predicted_emotion:
+        return jsonify({"error": "일기 내용이나 감정이 없습니다."}), 400
 
     try:
-        # 감정 분석
-        predicted_emotion = predict_emotion(current_app.emotion_classifier, diary_content)
-
         # 일기 저장
         new_diary = Diary(
             content=diary_content,
