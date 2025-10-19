@@ -23,7 +23,7 @@ def load_emotion_classifier():
         print(f"모델 로딩 중 오류: {e}")
         return None
     
-    device = -1
+    device = 0 if torch.cuda.is_available() else -1
     if device == 0:
         print("Device set to use cuda (GPU)")
     else:
@@ -38,6 +38,5 @@ def predict_emotion(text):
     classifier = load_emotion_classifier()
     if not text or not text.strip(): return "내용 없음"
     if classifier is None: return "오류: 감정 분석 엔진 준비 안됨."
-    # result = classifier(text)
-    result = [{'label': '기쁨'}]
+    result = classifier(text)
     return result[0]['label']

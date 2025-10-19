@@ -139,9 +139,6 @@ def api_diaries():
         Diary.created_at < end_date
     ).order_by(Diary.created_at.asc()).all()
 
-    found_ids = [d.id for d in user_diaries]
-    logging.warning(f"--- DIARIES READ ATTEMPT --- For {year}-{month}, Found IDs: {found_ids}")
-
     diaries_data = []
     for diary in user_diaries:
         diaries_data.append({
@@ -191,8 +188,6 @@ def diary_save():
             user_id=user_id
         )
         db.session.add(new_diary)
-        db.session.flush() # ID를 할당받기 위해 flush
-        logging.warning(f"--- DIARY SAVE ATTEMPT --- ID: {new_diary.id}, User: {user_id}")
         db.session.commit()
 
         return jsonify({"success": "일기가 성공적으로 저장되었습니다."}), 200
