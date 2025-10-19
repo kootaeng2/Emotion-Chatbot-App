@@ -53,7 +53,7 @@ def api_predict():
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     try:
-        predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
+        predicted_emotion = predict_emotion(user_diary)
         return jsonify({"emotion": predicted_emotion})
     except Exception as e:
         logging.error(f"감정 분석 중 오류 발생: {e}")
@@ -67,7 +67,7 @@ def api_recommend():
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     # 1. 감정 분석
-    predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
+    predicted_emotion = predict_emotion(user_diary)
 
     # 2. Gemini API를 통한 문화생활 추천
     recommendation_text = "추천 내용을 생성하지 못했습니다."
@@ -139,16 +139,18 @@ def api_diaries():
         Diary.created_at < end_date
     ).order_by(Diary.created_at.asc()).all()
 
-    diaries_by_date = {}
+    found_ids = [d.id for d in user_diaries]
+    logging.warning(f"--- DIARIES READ ATTEMPT --- For {year}-{month}, Found IDs: {found_ids}")
+
+    diaries_data = []
     for diary in user_diaries:
-        date_str = diary.created_at.strftime('%Y-%m-%d')
-        # If multiple diaries on the same day, the last one will be used.
-        diaries_by_date[date_str] = {
+        diaries_data.append({
+            "date": diary.created_at.strftime('%Y-%m-%d'),
             "content": diary.content,
             "emotion": diary.emotion
-        }
+        })
 
-    return jsonify(diaries_by_date)
+    return jsonify(diaries_data)
 
 
 
@@ -189,6 +191,8 @@ def diary_save():
             user_id=user_id
         )
         db.session.add(new_diary)
+        db.session.flush() # ID를 할당받기 위해 flush
+        logging.warning(f"--- DIARY SAVE ATTEMPT --- ID: {new_diary.id}, User: {user_id}")
         db.session.commit()
 
         return jsonify({"success": "일기가 성공적으로 저장되었습니다."}), 200

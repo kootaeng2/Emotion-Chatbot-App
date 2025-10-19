@@ -161,11 +161,10 @@
                     fetch(`/api/diaries?year=${fetchInfo.start.getFullYear()}&month=${fetchInfo.start.getMonth() + 1}`)
                         .then(response => response.json())
                         .then(data => {
-                            const events = Object.keys(data).map(date => {
-                                const diary = data[date];
+                            const events = data.map(diary => {
                                 return {
                                     title: emotionEmojis[diary.emotion] || emotionEmojis['default'],
-                                    start: date,
+                                    start: diary.date,
                                     backgroundColor: emotionColors[diary.emotion] || emotionColors['default'],
                                     extendedProps: {
                                         content: diary.content,

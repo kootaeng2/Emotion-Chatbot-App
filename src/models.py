@@ -2,6 +2,7 @@ from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from sqlalchemy.sql import func
+import datetime
 
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -22,4 +23,4 @@ class Diary(db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     emotion = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=func.now())
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
