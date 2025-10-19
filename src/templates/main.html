@@ -113,7 +113,7 @@
         .container {
             flex-grow: 1;
             display: flex;
-            justify-content: flex-start; /* 왼쪽 정렬 */
+            justify-content: center; /* 가운데 정렬 */
             align-items: flex-start;
             padding: 2rem;
             width: 100%;
@@ -122,13 +122,14 @@
 
         .main-content {
             display: flex;
-            gap: 3rem; /* 간격 늘리기 */
+            gap: 20rem; /* 간격 추가 */
+            align-items: flex-start; /* 추가 */
             width: 100%;
-            max-width: 1100px; /* 최대 너비 줄이기 */
+            max-width: 1372px; /* 최대 너비 줄이기 */
         }
 
         .chat-container {
-            flex: 0.8; /* 너비 줄이기 */
+            flex: 1; /* 공간을 1:1 비율로 나눔 */
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
@@ -140,7 +141,7 @@
         }
 
         #result-container {
-            flex: 1.2; /* 너비 늘리기 */
+            flex: 1.5; /* 추천칸의 넓이를 더 늘림 */
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
@@ -158,6 +159,7 @@
 
         textarea {
             width: 100%;
+            flex-grow: 1; /* 남은 세로 공간을 채움 */
             border-radius: 8px;
             border: 1px solid #d0d0e0;
             padding: 14px;
@@ -166,7 +168,6 @@
             background: #f7f7fb;
             resize: vertical;
             box-sizing: border-box;
-            min-height: 120px;
         }
 
         .button-container {
@@ -504,10 +505,12 @@
         <div class="main-content">
             <div class="chat-container">
                 <h1>오늘 하루는 어떠셨나요?</h1>
-                <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="15"></textarea>
-                <div class="button-container">
-                    <button id="submit-btn" disabled>감정 분석하기</button>
+                <textarea id="diary" placeholder="당신의 이야기를 들려주세요."></textarea>
+                <div class="button-container" style="display: flex; gap: 10px;">
+                    <button id="submit-btn" style="flex: 1;" disabled>감정 분석하기</button>
+                    <button id="save-btn" style="flex: 1; background-color: #4CAF50;" disabled>일기 저장하기</button>
                 </div>
+                <div id="save-status" style="margin-top: 10px; text-align: center; font-weight: 500;"></div>
             </div>
             <div id="result-container">
                 <div id="result">
@@ -577,23 +580,59 @@
         // 전체 기능이 포함된 최종 스크립트
         document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = document.getElementById('submit-btn');
+            const saveBtn = document.getElementById('save-btn');
             const diaryTextarea = document.getElementById('diary');
             const resultDiv = document.getElementById('result');
+            const saveStatus = document.getElementById('save-status');
 
-            if (!submitBtn || !diaryTextarea || !resultDiv) {
+            if (!submitBtn || !saveBtn || !diaryTextarea || !resultDiv || !saveStatus) {
                 console.error("필수 요소를 찾지 못했습니다.");
                 return;
             }
 
             function updateButtonState() {
-                if (diaryTextarea.value.trim() !== '') {
-                    submitBtn.disabled = false;
-                } else {
-                    submitBtn.disabled = true;
-                }
+                const hasText = diaryTextarea.value.trim() !== '';
+                submitBtn.disabled = !hasText;
+                saveBtn.disabled = !hasText;
             }
             diaryTextarea.addEventListener('input', updateButtonState);
             updateButtonState();
+
+            submitBtn.addEventListener('click', runAnalysisFlow);
+            saveBtn.addEventListener('click', saveDiary);
+
+            async function saveDiary() {
+                const diaryContent = diaryTextarea.value.trim();
+                if (!diaryContent) {
+                    saveStatus.textContent = "저장할 내용이 없습니다.";
+                    return;
+                }
+
+                saveBtn.disabled = true;
+                saveStatus.textContent = "저장 중...";
+
+                try {
+                    const response = await fetch('/diary/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `diary=${encodeURIComponent(diaryContent)}`
+                    });
+
+                    if (response.ok) {
+                        saveStatus.innerHTML = "<span style='color: green;'>일기가 성공적으로 저장되었습니다!</span>";
+                    } else {
+                        const data = await response.json();
+                        saveStatus.innerHTML = `<span style='color: red;'>일기 저장에 실패했습니다: ${data.error}</span>`;
+                    }
+                } catch (error) {
+                    console.error('Save error:', error);
+                    saveStatus.innerHTML = "<span style='color: red;'>서버 통신 중 오류가 발생했습니다.</span>";
+                } finally {
+                    saveBtn.disabled = false;
+                }
+            }
 
             submitBtn.addEventListener('click', runAnalysisFlow);
 
@@ -624,12 +663,72 @@
                         let transitionContent = '';
 
                         parts.forEach(part => {
-                            if (part.includes('감정 몰입 (수용)')) {
+                            if (part.includes('감정 몰입 ')) {
                                 immersionContent = '<h2>' + part;
                             } else if (part.includes('감정 전환')) {
                                 transitionContent = '<h2>' + part;
                             }
                         });
+
+                        const filterRecs = (htmlContent) => {
+                            if (!htmlContent) return '';
+
+                            // Create a temporary div to parse the HTML
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = htmlContent;
+
+                            const allowedCategories = ['영화', '음악', '도서'];
+
+                            // Handle tables
+                            const tables = tempDiv.querySelectorAll('table');
+                            tables.forEach(table => {
+                                const tbody = table.querySelector('tbody');
+                                if (tbody) {
+                                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                                    const filteredRows = rows.filter(row => {
+                                        const firstCell = row.querySelector('td');
+                                        if (firstCell) {
+                                            const category = firstCell.textContent.trim();
+                                            return allowedCategories.includes(category);
+                                        }
+                                        return false;
+                                    });
+
+                                    // Clear existing rows and append filtered rows
+                                    tbody.innerHTML = '';
+                                    filteredRows.forEach(row => tbody.appendChild(row));
+                                }
+                            });
+
+                            // Handle h3 tags (for non-table content, if any)
+                            const h3Elements = tempDiv.querySelectorAll('h3');
+                            h3Elements.forEach(h3 => {
+                                const category = h3.textContent.trim();
+                                if (!allowedCategories.includes(category)) {
+                                    h3.remove(); // Remove the h3 and its content
+                                }
+                            });
+
+                            // If after filtering, the content is empty except for the <h2> header,
+                            // add a message indicating no recommendations.
+                            const contentWithoutH2 = tempDiv.innerHTML.replace(/<h2[^>]*>.*?<\/h2>/, '').trim();
+                            if (contentWithoutH2 === '' || contentWithoutH2 === '<p>추천할 음악, 영화 또는 도서가 없습니다.</p>') {
+                                // If the content is empty or only contains the default message,
+                                // ensure the <h2> header is preserved and add the message.
+                                const h2 = tempDiv.querySelector('h2');
+                                if (h2) {
+                                    tempDiv.innerHTML = h2.outerHTML + '<p>추천할 음악, 영화 또는 도서가 없습니다.</p>';
+                                } else {
+                                    tempDiv.innerHTML = '<p>추천할 음악, 영화 또는 도서가 없습니다.</p>';
+                                }
+                            }
+
+
+                            return tempDiv.innerHTML;
+                        };
+
+                        const filteredImmersionContent = filterRecs(immersionContent);
+                        const filteredTransitionContent = filterRecs(transitionContent);
 
                         resultDiv.innerHTML = `
                             <p style="font-weight: 500; font-size: 1.1rem;">
@@ -641,8 +740,8 @@
                                 <button id="transition-btn" class="rec-btn">감정 전환</button>
                             </div>
                             <div id="recommendation-content">
-                                <div id="immersion-content">${immersionContent}</div>
-                                <div id="transition-content" style="display: none;">${transitionContent}</div>
+                                <div id="immersion-content">${filteredImmersionContent}</div>
+                                <div id="transition-content" style="display: none;">${filteredTransitionContent}</div>
                             </div>
                         `;
 

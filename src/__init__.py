@@ -18,6 +18,11 @@ def create_app():
     
     # 3. Supabase DB 설정 (변경 없음)
     db_uri = os.environ.get('DATABASE_URL')
+    if not db_uri:
+        # If DATABASE_URL is not set, use a local SQLite database.
+        db_uri = f"sqlite:///{os.path.join(app.instance_path, 'emotion.db')}"
+        os.makedirs(app.instance_path, exist_ok=True)
+
     if db_uri and db_uri.startswith("postgres://"):
         db_uri = db_uri.replace("postgres://", "postgresql://", 1)
     

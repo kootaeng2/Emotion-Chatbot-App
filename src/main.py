@@ -1,5 +1,7 @@
 # src/main.py
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request, current_app
+from sqlalchemy import extract
+import datetime
 from . import db
 from .models import Diary
 from .emotion_engine import predict_emotion
@@ -53,18 +55,7 @@ def api_recommend():
     # 1. 감정 분석
     predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
 
-    # 2. DB에 일기 저장
-    if 'user_id' in session:
-        try:
-            user_id = session['user_id']
-            new_diary_entry = Diary(content=user_diary, emotion=predicted_emotion, user_id=user_id)
-            db.session.add(new_diary_entry)
-            db.session.commit()
-        except Exception as e:
-            logging.exception("DB 저장 오류 발생!")
-            db.session.rollback()
-
-    # 3. Gemini API를 통한 문화생활 추천
+    # 2. Gemini API를 통한 문화생활 추천
     recommendation_text = "추천 내용을 생성하지 못했습니다."
     try:
         model = genai.GenerativeModel('gemini-flash-latest')
@@ -79,11 +70,11 @@ def api_recommend():
         {user_diary}
         ---
 
-        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서, 공연, 전시 등 다양한 문화 콘텐츠를 추천해줘.
+        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서 등 다양한 문화 콘텐츠를 추천해줘.
         각 추천 항목은 "종류: 추천 콘텐츠 제목 (아티스트/감독/작가 등)" 형식으로 작성하고, 간단한 추천 이유를 덧붙여줘.
         결과는 Markdown 형식으로 보기 좋게 정리해줘.
 
-        ## [감정 몰입 (수용)]
+        ## [감정 몰입 ]
         현재 감정을 더 깊이 느끼거나 위로받고 싶을 때.
 
         ## [감정 전환]
@@ -107,15 +98,93 @@ def api_recommend():
     return jsonify(response_data)
 
 
-# --- 이하 다른 라우트들 (my_diary, delete_diary 등)은 기존 코드와 동일 ---
+
+@bp.route('/api/diaries')
+def api_diaries():
+    if 'user_id' not in session:
+        return jsonify({"error": "로그인이 필요합니다."}), 401
+
+    user_id = session['user_id']
+    year = request.args.get('year', type=int)
+    month = request.args.get('month', type=int)
+
+    if not year or not month:
+        today = datetime.date.today()
+        year = today.year
+        month = today.month
+
+    start_date = datetime.date(year, month, 1)
+    if month == 12:
+        end_date = datetime.date(year + 1, 1, 1)
+    else:
+        end_date = datetime.date(year, month + 1, 1)
+
+    user_diaries = Diary.query.filter(
+        Diary.user_id == user_id,
+        Diary.created_at >= start_date,
+        Diary.created_at < end_date
+    ).order_by(Diary.created_at.asc()).all()
+
+    diaries_by_date = {}
+    for diary in user_diaries:
+        date_str = diary.created_at.strftime('%Y-%m-%d')
+        # If multiple diaries on the same day, the last one will be used.
+        diaries_by_date[date_str] = {
+            "content": diary.content,
+            "emotion": diary.emotion
+        }
+
+    return jsonify(diaries_by_date)
+
+
+
+
 
 @bp.route('/my_diary')
 def my_diary():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
+    # This page is now primarily handled by the frontend calendar,
+    # but we still render the base page.
+    return render_template('my_diary.html')
+
+@bp.route('/save_diary')
+def save_diary():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('save_diary.html')
+
+
+@bp.route('/diary/save', methods=['POST'])
+def diary_save():
+    if 'user_id' not in session:
+        return jsonify({"error": "로그인이 필요합니다."}), 401
+
     user_id = session['user_id']
-    user_diaries = Diary.query.filter_by(user_id=user_id).order_by(Diary.created_at.desc()).all()
-    return render_template('my_diary.html', diaries=user_diaries)
+    diary_content = request.form.get('diary')
+
+    if not diary_content:
+        return jsonify({"error": "일기 내용이 없습니다."}), 400
+
+    try:
+        # 감정 분석
+        predicted_emotion = predict_emotion(current_app.emotion_classifier, diary_content)
+
+        # 일기 저장
+        new_diary = Diary(
+            content=diary_content,
+            emotion=predicted_emotion,
+            user_id=user_id
+        )
+        db.session.add(new_diary)
+        db.session.commit()
+
+        return jsonify({"success": "일기가 성공적으로 저장되었습니다."}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"일기 저장 중 오류 발생: {e}")
+        return jsonify({"error": "일기 저장 중 오류가 발생했습니다."}), 500
 
 @bp.route('/diary/delete/<string:diary_id>', methods=['DELETE'])
 def delete_diary(diary_id):
