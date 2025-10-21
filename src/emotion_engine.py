@@ -27,4 +27,4 @@ def predict_emotion(classifier, text):
     if not text or not text.strip(): return "내용 없음"
     if classifier is None: return "오류: 감정 분석 엔진 준비 안됨."
     result = classifier(text)
-    return result[0]['label']
+    return result[0]['label'], result[0]['score']

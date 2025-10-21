@@ -1,8 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 import os
 
 db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login' # Redirect to auth.login if not logged in
 
 def create_app():
     app = Flask(__name__)
@@ -26,6 +29,13 @@ def create_app():
     
     # 4. DB 초기화 (변경 없음)
     db.init_app(app)
+    login_manager.init_app(app)
+
+    from .models import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # 5. 블루프린트 등록 (변경 없음)
     from . import main, auth

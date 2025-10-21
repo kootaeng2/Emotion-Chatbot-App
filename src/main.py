@@ -51,8 +51,7 @@ def api_recommend():
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     # 1. 감정 분석
-    predicted_emotion = predict_emotion(current_app.emotion_classifier, user_diary)
-
+    predicted_emotion, _ = predict_emotion(current_app.emotion_classifier, user_diary)
     # 2. DB에 일기 저장
     if 'user_id' in session:
         try:
@@ -79,11 +78,11 @@ def api_recommend():
         {user_diary}
         ---
 
-        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서, 공연, 전시 등 다양한 문화 콘텐츠를 추천해줘.
+        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서를 추천해줘.
         각 추천 항목은 "종류: 추천 콘텐츠 제목 (아티스트/감독/작가 등)" 형식으로 작성하고, 간단한 추천 이유를 덧붙여줘.
         결과는 Markdown 형식으로 보기 좋게 정리해줘.
 
-        ## [감정 몰입 (수용)]
+        ## [감정 몰입]
         현재 감정을 더 깊이 느끼거나 위로받고 싶을 때.
 
         ## [감정 전환]
