@@ -3,125 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <title>나의 일기</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <style>
+        :root {
+            --primary-color: #6598e5;
+            --primary-hover-color: #5540a3;
+            --danger-color: #e74c3c;
+            --fc-border-color: #ddd;
+            --fc-daygrid-day-bg: white;
+            --fc-today-bg-color: #f0f8ff;
+        }
         body {
             font-family: "Spoqa Han Sans Neo", Arial, sans-serif;
-            padding: 50px;
+            padding: 40px;
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            color: #333;
         }
-        .container {
+        #calendar-container {
             background: white;
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 40px auto;
+            max-width: 1100px;
+            margin: 0 auto;
         }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
         }
-        .diary-entry {
-            background: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .fc .fc-daygrid-day-frame {
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
-        .diary-date {
+        .fc .fc-daygrid-day.fc-day-today {
+            background: var(--fc-today-bg-color);
+        }
+        .fc .fc-daygrid-day:hover .fc-daygrid-day-frame {
+            background: #f7f7f7;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .fc .fc-daygrid-day-top {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px;
+        }
+        .fc .fc-day-number {
             font-size: 0.9em;
-            color: #888;
-            margin-bottom: 10px;
+            font-weight: 500;
         }
-        .diary-content {
-            font-size: 1.1em;
-            line-height: 1.6;
+        .fc-event {
+            cursor: pointer;
+            border: none !important;
+            padding: 4px 6px !important;
+            border-radius: 4px !important;
+            font-size: 1.1em !important;
+            margin-bottom: 4px;
         }
         .back-link {
             display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #6598e5;
+            background-color: var(--primary-color);
             color: white;
             text-decoration: none;
             border-radius: 5px;
+            transition: background-color 0.2s;
         }
-        .delete-btn {
-            background: #e25b66;
-            color: white;
-            font-size: 14px;
-            padding: 7px 13px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
+        .back-link:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s;
+        }
+        .close-btn {
+            color: #aaa;
             float: right;
-            transition: 0.2s;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
         }
-        .delete-btn:hover { background: #c73442; }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+        }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes slideIn { from {transform: translateY(-50px);} to {transform: translateY(0);} }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>나의 일기</h1>
-        {% for diary in diaries %}
-        <div class="diary-entry" id="diary-{{ diary.id }}">
-            <button class="delete-btn" onclick="deleteDiary('{{ diary.id }}')">삭제</button>
-            <div class="diary-date">{{ diary.created_at.strftime('%Y년 %m월 %d일 %H시 %M분') }}</div>
-            <div class="diary-content">{{ diary.content }}</div>
-            <div class="diary-emotion"><strong>감정:</strong> {{ diary.emotion }}</div>
-        </div>
-        {% else %}
-        <p>작성된 일기가 없습니다.</p>
-        {% endfor %}
+    <div id="calendar-container">
+        <div id="calendar"></div>
         <a href="{{ url_for('main.home') }}" class="back-link">일기 쓰러가기</a>
     </div>
 
+    <!-- Diary Modal -->
+    <div id="diaryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
     <script>
-        // 테마 변경 함수
-        function changeTheme(mode) {
-            if (mode === 'light') {
-                document.body.style.background = 'linear-gradient(135deg, #ffffff, #f0f0f0)';
-            } 
-            else if (mode === 'dark') {
-                document.body.style.background = 'linear-gradient(135deg, #2c2c3e, #1a1a28)';
-            } 
-            else if (mode === 'pastel') {
-                document.body.style.background = 'linear-gradient(135deg, #ffefd5, #ffe4e1)';
-            }
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const modal = document.getElementById('diaryModal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const closeBtn = document.querySelector('.close-btn');
 
-        // 페이지 로드시 저장된 테마 불러오기
-        window.onload = function() {
-            const savedTheme = localStorage.getItem('selectedTheme');
-            if (savedTheme) {
-                changeTheme(savedTheme);
-            }
-        };
+            const emotionColors = {
+                '기쁨': '#4CAF50', '슬픔': '#2196F3', '분노': '#F44336',
+                '불안': '#FFC107', '당황': '#9C27B0', '상처': '#795548',
+                'default': '#9E9E9E'
+            };
+            const emotionEmojis = {
+                '기쁨': '😄', '슬픔': '😢', '분노': '😠',
+                '불안': '😟', '당황': '😮', '상처': '💔',
+                'default': '🤔'
+            };
 
-        async function deleteDiary(diaryId) {
-            if (!confirm("정말 이 일기를 삭제하시겠습니까?")) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/diary/delete/${diaryId}`, {
-                    method: 'DELETE',
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const diaryElement = document.getElementById(`diary-${diaryId}`);
-                    diaryElement.remove();
-                } else {
-                    alert(`오류: ${data.error}`);
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialDate: new Date(),
+                initialView: 'dayGridMonth',
+                locale: 'ko',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth'
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch(`/api/diaries?year=${fetchInfo.start.getFullYear()}&month=${fetchInfo.start.getMonth() + 1}&_=${new Date().getTime()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const events = data.map(diary => {
+                                return {
+                                    title: emotionEmojis[diary.emotion] || emotionEmojis['default'],
+                                    start: diary.date,
+                                    backgroundColor: emotionColors[diary.emotion] || emotionColors['default'],
+                                    extendedProps: {
+                                        content: diary.content,
+                                        emotion: diary.emotion
+                                    }
+                                };
+                            });
+                            successCallback(events);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching diaries:', error);
+                            failureCallback(error);
+                        });
+                },
+                eventClick: function(info) {
+                    modalTitle.textContent = `${info.event.startStr} 일기`;
+                    modalBody.innerHTML = `
+                        <p><strong>감정:</strong> ${info.event.extendedProps.emotion}</p>
+                        <p>${info.event.extendedProps.content.replace(/\n/g, '<br>')}</p>
+                    `;
+                    modal.style.display = 'block';
                 }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                alert('서버 통신 중 오류가 발생했습니다.');
-            }
-        }
+            });
+
+            calendar.render();
+
+            closeBtn.onclick = () => modal.style.display = 'none';
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
+        });
     </script>
 </body>
 </html>

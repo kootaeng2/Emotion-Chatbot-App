@@ -2,6 +2,12 @@ from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from sqlalchemy.sql import func
+import datetime
+from datetime import timezone, timedelta
+
+# KST 시간대를 위한 함수
+def kst_now():
+    return datetime.datetime.now(timezone(timedelta(hours=9)))
 
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -22,4 +28,4 @@ class Diary(db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     emotion = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, server_default=func.now())
+    created_at = db.Column(db.DateTime, default=kst_now)
