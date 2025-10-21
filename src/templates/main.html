@@ -113,22 +113,18 @@
         .container {
             flex-grow: 1;
             display: flex;
-<<<<<<< HEAD
+
             justify-content: center; /* 가운데 정렬 */
             align-items: flex-start;
             padding: 3rem;
-=======
-            justify-content: flex-start; /* 왼쪽 정렬 */
-            align-items: flex-start;
-            padding: 2rem;
->>>>>>> 67b6a01 (API키 복구완료 홈페이지 수정중)
+
             width: 100%;
             box-sizing: border-box;
         }
 
         .main-content {
             display: flex;
-<<<<<<< HEAD
+
             gap: 20rem; /* 간격 추가 */
             align-items: flex-start; /* 추가 */
             width: 100%;
@@ -137,15 +133,7 @@
 
         .chat-container {
             flex: 1; /* 공간을 1:1 비율로 나눔 */
-=======
-            gap: 3rem; /* 간격 늘리기 */
-            width: 100%;
-            max-width: 1100px; /* 최대 너비 줄이기 */
-        }
 
-        .chat-container {
-            flex: 0.8; /* 너비 줄이기 */
->>>>>>> 67b6a01 (API키 복구완료 홈페이지 수정중)
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
@@ -157,11 +145,9 @@
         }
 
         #result-container {
-<<<<<<< HEAD
+
             flex: 1.5; /* 추천칸의 넓이를 더 늘림 */
-=======
-            flex: 1.2; /* 너비 늘리기 */
->>>>>>> 67b6a01 (API키 복구완료 홈페이지 수정중)
+
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 8px 32px #0001;
@@ -525,21 +511,12 @@
         <div class="main-content">
             <div class="chat-container">
                 <h1>오늘 하루는 어떠셨나요?</h1>
-<<<<<<< HEAD
-                <textarea id="diary" placeholder="당신의 이야기를 들려주세요."></textarea>
-                <div class="button-container" style="display: flex; gap: 10px;">
-                    <button id="submit-btn" style="flex: 1;" disabled>감정 분석하기</button>
-                    <button id="save-btn" style="flex: 1; background-color: #4CAF50;" disabled>일기 저장하기</button>
-                </div>
-                <div id="save-status" style="margin-top: 10px; text-align: center; font-weight: 500;"></div>
-                <div id="emotion-result-display" style="margin-top: 15px; text-align: center; font-size: 1.1em; font-weight: bold;"></div>
-                <input type="hidden" id="predicted-emotion-storage">
-=======
+
                 <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="15"></textarea>
                 <div class="button-container">
                     <button id="submit-btn" disabled>감정 분석하기</button>
                 </div>
->>>>>>> 67b6a01 (API키 복구완료 홈페이지 수정중)
+
             </div>
             <div id="result-container">
                 <div id="result">
@@ -652,11 +629,7 @@
                         emotionDisplay.innerHTML = `<span style="color: red;">오류: ${data.error}</span>`;
                         emotionStorage.value = '';
                     } else {
-<<<<<<< HEAD
-                        emotionDisplay.textContent = `분석된 감정: ${data.emotion}`;
-                        emotionStorage.value = data.emotion;
-                        saveBtn.disabled = false; // 저장 버튼 활성화
-=======
+
                         const recommendationHtml = marked.parse(data.recommendation);
                         const parts = recommendationHtml.split('<h2>');
 
@@ -704,7 +677,7 @@
                             transitionContentDiv.style.display = 'block';
                             immersionContentDiv.style.display = 'none';
                         });
->>>>>>> 67b6a01 (API키 복구완료 홈페이지 수정중)
+
                     }
                 } catch (error) {
                     console.error('Prediction error:', error);
