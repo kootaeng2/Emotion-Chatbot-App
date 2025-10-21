@@ -452,7 +452,7 @@
             {% if logged_in %}
                 <span>환영합니다, <strong>{{ username }}</strong>님!</span>
                 <a href="{{ url_for('main.my_diary') }}">나의 일기</a>
-                <a href="{{ url_for('auth.logout') }}">로그아웃</a>
+                <a href="{{ url_for('auth.logout') }}">로그아웃1</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">로그인</a>
                 <a href="{{ url_for('auth.signup') }}">회원가입</a>
@@ -512,9 +512,11 @@
             <div class="chat-container">
                 <h1>오늘 하루는 어떠셨나요?</h1>
 
-                <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="15"></textarea>
+                <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="8"></textarea>
+                <input type="hidden" id="predicted-emotion-storage" value="">
                 <div class="button-container">
                     <button id="submit-btn" disabled>감정 분석하기</button>
+                    <button id="save-btn" disabled>일기 저장</button>
                 </div>
 
             </div>
@@ -522,6 +524,7 @@
                 <div id="result">
                     <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
                 </div>
+                <div id="save-status" style="margin-top: 1rem; text-align: center;"></div>
             </div>
         </div>
     </main>
@@ -587,7 +590,11 @@
             const analyzeBtn = document.getElementById('submit-btn');
             const saveBtn = document.getElementById('save-btn');
             const diaryTextarea = document.getElementById('diary');
-            const emotionDisplay = document.getElementById('emotion-result-display');
+            const resultDiv = document.getElementById('result'); // resultDiv 정의
+            if (!resultDiv) {
+                console.error("Error: Element with ID 'result' not found.");
+                return; // resultDiv가 없으면 더 이상 진행하지 않음
+            }
             const emotionStorage = document.getElementById('predicted-emotion-storage');
             const saveStatus = document.getElementById('save-status');
 
@@ -602,7 +609,7 @@
             diaryTextarea.addEventListener('input', () => {
                 updateButtonState();
                 // 일기 내용이 변경되면 이전 분석 결과는 초기화
-                emotionDisplay.textContent = '';
+                resultDiv.innerHTML = '<p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>'; // resultDiv 사용
                 emotionStorage.value = '';
                 saveBtn.disabled = true;
             });
@@ -614,7 +621,7 @@
 
                 analyzeBtn.disabled = true;
                 analyzeBtn.textContent = '분석 중...';
-                emotionDisplay.textContent = '감정을 분석하고 있습니다...';
+                resultDiv.innerHTML = '<p>감정을 분석하고 있습니다...</p>'; // resultDiv 사용
                 saveStatus.textContent = '';
 
                 try {
@@ -626,62 +633,22 @@
                     const data = await response.json();
 
                     if (data.error) {
-                        emotionDisplay.innerHTML = `<span style="color: red;">오류: ${data.error}</span>`;
+                        resultDiv.innerHTML = `<span style="color: red;">오류: ${data.error}</span>`; // resultDiv 사용
                         emotionStorage.value = '';
                     } else {
-
-                        const recommendationHtml = marked.parse(data.recommendation);
-                        const parts = recommendationHtml.split('<h2>');
-
-                        let immersionContent = '';
-                        let transitionContent = '';
-
-                        parts.forEach(part => {
-                            if (part.includes('감정 몰입 (수용)')) {
-                                immersionContent = '<h2>' + part;
-                            } else if (part.includes('감정 전환')) {
-                                transitionContent = '<h2>' + part;
-                            }
-                        });
-
+                        // /api/predict 응답 처리: 감정과 이모지만 표시
+                        emotionStorage.value = data.emotion; // 감정 저장
                         resultDiv.innerHTML = `
                             <p style="font-weight: 500; font-size: 1.1rem;">
                                 <strong>감정 분석 결과:</strong> ${data.emotion} ${data.emoji}
                             </p>
-                            <hr style="border: 0; border-top: 1px solid #d0d0e0; margin: 1rem 0;">
-                            <div id="recommendation-controls" style="margin-bottom: 1rem;">
-                                <button id="immersion-btn" class="rec-btn active">감정 몰입</button>
-                                <button id="transition-btn" class="rec-btn">감정 전환</button>
-                            </div>
-                            <div id="recommendation-content">
-                                <div id="immersion-content">${immersionContent}</div>
-                                <div id="transition-content" style="display: none;">${transitionContent}</div>
-                            </div>
+                            <p>추천을 받으려면 일기를 저장하세요.</p>
                         `;
-
-                        const immersionBtn = document.getElementById('immersion-btn');
-                        const transitionBtn = document.getElementById('transition-btn');
-                        const immersionContentDiv = document.getElementById('immersion-content');
-                        const transitionContentDiv = document.getElementById('transition-content');
-
-                        immersionBtn.addEventListener('click', () => {
-                            immersionBtn.classList.add('active');
-                            transitionBtn.classList.remove('active');
-                            immersionContentDiv.style.display = 'block';
-                            transitionContentDiv.style.display = 'none';
-                        });
-
-                        transitionBtn.addEventListener('click', () => {
-                            transitionBtn.classList.add('active');
-                            immersionBtn.classList.remove('active');
-                            transitionContentDiv.style.display = 'block';
-                            immersionContentDiv.style.display = 'none';
-                        });
-
+                        saveBtn.disabled = false; // 감정 분석 완료 후 저장 버튼 활성화
                     }
                 } catch (error) {
                     console.error('Prediction error:', error);
-                    emotionDisplay.innerHTML = '<span style="color: red;">분석 중 서버 오류가 발생했습니다.</span>';
+                    resultDiv.innerHTML = '<span style="color: red;">분석 중 서버 오류가 발생했습니다.</span>'; // resultDiv 사용
                 } finally {
                     analyzeBtn.disabled = false;
                     analyzeBtn.textContent = '감정 분석하기';

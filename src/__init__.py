@@ -24,6 +24,10 @@ def create_app():
     
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # 로깅 설정
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     
     # 2. DB 초기화 및 테이블 생성
     db.init_app(app)
@@ -31,11 +35,18 @@ def create_app():
         from . import models
         db.create_all()
 
-    # 3. 블루프린트 등록
+   # 3. AI 모델 로딩
+    from .emotion_engine import load_emotion_classifier
+    # 앱 컨텍스트 안에서 모델을 로드하고 app 객체에 저장합니다.
+    with app.app_context():
+        app.emotion_classifier = load_emotion_classifier()
+        
+
+
+    # 5. 블루프린트 등록
+    # --- 💡 여기까지 수정 ---
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
-
-    # 4. AI 모델은 이제 요청 시 로드됩니다 (지연 로딩).
 
     return app

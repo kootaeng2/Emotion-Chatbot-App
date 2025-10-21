@@ -48,26 +48,34 @@ def home():
 
 @bp.route("/api/predict", methods=["POST"])
 def api_predict():
+    logging.info("[/api/predict] 요청 수신됨.")
     user_diary = request.json.get("diary")
     if not user_diary:
+        logging.warning("[/api/predict] 일기 내용이 없습니다.")
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     try:
+        logging.info(f"[/api/predict] 감정 분석 시작. 일기 내용 길이: {len(user_diary)}")
         predicted_emotion = predict_emotion(user_diary)
-        return jsonify({"emotion": predicted_emotion})
+        logging.info(f"[/api/predict] 감정 분석 완료. 예측된 감정: {predicted_emotion}")
+        return jsonify({"emotion": predicted_emotion, "emoji": emotion_emoji_map.get(predicted_emotion, '🤔')})
     except Exception as e:
-        logging.error(f"감정 분석 중 오류 발생: {e}")
+        logging.error(f"[/api/predict] 감정 분석 중 오류 발생: {e}")
         return jsonify({"error": "감정 분석 중 오류가 발생했습니다."}), 500
 
 
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
+    logging.info("[/api/recommend] 요청 수신됨.")
     user_diary = request.json.get("diary")
     if not user_diary:
+        logging.warning("[/api/recommend] 일기 내용이 없습니다.")
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
-    # 1. 감정 분석
+    # 1. 감정 분석 (마찬가지로 current_app의 모델 사용)
+    logging.info(f"[/api/recommend] 감정 분석 시작. 일기 내용 길이: {len(user_diary)}")
     predicted_emotion = predict_emotion(user_diary)
+    logging.info(f"[/api/recommend] 감정 분석 완료. 예측된 감정: {predicted_emotion}")
 
     # 2. Gemini API를 통한 문화생활 추천
     recommendation_text = "추천 내용을 생성하지 못했습니다."
@@ -160,7 +168,7 @@ def my_diary():
         return redirect(url_for('auth.login'))
     # This page is now primarily handled by the frontend calendar,
     # but we still render the base page.
-    return render_template('my_diary.html')
+    return render_template('my_diary.html', current_app=current_app)
 
 @bp.route('/save_diary')
 def save_diary():
