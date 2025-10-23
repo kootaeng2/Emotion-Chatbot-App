@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 감정 달력 - {{ current_app.name }}</title>
+    <title>나의 감정 달력</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 
     <style>
         @import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
@@ -13,6 +17,7 @@
             --primary-hover-color: #5540a3;
             --text-color: #333;
             --light-text-color: #666;
+            --danger-color: #e74c3c;
             --font-family: 'Spoqa Han Sans Neo', sans-serif;
         }
 
@@ -26,7 +31,6 @@
             min-height: 100vh;
         }
 
-        /* --- Navbar Styles (from main.html) --- */
         .navbar {
             background-color: white;
             padding: 10px 2rem;
@@ -34,6 +38,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
         .navbar-brand {
             color: var(--primary-color);
@@ -48,131 +53,219 @@
             margin-left: 1rem;
         }
 
-        /* --- Main Content Styles --- */
         .container {
             flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 2rem;
+            padding: 3rem;
             width: 100%;
             box-sizing: border-box;
         }
 
-        .calendar-container {
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px #0001;
-            padding: 40px;
+        .main-content {
+            display: flex;
+            gap: 2rem;
             width: 100%;
-            max-width: 1200px; /* 최대 너비 증가 */
+            max-width: 1600px;
+        }
+
+        .calendar-wrapper, .diary-display-wrapper {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 40px 20px;
             box-sizing: border-box;
         }
-        /* Flatpickr 특정 스타일 */
-        .flatpickr-calendar {
-            width: 100%; /* 컨테이너에 맞춰 너비 조정 */
-            font-size: 1.2em; /* 폰트 크기 증가 */
+
+        .calendar-wrapper {
+            flex: 1;
+            min-width: 500px;
         }
-        .flatpickr-day {
-            height: 40px; /* 날짜 셀 높이 증가 */
-            line-height: 40px; /* 텍스트 중앙 정렬 */
-        }
-        .flatpickr-weekday {
-            font-size: 1.1em; /* 요일 폰트 크기 증가 */
-        }
-        .flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month .flatpickr-yearDropdown-years {
-            font-size: 1.2em; /* 월/년 드롭다운 폰트 크기 증가 */
+
+        .diary-display-wrapper {
+            flex: 2;
+            align-self: stretch;
         }
         
-        h1 {
-            font-size: 28px;
+        h1, h2 {
             font-weight: 700;
             color: var(--primary-color);
-            margin: 0 0 25px 0;
             text-align: center;
         }
+        h1 {
+            font-size: 28px;
+            margin: 0 0 25px 0;
+        }
+        h2 {
+            font-size: 24px;
+            margin-top: 0;
+        }
 
-        /* --- Calendar Custom Styles --- */
-        #calendar {
-            --v-cal-bg-color: #fff;
-            --v-cal-border-radius: 20px;
-            --v-cal-p: 20px;
-            --v-cal-date-font-size: 1rem;
-            --v-cal-day-font-size: 0.9rem;
-            --v-cal-month-font-size: 1.2rem;
-            --v-cal-arrow-size: 10px;
+        /* Flatpickr Customization */
+        .flatpickr-calendar {
+            margin: 0 auto; /* Center the calendar block itself */
+            font-size: 1em;
         }
-        .vcal-date--marked {
-            background-color: transparent !important;
+        .flatpickr-weekday {
+            font-size: 1.2em; /* User's preference */
+            text-align: center; /* Explicitly center */
+            font-weight: 500;
+            color: #333;
         }
-        .vcal-date__label {
-            position: relative;
+        .flatpickr-day {
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .day-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .day-number {
+            font-size: 1.2em;
         }
         .emotion-emoji {
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            opacity: 0.8;
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-top: 2px;
         }
 
-        /* --- Modal Styles --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
+        #diary-display {
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 30px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+
+        #diary-display.placeholder {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #888;
         }
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+
+        /* Diary List & Detail */
+        #diary-list-container {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .diary-list-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.2s;
+            border: 1px solid #eee;
         }
-        #modal-emotion {
+        .diary-list-item:hover, .diary-list-item.active {
+            background-color: #f0f5ff;
+            border-color: var(--primary-color);
+        }
+        .list-item-emoji {
+            font-size: 1.3rem;
+            margin-right: 10px;
+        }
+        .list-item-time {
+            font-size: 0.9rem;
+            color: var(--light-text-color);
+        }
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            margin-left: 8px;
+        }
+        .delete-btn:hover {
+            opacity: 1;
+        }
+        #diary-detail-container {
+            border-top: 2px solid #eee;
+            padding-top: 2rem;
+        }
+        .diary-header {
+            margin-bottom: 1.5rem;
+        }
+        .diary-date {
             font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
         }
-        #modal-content {
-            font-size: 1rem;
-            line-height: 1.6;
+        .diary-emotion {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        .diary-body {
+            overflow-y: auto;
+        }
+        .diary-section {
+            margin-bottom: 1.5rem;
+        }
+        .diary-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .diary-content, .diary-recommendation {
             white-space: pre-wrap;
+            line-height: 1.6;
             background-color: #f9f9f9;
             padding: 1rem;
             border-radius: 8px;
         }
+        .diary-recommendation ul, .diary-recommendation ol {
+            padding-left: 20px;
+        }
 
+        /* Recommendation Tabs */
+        .rec-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .rec-tab-btn {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-size: 1rem;
+            color: var(--light-text-color);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .rec-tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+        .rec-content {
+            display: none;
+        }
+        .rec-content.active {
+            display: block;
+        }
     </style>
-    <!-- Flatpickr CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
     <header class="navbar">
         <a href="{{ url_for('main.home') }}" class="navbar-brand">Emotion Diary</a>
         <div class="navbar-menu">
             {% if 'user_id' in session %}
-                <span>환영합니다, <strong>{{ session.get('username') }}</strong>님!</span>
+                <a href="{{ url_for('main.mypage') }}" style="text-decoration: underline; color: inherit;"><span>환영합니다, <strong>{{ session.get('username') }}</strong>님!</span></a>
                 <a href="{{ url_for('main.home') }}">일기 쓰기</a>
-                <a href="{{ url_for('main.my_diary') }}">나의 일기</a>
                 <a href="{{ url_for('auth.logout') }}">로그아웃</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">로그인</a>
@@ -182,110 +275,247 @@
     </header>
 
     <main class="container">
-        <div class="calendar-container">
-            <h1>나의 감정 달력</h1>
-            <div id="calendar"></div>
+        <div class="main-content">
+            <div class="calendar-wrapper">
+                <h1>나의 감정 달력</h1>
+                <div id="calendar"></div>
+            </div>
+            <div class="diary-display-wrapper">
+                <div id="diary-display" class="placeholder">
+                    <h2>일기를 선택해주세요</h2>
+                    <p>달력에서 날짜를 클릭하면 여기에 내용이 표시됩니다.</p>
+                </div>
+            </div>
         </div>
     </main>
-
-    <!-- Diary Detail Modal -->
-    <div id="diary-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="modal-date"></h2>
-            <p id="modal-emotion"></p>
-            <div id="modal-content"></div>
-        </div>
-    </div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const emotionEmojiMap = {
                 '분노': '😠', '불안': '😟', '슬픔': '😢',
                 '당황': '😮', '기쁨': '😄', '상처': '💔',
-                '중립': '😐', // 혹시 모를 기본값
             };
+            const diaryDisplay = document.getElementById('diary-display');
             let diaryDataByDate = {};
+            let fp;
 
-            const modal = document.getElementById('diary-modal');
-            const closeBtn = document.querySelector('.close-btn');
+            const initialDisplayHTML = diaryDisplay.innerHTML;
 
-            function showDiaryModal(diary) {
-                document.getElementById('modal-date').innerText = diary.date;
-                const emoji = emotionEmojiMap[diary.emotion] || '🤔';
-                document.getElementById('modal-emotion').innerText = `${diary.emotion} ${emoji}`;
-                document.getElementById('modal-content').innerText = diary.content;
-                modal.style.display = 'block';
+            function renderDiaryDetail(diary, container) {
+                container.innerHTML = ''; // Clear previous detail
+
+                const header = document.createElement('div');
+                header.className = 'diary-header';
+                header.innerHTML = `
+                    <div class="diary-date">${diary.createdAt}</div>
+                    <div class="diary-emotion">${diary.emotion} ${emotionEmojiMap[diary.emotion] || '🤔'}</div>
+                `;
+
+                const body = document.createElement('div');
+                body.className = 'diary-body';
+                
+                let recommendationText = diary.recommendation || '';
+                let acceptanceContent = '';
+                let diversionContent = '';
+                
+                const diversionMarker = '## [전환]';
+                const acceptanceMarker = '## [수용]';
+
+                let diversionIndex = recommendationText.indexOf(diversionMarker);
+                let acceptanceIndex = recommendationText.indexOf(acceptanceMarker);
+
+                if (acceptanceIndex !== -1) {
+                    let acceptanceStart = acceptanceIndex + acceptanceMarker.length;
+                    if (diversionIndex !== -1) {
+                        acceptanceContent = recommendationText.substring(acceptanceStart, diversionIndex).trim();
+                    } else {
+                        acceptanceContent = recommendationText.substring(acceptanceStart).trim();
+                    }
+                }
+
+                if (diversionIndex !== -1) {
+                    diversionContent = recommendationText.substring(diversionIndex + diversionMarker.length).trim();
+                }
+
+                body.innerHTML = `
+                    <div class="diary-section">
+                        <h3>나의 일기</h3>
+                        <div class="diary-content">${diary.content}</div>
+                    </div>
+                    <div class="diary-section">
+                        <h3>AI 추천</h3>
+                        <div class="rec-tabs">
+                            <button class="rec-tab-btn active" data-tab="acceptance">수용</button>
+                            <button class="rec-tab-btn" data-tab="diversion">전환</button>
+                        </div>
+                        <div id="rec-acceptance" class="rec-content active">
+                            ${marked.parse(acceptanceContent || '추천을 불러오지 못했습니다.')}
+                        </div>
+                        <div id="rec-diversion" class="rec-content">
+                            ${marked.parse(diversionContent || '추천을 불러오지 못했습니다.')}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(header);
+                container.appendChild(body);
+
+                container.querySelectorAll('.rec-tab-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const tab = button.dataset.tab;
+                        container.querySelectorAll('.rec-tab-btn').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        container.querySelectorAll('.rec-content').forEach(content => content.classList.remove('active'));
+                        container.querySelector(`#rec-${tab}`).classList.add('active');
+                    });
+                });
             }
 
-            closeBtn.onclick = function() {
-                modal.style.display = 'none';
-            }
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
+            async function handleDelete(diaryId, dateStr) {
+                if (!confirm('정말로 이 일기를 삭제하시겠습니까?')) return;
+
+                try {
+                    const response = await fetch(`/diary/delete/${diaryId}`, { method: 'DELETE' });
+                    if (!response.ok) {
+                        const data = await response.json();
+                        throw new Error(data.error || '삭제에 실패했습니다.');
+                    }
+
+                    diaryDataByDate[dateStr] = diaryDataByDate[dateStr].filter(d => d.id !== diaryId);
+                    if (diaryDataByDate[dateStr].length === 0) {
+                        delete diaryDataByDate[dateStr];
+                    }
+
+                    renderDayView(diaryDataByDate[dateStr] || null, dateStr);
+                    fp.redraw();
+
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert(error.message);
                 }
             }
 
-            // Flatpickr 초기화
-            const fp = flatpickr("#calendar", {
-                inline: true,
-                dateFormat: "Y-m-d",
-                locale: "ko",
-                onMonthChange: function(selectedDates, dateStr, instance) {
-                    const year = instance.currentYear;
-                    const month = instance.currentMonth + 1; // Flatpickr month is 0-indexed
-                    fetchAndRenderDiaries(year, month);
-                },
-                onYearChange: function(selectedDates, dateStr, instance) {
-                    const year = instance.currentYear;
-                    const month = instance.currentMonth + 1;
-                    fetchAndRenderDiaries(year, month);
-                },
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const date = dayElem.dateObj.toISOString().slice(0, 10);
-                    if (diaryDataByDate[date]) {
-                        const emoji = emotionEmojiMap[diaryDataByDate[date].emotion] || '🤔';
-                        const emojiSpan = document.createElement("span");
-                        emojiSpan.className = "emotion-emoji";
-                        emojiSpan.textContent = emoji;
-                        dayElem.appendChild(emojiSpan);
-                    }
-                },
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length > 0) {
-                        const selectedDate = dateStr;
-                        if (diaryDataByDate[selectedDate]) {
-                            showDiaryModal(diaryDataByDate[selectedDate]);
-                        }
-                    }
-                }
-            });
+            function renderDayView(diaries, dateStr) {
+                diaryDisplay.innerHTML = '';
+                diaryDisplay.classList.remove('placeholder');
 
-            async function fetchAndRenderDiaries(year, month) {
+                if (!diaries || diaries.length === 0) {
+                    diaryDisplay.innerHTML = initialDisplayHTML;
+                    diaryDisplay.classList.add('placeholder');
+                    return;
+                }
+
+                const listContainer = document.createElement('div');
+                listContainer.id = 'diary-list-container';
+
+                const detailContainer = document.createElement('div');
+                detailContainer.id = 'diary-detail-container';
+
+                diaries.forEach((diary, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'diary-list-item';
+                    item.dataset.diaryId = diary.id;
+
+                    const time = new Date(diary.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+                    item.innerHTML = `
+                        <span class="list-item-emoji">${emotionEmojiMap[diary.emotion] || '🤔'}</span>
+                        <span class="list-item-time">${time}</span>
+                        <button class="delete-btn" title="삭제">&times;</button>
+                    `;
+
+                    item.querySelector('.delete-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        handleDelete(diary.id, dateStr);
+                    });
+
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.diary-list-item').forEach(el => el.classList.remove('active'));
+                        item.classList.add('active');
+                        renderDiaryDetail(diary, detailContainer);
+                    });
+
+                    listContainer.appendChild(item);
+                });
+
+                diaryDisplay.appendChild(listContainer);
+                diaryDisplay.appendChild(detailContainer);
+
+                if (diaries.length > 0) {
+                    const latestDiary = diaries[diaries.length - 1];
+                    listContainer.querySelector(`.diary-list-item[data-diary-id='${latestDiary.id}']`).classList.add('active');
+                    renderDiaryDetail(latestDiary, detailContainer);
+                }
+            }
+
+            async function fetchDiaries(year, month, instance) {
                 try {
                     const response = await fetch(`/api/diaries?year=${year}&month=${month}`);
-                    if (!response.ok) {
-                        throw new Error('일기 데이터를 불러오는데 실패했습니다.');
-                    }
+                    if (!response.ok) throw new Error('일기 데이터 로딩 실패');
                     const diaries = await response.json();
                     
-                    diaryDataByDate = {}; // 데이터 초기화
+                    diaryDataByDate = {};
                     diaries.forEach(diary => {
-                        diaryDataByDate[diary.date] = diary;
+                        if (!diaryDataByDate[diary.date]) {
+                            diaryDataByDate[diary.date] = [];
+                        }
+                        diaryDataByDate[diary.date].push(diary);
                     });
-                    fp.redraw(); // Flatpickr에게 날짜를 다시 그리도록 지시하여 onDayCreate를 다시 실행
 
+                    if (instance) instance.redraw();
                 } catch (error) {
                     console.error(error);
                     alert(error.message);
                 }
             }
 
+            fp = flatpickr("#calendar", {
+                inline: true,
+                dateFormat: "Y-m-d",
+                locale: flatpickr.l10ns.ko,
+                onMonthChange: (d, s, i) => fetchDiaries(i.currentYear, i.currentMonth + 1, i),
+                onYearChange: (d, s, i) => fetchDiaries(i.currentYear, i.currentMonth + 1, i),
+                onDayCreate: (dObj, dStr, fp, dayElem) => {
+                    const dayNumber = dayElem.innerHTML;
+                    dayElem.innerHTML = '';
+
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.className = 'day-content-wrapper';
+                    
+                    const numberSpan = document.createElement('span');
+                    numberSpan.className = 'day-number';
+                    numberSpan.textContent = dayNumber;
+                    contentWrapper.appendChild(numberSpan);
+
+                    const emojiSpan = document.createElement("span");
+                    emojiSpan.className = "emotion-emoji";
+
+                    const y = dayElem.dateObj.getFullYear();
+                    const m = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+                    const d = String(dayElem.dateObj.getDate()).padStart(2, '0');
+                    const date = `${y}-${m}-${d}`;
+
+                    if (diaryDataByDate[date] && diaryDataByDate[date].length > 0) {
+                        const diariesForDay = diaryDataByDate[date];
+                        const latestDiary = diariesForDay[diariesForDay.length - 1];
+                        const emoji = emotionEmojiMap[latestDiary.emotion] || '🤔';
+                        emojiSpan.textContent = emoji;
+                    } else {
+                        emojiSpan.innerHTML = '&nbsp;';
+                    }
+                    
+                    contentWrapper.appendChild(emojiSpan);
+                    dayElem.appendChild(contentWrapper);
+                },
+                onChange: (selectedDates, dateStr, instance) => {
+                    const diariesForDay = diaryDataByDate[dateStr] || null;
+                    renderDayView(diariesForDay, dateStr);
+                }
+            });
+
             // Initial Load
-            const today = new Date();
-            fetchAndRenderDiaries(today.getFullYear(), today.getMonth() + 1);
+            fetchDiaries(new Date().getFullYear(), new Date().getMonth() + 1, fp);
         });
     </script>
 </body>

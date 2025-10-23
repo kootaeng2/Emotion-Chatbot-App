@@ -36,6 +36,39 @@ default_recommendations = {
     '상처': '마음의 상처를 받았을 때는, 위로가 되는 음악을 듣거나, 조용한 곳에서 책을 읽으며 마음을 달래보세요.'
 }
 
+def generate_recommendation(user_diary, predicted_emotion):
+    """
+    주어진 일기 내용과 감정을 바탕으로 Gemini API를 사용하여 문화생활 추천을 생성합니다.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-flash-latest')
+        prompt = f"""
+        사용자의 일기 내용과 감정을 바탕으로 문화생활을 추천해줘.
+        사용자는 현재 '{predicted_emotion}' 감정을 느끼고 있어.
+
+        일기 내용:
+        ---
+        {user_diary}
+        ---
+
+        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서만 추천해줘.
+        각 추천 항목은 "종류: 추천 콘텐츠 제목 (아티스트/감독/작가 등)" 형식으로 작성하고, 간단한 추천 이유를 덧붙여줘.
+        결과는 Markdown 형식으로 보기 좋게 정리해줘.
+        
+        ## [수용]
+        현재 감정을 더 깊이 느끼거나 위로받고 싶을 때.
+
+        ## [전환]
+        현재 감정에서 벗어나 새로운 활력을 얻고 싶을 때.
+        """
+        
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        logging.error(f"🔥🔥🔥 Gemini API 호출 중 오류 발생: {e} 🔥🔥🔥")
+        return default_recommendations.get(predicted_emotion, "오늘은 좋아하는 음악을 들으며 편안한 하루를 보내는 건 어떠세요?")
+
+
 @bp.route("/")
 def home():
     if 'user_id' not in session:
@@ -48,78 +81,60 @@ def home():
 
 @bp.route("/api/predict", methods=["POST"])
 def api_predict():
-    logging.info("[/api/predict] 요청 수신됨.")
+    if 'user_id' not in session:
+        return jsonify({"error": "로그인이 필요합니다."}), 401
+        
+    user_id = session['user_id']
     user_diary = request.json.get("diary")
     if not user_diary:
-        logging.warning("[/api/predict] 일기 내용이 없습니다.")
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     try:
-        logging.info(f"[/api/predict] 감정 분석 시작. 일기 내용 길이: {len(user_diary)}")
+        # 1. Predict emotion
         predicted_emotion = predict_emotion(user_diary)
-        logging.info(f"[/api/predict] 감정 분석 완료. 예측된 감정: {predicted_emotion}")
-        return jsonify({"emotion": predicted_emotion, "emoji": emotion_emoji_map.get(predicted_emotion, '🤔')})
+        
+        # 2. Generate recommendation
+        recommendation_text = generate_recommendation(user_diary, predicted_emotion)
+
+        # 3. Save diary
+        new_diary = Diary(
+            content=user_diary,
+            emotion=predicted_emotion,
+            recommendation=recommendation_text,
+            user_id=user_id
+        )
+        db.session.add(new_diary)
+        db.session.commit()
+
+        # 4. Return everything
+        return jsonify({
+            "emotion": predicted_emotion,
+            "emoji": emotion_emoji_map.get(predicted_emotion, '🤔'),
+            "recommendation": recommendation_text
+        })
     except Exception as e:
-        logging.error(f"[/api/predict] 감정 분석 중 오류 발생: {e}")
-        return jsonify({"error": "감정 분석 중 오류가 발생했습니다."}), 500
+        logging.error(f"[/api/predict] 처리 중 오류 발생: {e}")
+        return jsonify({"error": "처리 중 오류가 발생했습니다."}), 500
 
 
 @bp.route("/api/recommend", methods=["POST"])
 def api_recommend():
     logging.info("[/api/recommend] 요청 수신됨.")
     user_diary = request.json.get("diary")
-    if not user_diary:
-        logging.warning("[/api/recommend] 일기 내용이 없습니다.")
-        return jsonify({"error": "일기 내용이 없습니다."}), 400
+    predicted_emotion = request.json.get("emotion") # 감정을 직접 받음
 
-    # 1. 감정 분석 (마찬가지로 current_app의 모델 사용)
-    logging.info(f"[/api/recommend] 감정 분석 시작. 일기 내용 길이: {len(user_diary)}")
-    predicted_emotion = predict_emotion(user_diary)
-    logging.info(f"[/api/recommend] 감정 분석 완료. 예측된 감정: {predicted_emotion}")
+    if not user_diary or not predicted_emotion:
+        logging.warning("[/api/recommend] 일기 내용 또는 감정이 없습니다.")
+        return jsonify({"error": "일기 내용 또는 감정이 없습니다."}), 400
 
-    # 2. Gemini API를 통한 문화생활 추천
-    recommendation_text = "추천 내용을 생성하지 못했습니다."
-    try:
-        model = genai.GenerativeModel('gemini-flash-latest')
-        
-        # 제미나이 API에 전달할 프롬프트
-        prompt = f"""
-        사용자의 일기 내용과 감정을 바탕으로 문화생활을 추천해줘.
-        사용자는 현재 '{predicted_emotion}' 감정을 느끼고 있어.
-
-        일기 내용:
-        ---
-        {user_diary}
-        ---
-
-        아래 두 가지 시나리오에 맞춰 영화, 음악, 도서 등 다양한 문화 콘텐츠를 추천해줘.
-        각 추천 항목은 "종류: 추천 콘텐츠 제목 (아티스트/감독/작가 등)" 형식으로 작성하고, 간단한 추천 이유를 덧붙여줘.
-        결과는 Markdown 형식으로 보기 좋게 정리해줘.
-        
-        ## [감정 몰입 ]
-
-        현재 감정을 더 깊이 느끼거나 위로받고 싶을 때.
-
-        ## [감정 전환]
-        현재 감정에서 벗어나 새로운 활력을 얻고 싶을 때.
-        """
-        
-        response = model.generate_content(prompt)
-        recommendation_text = response.text
-
-    except Exception as e:
-        logging.error(f"🔥🔥🔥 Gemini API 호출 중 오류 발생: {e} 🔥🔥🔥")
-        recommendation_text = default_recommendations.get(predicted_emotion, "오늘은 좋아하는 음악을 들으며 편안한 하루를 보내는 건 어떠세요?")
-
-
-    # 4. 프론트엔드로 결과 전송
+    recommendation_text = generate_recommendation(user_diary, predicted_emotion)
+    
     response_data = {
         "emotion": predicted_emotion,
         "emoji": emotion_emoji_map.get(predicted_emotion, '🤔'),
         "recommendation": recommendation_text
     }
     return jsonify(response_data)
-
 
 
 @bp.route('/api/diaries')
@@ -149,32 +164,41 @@ def api_diaries():
     ).order_by(Diary.created_at.asc()).all()
 
     diaries_data = []
+    utc_tz = datetime.timezone.utc
+    kst_tz = datetime.timezone(datetime.timedelta(hours=9))
+
     for diary in user_diaries:
+        # Assume created_at from DB is a naive datetime representing UTC, make it aware
+        utc_time = diary.created_at.replace(tzinfo=utc_tz)
+        
+        # Convert to KST for display
+        kst_time = utc_time.astimezone(kst_tz)
+        
         diaries_data.append({
-            "date": diary.created_at.strftime('%Y-%m-%d'),
+            "id": diary.id,
+            "date": kst_time.strftime('%Y-%m-%d'),
+            "createdAt": kst_time.strftime('%Y-%m-%d %H:%M:%S'),
             "content": diary.content,
-            "emotion": diary.emotion
+            "emotion": diary.emotion,
+            "recommendation": diary.recommendation
         })
 
     return jsonify(diaries_data)
-
-
-
 
 
 @bp.route('/my_diary')
 def my_diary():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-    # This page is now primarily handled by the frontend calendar,
-    # but we still render the base page.
-    return render_template('my_diary.html', current_app=current_app)
+    return render_template('my_diary.html')
 
-@bp.route('/save_diary')
-def save_diary():
+
+@bp.route('/mypage')
+def mypage():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-    return render_template('save_diary.html')
+    username = session.get('username')
+    return render_template('mypage.html', username=username)
 
 
 @bp.route('/diary/save', methods=['POST'])
@@ -186,21 +210,27 @@ def diary_save():
     diary_content = request.form.get('diary')
     predicted_emotion = request.form.get('emotion')
 
-    logging.warning(f"--- DIARY SAVE DATA --- Content: '{diary_content}', Emotion: '{predicted_emotion}'")
     if not diary_content or not predicted_emotion:
         return jsonify({"error": "일기 내용이나 감정이 없습니다."}), 400
 
     try:
+        # 추천 생성
+        recommendation_text = generate_recommendation(diary_content, predicted_emotion)
+
         # 일기 저장
         new_diary = Diary(
             content=diary_content,
             emotion=predicted_emotion,
+            recommendation=recommendation_text,
             user_id=user_id
         )
         db.session.add(new_diary)
         db.session.commit()
 
-        return jsonify({"success": "일기가 성공적으로 저장되었습니다."}), 200
+        return jsonify({
+            "success": "일기가 성공적으로 저장되었습니다.",
+            "recommendation": recommendation_text # 클라이언트에서 바로 사용할 수 있도록 추천 내용 반환
+        }), 200
 
     except Exception as e:
         db.session.rollback()

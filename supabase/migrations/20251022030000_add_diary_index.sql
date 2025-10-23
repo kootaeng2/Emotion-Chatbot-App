@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "idx_diary_user_id_created_at" ON "public"."diary" ("user_id", "created_at");

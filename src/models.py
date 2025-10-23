@@ -5,10 +5,6 @@ from sqlalchemy.sql import func
 import datetime
 from datetime import timezone, timedelta
 
-# KST 시간대를 위한 함수
-def kst_now():
-    return datetime.datetime.now(timezone(timedelta(hours=9)))
-
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -28,4 +24,7 @@ class Diary(db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     emotion = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, default=kst_now)
+    recommendation = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=func.now())
+
+    __table_args__ = (db.Index('idx_diary_user_id_created_at', "user_id", "created_at"),)

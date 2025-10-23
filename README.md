@@ -26,7 +26,7 @@ pinned: false
 <br>
 
 # ✨ 핵심 기능
-🤖 텍스트 속 감정 탐색: klue/roberta-base 모델을 한국어 '감성대화 말뭉치' 데이터로 미세조정하여, 일기 속에 담긴 복합적인 감정을 85% 이상의 정확도로 분석합니다.
+🤖 텍스트 속 감정 탐색: klue/roberta-base 모델을 한국어 '감성대화 말뭉치' 데이터로 미세조정하여, 일기 속에 담긴 복합적인 감정을 80% 이상의 정확도로 분석합니다.
 
 
 🎭 감성 맞춤 큐레이션: 분석된 감정을 더 깊이 음미하고 싶을 때(수용)와 새로운 기분으로 전환하고 싶을 때(전환), 두 가지 시나리오에 맞춰 영화, 음악, 책을 추천합니다.
@@ -95,7 +95,7 @@ python src/app.py
 
 # 📂 프로젝트 폴더 구조
 ```
-Emotion-Chatbot-App/
+Emotion/
 │
 ├── .github/                     # GitHub Actions 워크플로우 (CI/CD)
 │   └── workflows/
@@ -110,17 +110,20 @@ Emotion-Chatbot-App/
 ├── notebooks/                   # 데이터 탐색 및 전처리용 Jupyter Notebook
 │   └── explore_data.py
 │
-├── scripts/                     # 모델 훈련, 테스트, 업로드용 스크립트
-│   ├── test.py
-│   ├── train_model.py
-│   └── upload_model.py
+├── results/                     # 모델 학습 결과
+│   ├── emotion_model_final/
+│   └── nsmc_model/
+│
+├── scripts/                     # 모델 훈련, 평가용 스크립트
+│   ├── evaluate_model.py
+│   └── train_final.py
 │
 ├── src/                         # 핵심 애플리케이션 소스 코드
 │   ├── templates/               # 사용자에게 보여지는 HTML 템플릿
 │   │   ├── login.html
 │   │   ├── main.html
 │   │   ├── my_diary.html
-│   │   ├── save_diary.html
+│   │   ├── mypage.html
 │   │   └── signup.html
 │   │
 │   ├── __init__.py              # Flask 앱 초기화 (Application Factory)
@@ -132,12 +135,16 @@ Emotion-Chatbot-App/
 │
 ├── supabase/                    # Supabase 클라우드 데이터베이스 설정
 │   └── migrations/
-│       └── 20250918153724_remote_schema.sql
+│       ├── 20250918153724_remote_schema.sql
+│       ├── 20251022030000_add_diary_index.sql
+│       └── 20251023100000_add_recommendation_to_diary.sql
 │
 ├── .gitattributes               # Git 파일 속성 설정
 ├── .gitignore                   # Git 추적 제외 파일/폴더 목록
+├── check.py                     # 스크립트 실행 확인용 파일
 ├── Dockerfile                   # 배포용 Docker 컨테이너 설정
 ├── package.json                 # Node.js 의존성 관리 (Supabase CLI 등)
+├── package-lock.json            # Node.js 의존성 잠금 파일
 ├── README.md                    # 프로젝트 설명서
 ├── requirements.txt             # Python 의존성 라이브러리 목록
 └── run.py                       # 애플리케이션 실행 스크립트
@@ -168,6 +175,8 @@ Spaces 앱 실행 시점에서 emotion_engine.py가 Hub로부터 모델을 다�
 
 GitHub Actions Secret (HF_TOKEN): '배포 로봇'이 Hugging Face에 코드를 푸시할 때 필요한 write 권한 토큰을 등록.
 
+
+
 Hugging Face Spaces Secret (HF_TOKEN): '빌드 로봇'이 내부적으로 LFS 파일 등을 처리할 때 필요한 write 권한 토큰을 등록.
 
 이를 통해 각기 다른 환경에서 필요한 인증을 명확히 분리하여 CI/CD 파이프라인의 인증 문제를 해결.
@@ -183,3 +192,13 @@ __init__.py에서 create_app 함수를 통해 앱의 모든 구성요소(DB, 블
 
 각 API 요청에서는 current_app을 통해 미리 로드된 모델을 참조하게 하여, 메모리 효율성과 응답 속도를 극대화. 이를 통해 확장 가능하고 안정적인 백엔드 구조를 완성.
 
+<br>
+
+# 📊 모델 성능
+```
+|   Metric  | Score |
+| :-------- | :---- |
+| Accuracy  | 0.798 |
+| F1 Score  | 0.798 |
+| Loss      | 0.615 |
+```

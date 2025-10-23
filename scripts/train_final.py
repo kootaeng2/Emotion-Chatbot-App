@@ -1,4 +1,5 @@
 # 파일 이름: train_final.py
+# 최종 감정 분류 모델을 학습하는 스크립트
 
 import os
 import pandas as pd
@@ -46,8 +47,8 @@ class TrainingConfig:
     output_dir: str = "./results"
     base_model_name: str = "klue/roberta-base"
     eval_batch_size: int = 64
-    num_train_epochs: int = 3
-    learning_rate: float = 2e-5
+    num_train_epochs: int = 10
+    learning_rate: float = 1e-5
     train_batch_size: int = 16
     weight_decay: float = 0.01
     max_length: int = 128
