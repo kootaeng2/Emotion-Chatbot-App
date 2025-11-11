@@ -8,6 +8,7 @@ from datetime import timezone, timedelta
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
+    nickname = db.Column(db.String(80), nullable=True)
     
     password_hash = db.Column(db.String(256), nullable=False)
 

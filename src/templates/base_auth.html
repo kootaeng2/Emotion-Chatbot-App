@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}인증{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base_auth.css') }}">
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <script>
+          alert("{{ messages[0] }}");
+        </script>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

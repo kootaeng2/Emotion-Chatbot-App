@@ -1,1 +1,0 @@
-ALTER TABLE "Diary" ADD COLUMN recommendation TEXT;

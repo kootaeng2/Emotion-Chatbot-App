@@ -1,0 +1,72 @@
+/* mypage css part*/
+.mypage-box {
+    width: 100%; 
+    max-width: 600px;
+    margin: 0;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+h1 {
+   
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 2rem;
+    text-align: center; 
+    margin-bottom: 0.1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #000000; 
+}
+.info-list {
+    list-style: none;
+    padding: 0;
+}
+
+.info-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #000000;
+}
+
+.info-list li:last-child {
+    border-bottom: none;
+}
+
+.info-list .label {
+    font-weight: 500;
+    color: var(--light-text-color);
+}
+
+.info-list .value {
+    font-weight: 700;
+}
+
+.nickname-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nickname-form input {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border: 1px solid #000000;
+    border-radius: 4px;
+}
+
+.nickname-form button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nickname-form button:hover {
+    background-color: var(--primary-hover-color);
+}

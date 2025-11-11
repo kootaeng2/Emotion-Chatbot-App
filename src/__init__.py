@@ -8,7 +8,7 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login' # Redirect to auth.login if not logged in
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='templates/static')
     
     # 1. 설정
     app.config['SECRET_KEY'] = 'a-very-long-and-unique-secret-key-for-this-app'

@@ -1,0 +1,52 @@
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+
+:root {
+    --primary-color: #6598e5;
+    --primary-hover-color: #5540a3;
+    --text-color: #333;
+    --light-text-color: #666;
+    --danger-color: #e74c3c;
+    --font-family: 'Spoqa Han Sans Neo', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background: linear-gradient(135deg, #ece9f7, #cacae0);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: white;
+    padding: 10px 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+.navbar-brand {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+.navbar-menu a, .navbar-menu span {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 1rem;
+}
+
+.container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem;
+    width: 100%;
+    box-sizing: border-box;
+}

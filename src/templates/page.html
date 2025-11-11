@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user_info.display_name }}님의 마이페이지{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/page.css') }}">
+{% endblock %}
+
+{% block content %}
+    
+    <div class="mypage-box">
+        <h1>{{ user_info.display_name }}님의 마음 팔레트</h1>
+
+        <ul class="info-list">
+            <li>
+                <span class="label">아이디</span>
+                <span class="value">{{ user_info.username }}</span>
+            </li>
+            <li>
+                <span class="label">닉네임</span>
+                <div class="value">
+                    <form action="{{ url_for('main.update_nickname') }}" method="post" class="nickname-form">
+                        <input type="text" name="nickname" value="{{ user_info.nickname or '' }}" placeholder="닉네임을 입력하세요">
+                        <button type="submit">변경</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

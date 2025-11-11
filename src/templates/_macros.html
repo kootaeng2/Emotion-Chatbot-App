@@ -1,0 +1,30 @@
+{% macro auth_form(title, form_action, bottom_link_url, bottom_link_text) %}
+    <div class="container">
+        <h1>{{ title }}</h1>
+        <form method="post" action="{{ form_action }}">
+            <div class="form-group">
+                <label for="username">사용자 이름</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">{{ title }}</button>
+        </form>
+        <p>{{ bottom_link_text }} <a href="{{ bottom_link_url }}">{{ '로그인' if 'signup' in bottom_link_url else '회원가입' }}</a></p>
+    </div>
+{% endmacro %}
+
+{% macro recommendation_tabs(acceptance_content, diversion_content, container_id) %}
+    <div class="rec-tabs">
+        <button class="rec-tab-btn active" data-tab="{{ container_id }}-acceptance">수용</button>
+        <button class="rec-tab-btn" data-tab="{{ container_id }}-diversion">전환</button>
+    </div>
+    <div id="{{ container_id }}-acceptance" class="rec-content active">
+        {{ acceptance_content | safe }}
+    </div>
+    <div id="{{ container_id }}-diversion" class="rec-content">
+        {{ diversion_content | safe }}
+    </div>
+{% endmacro %}

@@ -1,9 +1,9 @@
-# src/main.py
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request, current_app
 from sqlalchemy import extract
 import datetime
+import time
 from . import db
-from .models import Diary
+from .models import Diary, User
 from .emotion_engine import predict_emotion
 import logging
 import os
@@ -40,6 +40,8 @@ def generate_recommendation(user_diary, predicted_emotion):
     """
     주어진 일기 내용과 감정을 바탕으로 Gemini API를 사용하여 문화생활 추천을 생성합니다.
     """
+    start_time = time.time()
+    logging.info("Gemini API 호출 시작...")
     try:
         model = genai.GenerativeModel('gemini-flash-latest')
         prompt = f"""
@@ -63,6 +65,8 @@ def generate_recommendation(user_diary, predicted_emotion):
         """
         
         response = model.generate_content(prompt)
+        end_time = time.time()
+        logging.info(f"Gemini API 호출 완료. 소요 시간: {end_time - start_time:.2f}초")
         return response.text
     except Exception as e:
         logging.error(f"🔥🔥🔥 Gemini API 호출 중 오류 발생: {e} 🔥🔥🔥")
@@ -74,9 +78,16 @@ def home():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
     logged_in = 'user_id' in session
-    username = session.get('username') if logged_in else None
-    logging.info(f"메인 페이지 접속: 로그인 상태: {logged_in}, 사용자: {username}")
-    return render_template("main.html", logged_in=logged_in, username=username)
+    display_name = None
+    if logged_in:
+        user_id = session.get('user_id')
+        user = User.query.get(user_id)
+        if user:
+            display_name = user.nickname if user.nickname else user.username
+        else:
+            display_name = session.get('username') # Fallback if user not found
+    logging.info(f"메인 페이지 접속: 로그인 상태: {logged_in}, 사용자: {display_name}")
+    return render_template("main.html", logged_in=logged_in, display_name=display_name)
 
 
 @bp.route("/api/predict", methods=["POST"])
@@ -190,15 +201,53 @@ def api_diaries():
 def my_diary():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-    return render_template('my_diary.html')
+    
+    user_id = session.get('user_id')
+    user = User.query.get(user_id)
+    display_name = user.nickname if user.nickname else user.username
+
+    return render_template('diary.html', display_name=display_name)
 
 
 @bp.route('/mypage')
 def mypage():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-    username = session.get('username')
-    return render_template('mypage.html', username=username)
+    
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    
+    user_info = {
+        'username': user.username,
+        'nickname': user.nickname,
+        'display_name': user.nickname if user.nickname else user.username
+    }
+    
+    return render_template('page.html', user_info=user_info)
+
+@bp.route('/update_nickname', methods=['POST'])
+def update_nickname():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+
+    new_nickname = request.form.get('nickname')
+    
+    # 닉네임이 비어있거나, 공백만 있을 경우 None으로 저장
+    if not new_nickname or not new_nickname.strip():
+        user.nickname = None
+    else:
+        user.nickname = new_nickname
+    
+    db.session.commit()
+    
+    # 세션 정보 업데이트 (선택 사항, 닉네임을 세션에 저장할 경우)
+    # session['nickname'] = user.nickname
+
+    return redirect(url_for('main.mypage'))
+
 
 
 @bp.route('/diary/save', methods=['POST'])

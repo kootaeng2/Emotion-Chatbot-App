@@ -1,4 +1,5 @@
 # 파일 이름: evaluate.py
+# 학습한 모델을 평가하고 혼동 행렬을 생성하는 스크립트
 
 import torch
 import pandas as pd
@@ -62,31 +63,32 @@ def map_ecode_to_major_emotion(ecode):
 
 def load_and_process_validation_data(file_path='./data/'):
     """JSON을 로드하고 레이블을 통합/처리하는 완전한 함수"""
-    val_label_path = os.path.join(file_path, 'validation-label.json')
+    # 주의: 실제 테스트 파일명으로 변경해야 합니다.
+    test_label_path = os.path.join(file_path, 'test.json') 
     try:
-        with open(val_label_path, 'r', encoding='utf-8') as f:
-            validation_data_raw = json.load(f)
+        with open(test_label_path, 'r', encoding='utf-8') as f:
+            test_data_raw = json.load(f)
     except FileNotFoundError:
-        print(f"오류: 평가용 라벨 파일 '{val_label_path}'를 찾을 수 없습니다.")
+        print(f"오류: 테스트용 라벨 파일 '{test_label_path}'를 찾을 수 없습니다.")
         return None
         
-    data = [{'text': " ".join(d['talk']['content'].values()), 'emotion': d['profile']['emotion']['type']} for d in validation_data_raw]
-    df_val = pd.DataFrame(data)
+    data = [{'text': " ".join(d['talk']['content'].values()), 'emotion': d['profile']['emotion']['type']} for d in test_data_raw]
+    df_test = pd.DataFrame(data)
 
-    df_val['major_emotion'] = df_val['emotion'].apply(map_ecode_to_major_emotion)
-    df_val.dropna(subset=['major_emotion'], inplace=True)
+    df_test['major_emotion'] = df_test['emotion'].apply(map_ecode_to_major_emotion)
+    df_test.dropna(subset=['major_emotion'], inplace=True)
     
     def clean_text(text):
         return re.sub(r'[^가-힣a-zA-Z0-9 ]', '', text)
-    df_val['cleaned_text'] = df_val['text'].apply(clean_text)
+    df_test['cleaned_text'] = df_test['text'].apply(clean_text)
     
-    return df_val
+    return df_test
 
 # --- 메인 평가 로직 ---
 def evaluate_saved_model():
     """저장된 모델을 불러와 성능 평가 및 혼동 행렬을 생성하는 메인 함수"""
     
-    MODEL_PATH = "./results/emotion_model_final"  # 경로는 results1으로 유지
+    MODEL_PATH = "E:/Emotion/results/emotion_model_v2_manual"  
     print(f"'{MODEL_PATH}' 경로의 모델을 평가합니다.")
 
     try:
@@ -102,7 +104,7 @@ def evaluate_saved_model():
         print("처리 후 평가 데이터가 없습니다.")
         return
 
-    # --- 👇👇👇 미정의 변수들을 여기서 정의합니다 👇👇👇 ---
+    
     label2id = loaded_model.config.label2id
     id2label = loaded_model.config.id2label
 
@@ -113,7 +115,7 @@ def evaluate_saved_model():
     val_texts = df_val['cleaned_text'].tolist()
     
     val_encodings = tokenizer(val_texts, truncation=True, padding=True, max_length=128, return_tensors="pt")
-    # --- 👆👆👆 변수 정의 완료 👆👆👆 ---
+    
     
     val_dataset = EmotionDataset(val_encodings, val_labels)
 
@@ -132,6 +134,17 @@ def evaluate_saved_model():
     results = trainer.evaluate(eval_dataset=val_dataset)
     print("\n--- 최종 평가 결과 ---")
     print(results)
+    
+    # 최종 평가 결과를 JSON 파일로 저장
+    results_to_save = {
+        "accuracy": results.get("eval_accuracy"),
+        "f1": results.get("eval_f1"),
+        "loss": results.get("eval_loss") # 손실 값 추가
+    }
+    results_path = os.path.join(MODEL_PATH, "final_test_results.json")
+    with open(results_path, "w", encoding='utf-8') as f:
+        json.dump(results_to_save, f, indent=4, ensure_ascii=False)
+    print(f"최종 평가 결과가 {results_path}에 저장되었습니다.")
     
     print("\n--- 혼동 행렬 생성 ---")
     predictions = trainer.predict(val_dataset)

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ display_name }}님의 감정 달력{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="calendar-wrapper">
+        <h1>나의 감정 달력</h1>
+        <div id="calendar"></div>
+    </div>
+    <div class="diary-display-wrapper">
+        <div id="diary-display" class="placeholder">
+            <h2>일기를 선택해주세요</h2>
+            <p>달력에서 날짜를 클릭하면 여기에 내용이 표시됩니다.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/diary_logic.js') }}"></script>
+{% endblock %}
