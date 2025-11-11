@@ -22,6 +22,8 @@ RUN pip install -r core_ml_deps.txt
 # 4.3. 나머지 App 종속성 설치 (작은 모듈의 설치 성공 보장)
 RUN pip install -r app_deps.txt
 
+RUN pip install google-generativeai
+
 # 5. 캐시 및 데이터베이스 폴더를 미리 만들고 권한을 부여합니다.
 RUN mkdir -p /app/.cache /app/src && chmod -R 777 /app/.cache /app/src
 
