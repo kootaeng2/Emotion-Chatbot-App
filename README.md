@@ -1,3 +1,13 @@
+---
+title: Emotion Chatbot
+emoji: 🤗
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+app_file: run.py
+pinned: false
+---
 # Emotion Diary 🤖
 
 **하루를 마무리하며 쓰는 당신의 일기, 그 속에 숨겨진 진짜 감정은 무엇일까요?**
