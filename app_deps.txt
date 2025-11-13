@@ -16,7 +16,7 @@ dill==0.4.0
 et_xmlfile==2.0.0
 Flask==3.1.2
 Flask-SQLAlchemy==3.1.1
-Flask-Login==0.6.3 # <-- 누락 문제 해결 대상
+Flask-Login==0.6.3 
 fonttools==4.60.0
 frozenlist==1.7.0
 fsspec==2025.9.0
