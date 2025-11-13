@@ -38,4 +38,4 @@ ENV TRANSFORMERS_CACHE=/app/.cache
 EXPOSE 7860
 
 # 9. 최종 실행 명령어 (Gunicorn 워커 수를 2개로 제한)
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "-w", "2", "run:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:7860", "-w", "2", "--preload", "run:app"]
