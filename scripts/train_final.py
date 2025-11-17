@@ -10,12 +10,12 @@ import numpy as np
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
-    Trainer, # [수정] CustomTrainer 대신 기본 Trainer 사용
+    Trainer, 
     TrainingArguments
 )
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
 from sklearn.model_selection import train_test_split 
-from sklearn.utils import resample # [추가] 오버샘플링용
+from sklearn.utils import resample # 오버샘플링 
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import platform
@@ -42,7 +42,7 @@ class TrainingConfig:
     output_dir: str = "./results1024"
     base_model_name: str = "klue/roberta-base"
     eval_batch_size: int = 64
-    num_train_epochs: int = 3 # 최고점이었던 Epoch 6만 돌려도 무방
+    num_train_epochs: int = 3 
     learning_rate: float = 2e-5
     train_batch_size: int = 16
     weight_decay: float = 0.01
@@ -60,7 +60,7 @@ class TrainingConfig:
         return "klue/roberta-base"
         
     def get_output_dir(self) -> str:
-        # [수정] 6-Class 오버샘플링 모델 저장 경로
+        # 모델 저장 경로 수정 
         return os.path.join(self.output_dir, 'emotion_model_6class_oversampled')
 
 # --- 2. 커스텀 클래스 및 함수 ---
@@ -74,8 +74,6 @@ class EmotionDataset(torch.utils.data.Dataset):
         return item
     def __len__(self):
         return len(self.labels)
-
-# [제거] CustomTrainer 클래스 제거 (기본 Trainer 사용)
 
 def compute_metrics(pred):
     labels = pred.label_ids
@@ -102,8 +100,6 @@ def map_ecode_to_6class(e_code_str):
     elif 50 <= code_num <= 59: return '당황'
     elif 60 <= code_num <= 69: return '기쁨'
     else: return None
-
-# [제거] map_6_to_3_groups 함수 제거
 
 def load_and_process(text_file, label_file, data_dir):
     """Excel(텍스트)과 JSON(라벨)을 병합하고 전처리하는 헬퍼 함수"""
@@ -141,7 +137,6 @@ def load_and_process(text_file, label_file, data_dir):
     # 1단계: E코드를 6-Class("분노")로 매핑
     df_combined['major_emotion'] = df_combined['e_code'].apply(map_ecode_to_6class)
     
-    # [수정] 6-class 매핑 실패 + 텍스트 빈 샘플 제거
     df_combined.dropna(subset=['major_emotion', 'cleaned_text'], inplace=True)
     df_combined = df_combined[df_combined['cleaned_text'].str.strip() != '']
     
@@ -167,19 +162,18 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     print(f"Full Train data loaded: {len(df_full_train)} rows")
     print(f"Test data loaded: {len(df_test)} rows")
 
-    # [수정] 6-Class('major_emotion') 기준으로 분리
     print("Splitting Full Train into New Train (90%) and New Validation (10%)...")
     df_train, df_val = train_test_split(
         df_full_train,
         test_size=0.1,  
         random_state=42, 
-        stratify=df_full_train['major_emotion'] # [수정] 6-Group 분포 유지
+        stratify=df_full_train['major_emotion'] 
     )
     
     print("\n--- [Oversampling] New Train 6-Class (원본 분포) ---")
     print(df_train['major_emotion'].value_counts())
 
-    # --- [핵심] 오버샘플링(Oversampling) 적용 ---
+    # --- [오버샘플링 시작] ---
     print("\n--- '기쁨' 클래스 오버샘플링 적용 중 ---")
     
     # 1. '기쁨'과 나머지 분리

@@ -18,7 +18,7 @@ from transformers import (
     TrainingArguments
 )
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
-from sklearn.model_selection import train_test_split # <-- [변경] 분리를 위해 추가
+from sklearn.model_selection import train_test_split # 데이터 분리
 from sklearn.utils import class_weight
 from torch.nn import CrossEntropyLoss
 from typing import Dict, List, Tuple
@@ -188,37 +188,13 @@ def run_training():
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\nUsing device: {device}")
-
-    # --- [변경] 클래스 가중치 수동 적용 ---
-    
-    # [ TODO ]
-    # 1. 아래 'manual_weights_list'를 주석 처리하고
-    # 2. 아래쪽의 '자동 계산 코드' 주석을 해제하여 훈련을 1회 실행합니다.
-    # 3. 터미널에 출력되는 '자동 계산된 클래스 가중치' 리스트를 복사합니다.
-    #    (예: [4.50, 2.80, 0.85, 1.15, 1.20, 0.92])
-    # 4. 그 리스트를 기반으로 혼동되는 클래스(불안, 상처, 당황 등)의
-    #    가중치를 높여 'manual_weights_list'를 완성합니다.
-    # 5. '자동 계산 코드'를 다시 주석 처리하고, 'manual_weights_list'의 주석을 해제합니다.
-    
-    # [새로운 수동 가중치 코드] (값은 예시이며, 위 TODO를 수행하여 채워야 함)
-    # 라벨 순서: ['기쁨', '당황', '분노', '불안', '상처', '슬픔']
+    # 클래스 가중치 계산 (신규 훈련 데이터 기준)
     manual_weights_list = [6.00, 4.50, 0.85, 1.80, 1.80, 0.92] 
     class_weights = torch.tensor(manual_weights_list, dtype=torch.float).to(device)
     
     print(f"--- 수동 적용된 클래스 가중치 ---")
     print(f"{class_weights.tolist()}")
     print(f"---------------------------------")
-    
-    # [자동 계산 코드 - 위 TODO 2, 3단계 수행 시 주석 해제하여 사용]
-    # print("\n--- 자동 가중치 계산 (1회용) ---")
-    # class_weights_array = class_weight.compute_class_weight(
-    #     'balanced', 
-    #     classes=np.unique(df_train['label']), 
-    #     y=df_train['label'].values
-    # )
-    # class_weights = torch.tensor(class_weights_array, dtype=torch.float).to(device)
-    # print(f"자동 계산된 클래스 가중치 (라벨 순서대로): {class_weights.tolist()}")
-    # print("--------------------------------------")
 
 
     # 4. 모델 로딩
@@ -227,7 +203,7 @@ def run_training():
         num_labels=len(unique_labels),
         id2label=id_to_label,
         label2id=label_to_id,
-        ignore_mismatched_sizes=True # NSMC->감정 분류로 바뀌므로 필수
+        ignore_mismatched_sizes=True 
     ).to(device)
 
     # 5. 훈련 실행
@@ -243,7 +219,7 @@ def run_training():
         save_strategy="epoch",
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
-        lr_scheduler_type="cosine",  # <--- [변경] 코사인 스케줄러 적용
+        lr_scheduler_type="cosine",  
         report_to="none"
     )
 
@@ -251,7 +227,7 @@ def run_training():
         model=model,
         args=training_args,
         train_dataset=train_dataset,
-        eval_dataset=val_dataset,      # [변경] 신규 10% 검증 데이터 사용
+        eval_dataset=val_dataset,      
         compute_metrics=compute_metrics,
         class_weights=class_weights
     )

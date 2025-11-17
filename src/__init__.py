@@ -5,7 +5,7 @@ import os
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login' # Redirect to auth.login if not logged in
+login_manager.login_view = 'auth.login' 
 
 def create_app():
     app = Flask(__name__, static_folder='templates/static')
@@ -60,7 +60,6 @@ def create_app():
 
 
     # 5. 블루프린트 등록
-    # --- 💡 여기까지 수정 ---
     from . import main, auth
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)

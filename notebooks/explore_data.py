@@ -11,7 +11,7 @@ try:
 except:
     print("한글 폰트 설정에 실패했습니다. 그래프의 라벨이 깨질 수 있습니다.")
 
-# 👇👇👇 사용자 요청에 따라 E코드를 대분류 감정으로 매핑하는 함수 추가 👇👇👇
+# 감정 매핑 함수 정의
 def map_emotion_code(ecode):
     """
     E코드 문자열을 대분류 감정 문자열로 매핑합니다. (예: 'E11' -> '분노')
@@ -40,8 +40,6 @@ def map_emotion_code(ecode):
         return '기쁨'
     else:
         return None
-# 👆👆👆 함수 추가 완료 👆👆👆
-
 
 # --- [Phase 1] 데이터 로딩 및 병합 ---
 print("---" + "[Phase 1] 데이터 로딩 및 병합 시작" + "---")
@@ -99,18 +97,14 @@ df_train = combine_dialogues(df_train)
 df_val = combine_dialogues(df_val)
 
 
-# 👇👇👇 매핑 함수 적용 👇👇👇
 # 원본 E코드(emotion)를 대분류 감정(major_emotion)으로 매핑하고, 매핑되지 않은 데이터는 제거합니다.
 df_train['major_emotion'] = df_train['emotion'].apply(map_emotion_code)
 df_val['major_emotion'] = df_val['emotion'].apply(map_emotion_code)
 
 df_train.dropna(subset=['major_emotion'], inplace=True)
 df_val.dropna(subset=['major_emotion'], inplace=True)
-# 👆👆👆 매핑 함수 적용 완료 👆👆👆
 
-
-# ⭐️ 훈련 데이터와 검증 데이터를 하나로 합칩니다.
-# 이제 합칠 때 'major_emotion' 컬럼이 포함됩니다.
+# 4. 훈련 데이터와 검증 데이터 통합
 df_combined = pd.concat([df_train, df_val], ignore_index=True)
 
 
@@ -126,9 +120,7 @@ print("--- [Phase 1] 완료 ---")
 print("\n---" + "[Phase 2] 데이터 탐색 및 전처리 시작" + "---")
 
 # 1. 데이터 탐색 및 시각화
-# ⭐️ 통합 데이터의 대분류 감정 분포 확인
 print("\n---" + "통합 데이터 (훈련 + 검증) 감정 분포" + "---")
-# ⭐️ 'major_emotion' 컬럼을 사용합니다.
 emotion_counts = df_combined['major_emotion'].value_counts() 
 print(emotion_counts)
 print("-------------------------------------------\n")
@@ -168,7 +160,7 @@ def clean_text(text):
     # 정규표현식을 사용하여 한글, 영어, 숫자, 공백을 제외한 모든 문자 제거
     return re.sub(r'[^가-힣a-zA-Z0-9 ]', '', text)
 
-# ⭐️ 통합 데이터에 정제 함수 적용
+
 df_combined['cleaned_text'] = df_combined['text'].apply(clean_text)
 
 print("텍스트 정제 완료.")

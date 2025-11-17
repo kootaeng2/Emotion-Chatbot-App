@@ -47,7 +47,7 @@ def predict_emotion(text):
         return "오류: 감정 분석 엔진 준비 안됨."
     
     try:
-        logging.info(f"분류기 실행 중... 텍스트: {text[:50]}...") # 텍스트의 처음 50자만 로깅
+        logging.info(f"분류기 실행 중... 텍스트: {text[:50]}...") 
         result = classifier(text)
         logging.info(f"분류 결과: {result[0]['label']}")
         return result[0]['label']
