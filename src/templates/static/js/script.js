@@ -15,34 +15,3 @@ function createRecommendationTabs(acceptanceContent, diversionContent, container
         </div>
     `;
 }
-
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('rec-tab-btn')) {
-        const tabId = event.target.dataset.tab;
-        const tabsContainer = event.target.closest('.rec-tabs');
-        if (!tabsContainer) return;
-
-        const contentContainer = tabsContainer.parentElement;
-
-        tabsContainer.querySelectorAll('.rec-tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-
-        // Find the correct content sections to toggle
-        let acceptanceContent = document.getElementById(`${tabsContainer.dataset.containerId}-acceptance`);
-        let diversionContent = document.getElementById(`${tabsContainer.dataset.containerId}-diversion`);
-
-        if (!acceptanceContent || !diversionContent) {
-            // Fallback for older structure if needed, or just use the more specific IDs
-            const allRecContent = contentContainer.querySelectorAll('.rec-content');
-            allRecContent.forEach(content => content.classList.remove('active'));
-        } else {
-            acceptanceContent.classList.remove('active');
-            diversionContent.classList.remove('active');
-        }
-        
-        const targetContent = document.getElementById(tabId);
-        if (targetContent) {
-            targetContent.classList.add('active');
-        }
-    }
-});

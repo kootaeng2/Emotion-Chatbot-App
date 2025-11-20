@@ -36,21 +36,21 @@ def load_emotion_classifier():
     _classifier = pipeline("text-classification", model=model, tokenizer=tokenizer, device=device)
     return _classifier
 
-def predict_emotion(text):
-    logging.info(f"predict_emotion 함수 호출됨. 텍스트 길이: {len(text) if text else 0}")
+def predict_emotion(text, top_k=3):
+    logging.info(f"predict_emotion 함수 호출됨. 텍스트 길이: {len(text) if text else 0}, top_k={top_k}")
     classifier = load_emotion_classifier()
     if not text or not text.strip():
         logging.warning("분석할 텍스트가 비어있거나 공백입니다.")
-        return "내용 없음"
+        return []
     if classifier is None:
         logging.error("감정 분석 엔진이 준비되지 않았습니다.")
-        return "오류: 감정 분석 엔진 준비 안됨."
+        return []
     
     try:
         logging.info(f"분류기 실행 중... 텍스트: {text[:50]}...") 
-        result = classifier(text)
-        logging.info(f"분류 결과: {result[0]['label']}")
-        return result[0]['label']
+        results = classifier(text, top_k=top_k)
+        logging.info(f"분류 결과 (Top {top_k}): {results}")
+        return results
     except Exception as e:
         logging.error(f"감정 분류 중 오류 발생: {e}")
-        return "오류: 감정 분류 실패"
+        return []

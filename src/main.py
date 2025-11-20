@@ -95,36 +95,47 @@ def api_predict():
     if 'user_id' not in session:
         return jsonify({"error": "로그인이 필요합니다."}), 401
         
-    user_id = session['user_id']
     user_diary = request.json.get("diary")
     if not user_diary:
         return jsonify({"error": "일기 내용이 없습니다."}), 400
 
     try:
-        # 1. Predict emotion
-        predicted_emotion = predict_emotion(user_diary)
-        
-        # 2. Generate recommendation
-        recommendation_text = generate_recommendation(user_diary, predicted_emotion)
+        # 1. Predict top 3 emotions
+        emotion_results = predict_emotion(user_diary, top_k=3)
 
-        # 3. Save diary
-        new_diary = Diary(
-            content=user_diary,
-            emotion=predicted_emotion,
-            recommendation=recommendation_text,
-            user_id=user_id
-        )
-        db.session.add(new_diary)
-        db.session.commit()
+        if not emotion_results:
+            logging.error("[/api/predict] 감정 분석 결과가 없습니다.")
+            return jsonify({"error": "감정을 분석할 수 없습니다."}), 500
 
-        # 4. Return everything
+        # 2. Process results
+        top_emotion_data = emotion_results[0]
+        top_emotion_label = top_emotion_data['label']
+        top_emotion_score = top_emotion_data['score']
+
+        # 3. Create candidates list
+        candidates = []
+        for result in emotion_results:
+            emotion_label = result['label']
+            candidates.append({
+                'emotion': emotion_label,
+                'score': result['score'],
+                'emoji': emotion_emoji_map.get(emotion_label, '🤔')
+            })
+
+        # 4. Generate recommendation ONLY for the top emotion initially
+        recommendation_text = generate_recommendation(user_diary, top_emotion_label)
+
+        # 5. Return the new structure
+        # Note: Diary is NOT saved here. It will be saved via a separate '/diary/save' call later.
         return jsonify({
-            "emotion": predicted_emotion,
-            "emoji": emotion_emoji_map.get(predicted_emotion, '🤔'),
-            "recommendation": recommendation_text
+            "top_emotion": top_emotion_label,
+            "top_score": top_emotion_score,
+            "candidates": candidates,
+            "recommendation": recommendation_text 
         })
     except Exception as e:
         logging.error(f"[/api/predict] 처리 중 오류 발생: {e}")
+        db.session.rollback() # 혹시 모를 트랜잭션 롤백
         return jsonify({"error": "처리 중 오류가 발생했습니다."}), 500
 
 

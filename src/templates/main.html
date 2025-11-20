@@ -60,7 +60,7 @@
             <button class="theme-btn" data-color="sunset" data-theme-group="sunset" title="저녁 노을">🌇</button>
             <div class="sub-options" data-theme-group="sunset">
                 <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun1.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun1.jpg" title="저녁 노을 1">
-                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" title="저녁 노을 2">
+                <img src="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" data-theme-bg="https://huggingface.co/datasets/taehoon222/emotion-images/resolve/main/sun2.jpg" title="저녁 노일 2">
             </div>
         </div>
         <div class="theme-option-wrapper">
@@ -99,7 +99,7 @@
 
             <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="8"></textarea>
             <div class="button-container">
-                <button id="submit-btn" disabled>분석 및 저장</button>
+                <button id="submit-btn" disabled>분석하기</button>
             </div>
 
         </div>
@@ -107,12 +107,29 @@
             <div id="result">
                 <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
             </div>
+            
+            <!-- 감정 선택 UI (초기에는 숨김) -->
+            <div id="emotion-choice-container" style="display: none;">
+                <div class="notification">
+                    <p>AI가 당신의 감정을 복합적으로 파악했어요.<br>현재 느끼는 가장 주된 감정을 선택해주세요.</p>
+                </div>
+                <div id="emotion-chips">
+                    <!-- 감정 칩은 JS를 통해 동적으로 생성됩니다. -->
+                </div>
+            </div>
+
+            <!-- 저장 버튼 컨테이너 (초기에는 숨김) -->
+            <div class="save-button-container" style="display: none; text-align: center; margin-top: 20px;">
+                <button id="save-diary-btn">일기 저장하기</button>
+            </div>
+
             <div id="save-status" style="margin-top: 1rem; text-align: center;"></div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="{{ url_for('static', filename='js/main_onboarding.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main_logic.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main_theme.js') }}"></script>
