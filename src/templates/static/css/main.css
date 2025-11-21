@@ -60,61 +60,105 @@
 }
 
 /* --- 메인 콘텐츠 스타일 --- */
+/* --- 📖 펼쳐진 다이어리 스타일 (Book Spread Design) --- */
+
+/* 1. 메인 레이아웃 */
 .main-content {
     display: flex;
-    gap: 20rem; /* 간격 추가 */
-    align-items: flex-start; /* 추가 */
-    width: 100%;
-    max-width: 1372px; /* 최대 너비 줄이기 */
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* 화면 중앙 정렬 */
+    padding: 10px;
 }
 
-.chat-container {
-    flex: 1.5; /* 공간을 1:1 비율로 나눔 */
-    background-color: white;
+/* 2. 다이어리 전체 프레임 */
+/* --- 1. 다이어리 크기 확대 (Big Size) --- */
+.diary-book {
+    display: flex;
+    width: 70vw;            /* 화면 너비의 70%까지 사용 */
+    max-width: 1600px;     /* 최대 너비 1600px */
+    min-width: 1200px;      /* 최소 너비 1200px 강제 */
+    height: 750px;         /* 높이 고정 */
+    
+    background-color: #fdfbf7;
     border-radius: 20px;
-    box-shadow: 0 8px 32px #0001;
-    padding: 40px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15), 0 0 0 12px #5d4037;
+    overflow: hidden; 
+    position: relative;
+
+    margin: 0 auto; /* 수평 중앙 정렬 */
+
+}
+
+/* --- 2. 페이지 내부 스크롤 추가 (잘림 방지) --- */
+.book-page {
+    flex: 1;
+    /* 패딩을 조금 더 늘려서 시원하게 (40px -> 60px) */
+    padding: 40px 50px; 
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    box-sizing: border-box;
+    position: relative;
+    background-image: linear-gradient(to right, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 5%);
+    
+    /* 스크롤바 숨김 유지 */
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+     min-width:0;
 }
 
-#result-container {
-    flex: 3; /* 추천칸의 넓이를 더 늘림 */
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px #0001;
-    padding: 40px;
-    box-sizing: border-box;
+/* (선택) 스크롤바를 예쁘게 꾸미기 */
+.book-page::-webkit-scrollbar {
+    display: none;
+}
+.book-page::-webkit-scrollbar-track {
+    background: transparent;
+}
+.book-page::-webkit-scrollbar-thumb {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+.book-page::-webkit-scrollbar-thumb:hover {
+    background-color: #ccc;
 }
 
-h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin: 0 0 25px 0;
-    text-align: center;
-}
-
+/* --- 3. 입력창 크기 대응 --- */
 textarea {
-    width: 100%;
-    flex-grow: 1; /* 남은 세로 공간을 채움 */
-    border-radius: 8px;
-    border: 1px solid #d0d0e0;
-    padding: 14px;
-    font-size: 16px;
-    font-family: var(--font-family);
-    background: #f7f7fb;
-    resize: vertical;
-    box-sizing: border-box;
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    
+    /* [수정] 줄 높이와 배경 패턴 간격을 줄여서 더 많이 쓰게 함 */
+    line-height: 2rem; /* 줄 간격 (기존 유지하거나 1.8rem으로 줄여도 됨) */
+    
+    resize: none;
+    outline: none;
+    
+    /* 배경 줄무늬 간격도 line-height와 똑같이 맞춰야 함 */
+    background-image: linear-gradient(transparent 95%, #e0e0e0 95%);
+    background-size: 100% 2rem; /* 2rem 간격 */
+    
+    padding: 0 10px; /* 좌우 여백 */
+    font-family: inherit;
+    
+    /* 스크롤바 숨김 */
+    scrollbar-width: none; 
 }
 
-.button-container {
+/* 9. 오른쪽 빈 화면 상태 */
+.empty-state {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #aaa;
+    text-align: center;
+    font-size: 0.95rem;
 }
+
+/* --- 기존 기능 호환성 유지 --- */
+/* 찢어지는 애니메이션용 클래스 재조정 */
 
 #submit-btn {
     width: 100%;
@@ -137,14 +181,19 @@ textarea {
 }
 
 #result {
-    background: #f7f7fb;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 15px; /* 둥글게 */
+    padding: 25px;       /* 내부 여백 넉넉하게 */
+    margin-top: 15px;    /* 헤더("AI의 답장")와 간격 띄우기 */
+    /* 그림자 + 테두리로 카드 느낌 내기 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    border: 1px solid #eee;
+    
     font-size: 1rem;
-    color: var(--text-color);
-    min-height: 50px;
-    line-height: 1.6;
-    border: 1px solid #d0d0e0;
+    color: #444;
+    line-height: 1.7;
+    width:100%;
+    box-sizing: border-box;
 }
 
 .rec-tabs {
@@ -342,22 +391,60 @@ textarea {
     border-color: var(--primary-color);
 }
 #result table {
-    width: 100%;
+    width: 100%;            /* 부모 박스 너비에 딱 맞춤 */
+    table-layout: fixed;    /* [핵심] 내용이 길어도 테이블이 늘어나지 않게 고정 */
     border-collapse: collapse;
-    margin-top: 1rem;
+    margin-top: 15px;
     font-size: 0.95rem;
+    background-color: #fafafa; /* 표 배경색 */
+    border-radius: 8px;
+    overflow: hidden; /* 둥근 모서리 적용 */
 }
+
 #result th, #result td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    word-break: keep-all; /* 한글 단어 안 끊기게 */
+    vertical-align: middle; /* 세로 중앙 정렬 */
+}
+
+/* 첫 번째 칸(종류) 너비 줄이기 */
+#result th:first-child, #result td:first-child {
+    width: 60px; /* '종류' 칸은 좁게 */
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-color);
+    background-color: #f0f5ff; /* 헤더 배경색 */
+}
+
+/* 두 번째 칸(추천 내용) */
+#result td:last-child {
     text-align: left;
+    font-size: 0.9rem;
+    color: #555;
+    
+    /* [핵심] 2줄 넘어가면 ... 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    /* 부드러운 전환 */
+    transition: all 0.3s ease;
+    cursor: help; /* 마우스 올리면 물음표 커서 */
 }
-#result th {
-    background-color: #f7f7fb;
-    font-weight: 600;
-}
-#result tr:nth-child(even) {
-    background-color: #fcfcfc;
+
+#result td:last-child:hover {
+    -webkit-line-clamp: unset; /* 줄 제한 해제 */
+    line-clamp: unset;
+    background-color: #fff;    /* 읽기 편하게 배경 밝게 */
+    color: #000;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* 살짝 띄우기 */
+    border-radius: 5px;
+    position: relative; /* 위로 뜨게 하기 위해 */
 }
 
 /* --- 감정 선택 UI 스타일 --- */
@@ -416,22 +503,28 @@ textarea {
     color: white;
 }
 
-#save-diary-btn {
+/* --- 일기 저장하기 버튼 위치 조정 --- */
+#save-action-container {
+    /* 버튼이 오른쪽 정렬되도록 */
+    display: flex; 
+    justify-content: flex-end; 
+    margin:0;
+}
+
+.save-btn {
+    /* 버튼 디자인 조금 더 예쁘게 */
     background-color: var(--primary-color);
     color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
     border: none;
-    font-size: 1rem;
     font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(101, 152, 229, 0.4);
+    transition: transform 0.2s;
 }
-
-#save-diary-btn:hover {
-    background-color: var(--primary-hover-color);
+.save-btn:hover {
+    transform: translateY(-2px);
 }
-
 /* --- 결과 표시 헤더 --- */
 .result-header {
     display: flex;
@@ -471,4 +564,61 @@ textarea {
     margin-top: 10px;
     color: #555;
     font-size: 0.9rem;
+}
+
+/* --- 📖 저장 애니메이션 효과 (Crumple and Morph) --- */
+
+.crumple-animation {
+    transform-origin: center bottom; /* 바닥 기준으로 찌그러지도록 변경 */
+    animation: crumple-book-and-morph 2.5s ease-in-out forwards;
+}
+
+/* 애니메이션 시작 시, 내부 페이지들은 즉시 투명하게 만듦 */
+.crumple-animation > * {
+    opacity: 0 !important;
+    transition: opacity 0.1s;
+}
+
+@keyframes crumple-book-and-morph {
+    /* 0-50%: Crumple and Drop to bottom-center */
+    0% {
+        width: 70vw; height: 750px; border-radius: 20px;
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    25% {
+        width: 250px; height: 250px; border-radius: 40px;
+        transform: translateX(calc(35vw - 125px)) translateY(250px) rotate(10deg);
+        opacity: 0.7;
+        background: var(--orb-color, #a1c4fd);
+    }
+    50% { /* Land at bottom-center and squash */
+        width: 30px; height: 30px; border-radius: 50%;
+        transform: translateX(calc(35vw - 15px)) translateY(720px) scale(1.2, 0.7);
+        opacity: 0.7;
+        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), var(--orb-color, #a1c4fd) 70%, rgba(0,0,0,0.5) 100%);
+        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 20px var(--orb-color, #a1c4fd);
+    }
+
+    /* 50-100%: 5 frog jumps to the right */
+    55% { transform: translateX(calc(35vw - 15px + 6vw)) translateY(680px) scale(1, 1); }
+    60% { transform: translateX(calc(35vw - 15px + 12vw)) translateY(720px) scale(1.2, 0.7); }
+
+    65% { transform: translateX(calc(35vw - 15px + 18vw)) translateY(680px) scale(1, 1); }
+    70% { transform: translateX(calc(35vw - 15px + 24vw)) translateY(720px) scale(1.2, 0.7); }
+
+    75% { transform: translateX(calc(35vw - 15px + 30vw)) translateY(680px) scale(1, 1); }
+    80% { transform: translateX(calc(35vw - 15px + 36vw)) translateY(720px) scale(1.2, 0.7); }
+
+    85% { transform: translateX(calc(35vw - 15px + 42vw)) translateY(680px) scale(1, 1); }
+    90% { transform: translateX(calc(35vw - 15px + 48vw)) translateY(720px) scale(1.2, 0.7); }
+
+    95% { transform: translateX(calc(35vw - 15px + 54vw)) translateY(680px) scale(1, 1); }
+    100% { /* Final landing */
+        width: 30px; height: 30px; border-radius: 50%;
+        transform: translateX(calc(35vw - 15px + 60vw)) translateY(720px) scale(1, 1);
+        opacity: 0.7;
+        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), var(--orb-color, #a1c4fd) 70%, rgba(0,0,0,0.5) 100%);
+        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 20px var(--orb-color, #a1c4fd);
+    }
 }

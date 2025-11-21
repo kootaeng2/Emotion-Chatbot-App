@@ -1,111 +1,133 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // DOM Elements
+    // --- DOM 요소 가져오기 ---
     const diaryTextarea = document.getElementById('diary');
     const submitBtn = document.getElementById('submit-btn');
     const resultContainer = document.getElementById('result-container');
     const resultDiv = document.getElementById('result');
     const saveStatus = document.getElementById('save-status');
-    const saveBtnContainer = document.querySelector('.save-button-container');
-    const saveDiaryBtn = document.getElementById('save-diary-btn');
+    const saveBtnContainer = document.getElementById('save-action-container');
+    const saveDiaryBtn = document.getElementById('final-save-btn');
 
-    // State
+    // --- 상태 변수 ---
     let currentEmotion = null;
     let currentCandidates = [];
     let progressInterval = null;
+    let diaryText = ''; // 일기 내용을 저장할 변수
 
-    // --- UTILITY & RENDER FUNCTIONS ---
-
+    // --- [유틸리티] 추천 내용 파싱 함수 ---
     function parseRecommendation(text) {
         const contents = { acceptance: '', diversion: '' };
-        const regex = /#+\s*\[(수용|전환)\]([\s\S]*?)(?=#+\s*\[(수용|전환)\]|$)/g;
+        if (!text) return contents;
+
+        // 정규표현식: ## [수용] 또는 ## [전환] 태그 사이의 내용 추출
+        const regex = /#+\s*\[\s*(수용|전환)\s*\]([\s\S]*?)(?=(?:#+\s*\[\s*(?:수용|전환)\s*\])|$)/gi;
+        
         let match;
         while ((match = regex.exec(text)) !== null) {
-            const key = match[1] === '수용' ? 'acceptance' : 'diversion';
-            contents[key] = match[2].trim();
+            const type = match[1].trim(); // '수용' 또는 '전환'
+            const content = match[2].trim();
+            
+            if (type === '수용') contents.acceptance = content;
+            else if (type === '전환') contents.diversion = content;
         }
         return contents;
     }
 
+    // --- [유틸리티] 로딩 바 표시 ---
     function showLoader(message) {
         resultDiv.innerHTML = `
-            <p class="loading-text">${message}</p>
-            <div class="progress-bar-container">
-                <div class="progress-bar"></div>
+            <div style="text-align: center; padding: 20px;">
+                <p class="loading-text" style="margin-bottom: 10px; color: #666;">${message}</p>
+                <div class="progress-bar-container" style="width: 100%; background-color: #f0f0f0; border-radius: 10px; overflow: hidden; height: 8px;">
+                    <div class="progress-bar" style="width: 0%; height: 100%; background-color: var(--primary-color, #6598e5); transition: width 0.1s;"></div>
+                </div>
             </div>
         `;
-        // Stop any previous interval
+        
         if (progressInterval) clearInterval(progressInterval);
         
         const bar = resultDiv.querySelector('.progress-bar');
         let width = 0;
         progressInterval = setInterval(() => {
-            // Animate slowly to 95% and stay there
             if (width < 95) {
-                width += 1;
-                bar.style.width = width + '%';
+                width += 1; 
+                if(bar) bar.style.width = width + '%';
             }
-        }, 80); // Adjust interval for desired speed
+        }, 50);
     }
 
+    // --- [유틸리티] 로딩 바 중지 ---
     function stopLoader() {
         if (progressInterval) {
             clearInterval(progressInterval);
             progressInterval = null;
         }
         const bar = resultDiv.querySelector('.progress-bar');
-        if (bar) {
-            bar.style.width = '100%'; // Complete the bar before disappearing
-        }
+        if (bar) bar.style.width = '100%';
     }
     
+    // --- [핵심] 결과 화면 렌더링 함수 ---
     function renderFullResult(data) {
         stopLoader();
-        const { recommendation, candidates } = data;
-        const activeEmotion = data.activeEmotion || candidates[0].emotion;
-        const activeCandidate = candidates.find(c => c.emotion === activeEmotion) || candidates[0];
+        
+        const recommendation = data.recommendation || '';
+        const candidates = data.candidates || [];
+        
+        // 현재 감정이 없으면 1순위 감정으로 설정
+        if (!currentEmotion && candidates.length > 0) {
+            currentEmotion = candidates[0].emotion;
+        }
 
+        // 1. 추천 내용 파싱 (함수 내부에서 처리하여 에러 방지)
         const { acceptance, diversion } = parseRecommendation(recommendation);
 
+        // 2. 감정 칩(선택지) 생성
         let chipsHTML = '';
-        candidates.forEach(candidate => {
-            chipsHTML += `
-                <button class="emotion-chip ${candidate.emotion === activeEmotion ? 'active' : ''}" data-emotion="${candidate.emotion}">
-                    ${candidate.emoji} ${candidate.emotion}
-                    <span class="score-badge">${Math.round(candidate.score * 100)}%</span>
-                </button>
-            `;
-        });
+        // 확신도가 낮거나(0.8 미만) 이미 후보가 있는 경우 칩 표시
+        const showChips = (data.top_score < 0.8) || (candidates.length > 0); 
 
-        resultDiv.innerHTML = `
-            <div class="result-header">
-                <div class="result-title">
-                    <p style="font-weight: 500; font-size: 1.1rem; margin: 0;">
-                        <strong>감정 분석 결과:</strong> ${activeCandidate.emotion} ${activeCandidate.emoji}
-                    </p>
-                </div>
-            </div>
-            <div id="emotion-choice-container">
-                <div id="emotion-chips">${chipsHTML}</div>
-            </div>
+        if (showChips) {
+             chipsHTML = `<div class="emotion-chips" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">`;
+             candidates.forEach(candidate => {
+                const isActive = candidate.emotion === currentEmotion;
+                chipsHTML += `
+                    <button class="emotion-chip ${isActive ? 'active' : ''}" data-emotion="${candidate.emotion}">
+                        ${candidate.emoji} ${candidate.emotion} 
+                        <span class="score-badge">${Math.round(candidate.score*100)}%</span>
+                    </button>
+                `;
+             });
+             chipsHTML += `</div>`;
+        }
+
+        // 3. 전체 HTML 조립
+        const contentHTML = `
+            ${chipsHTML}
             <div class="rec-tabs">
                 <button class="rec-tab-btn active" data-tab="acceptance">수용</button>
                 <button class="rec-tab-btn" data-tab="diversion">전환</button>
             </div>
             <div id="rec-acceptance" class="rec-content active">
-                ${marked.parse(acceptance || '추천을 불러오지 못했습니다.')}
+                ${marked.parse(acceptance || '추천 내용을 불러오지 못했습니다.')}
             </div>
             <div id="rec-diversion" class="rec-content">
-                ${marked.parse(diversion || '추천을 불러오지 못했습니다.')}
+                ${marked.parse(diversion || '추천 내용을 불러오지 못했습니다.')}
             </div>
         `;
         
-        const resultHeader = resultDiv.querySelector('.result-header');
-        if (resultHeader) {
-            resultHeader.appendChild(saveBtnContainer);
-            saveBtnContainer.style.display = 'block';
+        resultDiv.innerHTML = contentHTML;
+
+        // 저장 버튼 표시
+        if (saveBtnContainer) {
+            saveBtnContainer.style.display = 'flex'; // flex로 변경 (CSS 정렬 따름)
         }
         
-        resultDiv.querySelectorAll('.emotion-chip').forEach(chip => chip.addEventListener('click', handleChipClick));
+        // 감정 칩 클릭 이벤트 연결
+        resultDiv.querySelectorAll('.emotion-chip').forEach(chip => {
+            chip.addEventListener('click', handleChipClick);
+        });
+
+        // 탭 전환 이벤트 연결
         resultDiv.querySelectorAll('.rec-tab-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const tab = button.dataset.tab;
@@ -115,19 +137,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 resultDiv.querySelector(`#rec-${tab}`).classList.add('active');
             });
         });
+    }
+    
+    // --- [이벤트 핸들러] ---
 
-        const choiceContainer = resultDiv.querySelector('#emotion-choice-container');
-        if (choiceContainer && (candidates[0].score < 0.8 || true)) { // Kept true for testing
-             choiceContainer.style.display = 'block';
+    function updateButtonState() {
+        if(diaryTextarea && submitBtn) {
+            submitBtn.disabled = diaryTextarea.value.trim() === '';
         }
     }
     
-    // --- EVENT HANDLERS ---
-
-    function updateButtonState() {
-        submitBtn.disabled = diaryTextarea.value.trim() === '';
-    }
-    
+    // 감정 칩 클릭 시: 새로운 추천 받아오기
     async function handleChipClick(event) {
         const selectedChip = event.currentTarget;
         const selectedEmotion = selectedChip.dataset.emotion;
@@ -135,10 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentEmotion === selectedEmotion) return;
         currentEmotion = selectedEmotion;
 
-        const activeCandidate = currentCandidates.find(c => c.emotion === selectedEmotion) || {};
-
-        // Update UI immediately
-        resultDiv.querySelector('.result-title p').innerHTML = `<strong>감정 분석 결과:</strong> ${activeCandidate.emotion} ${activeCandidate.emoji}`;
+        // UI 즉시 업데이트 (활성 상태 변경)
         resultDiv.querySelectorAll('.emotion-chip').forEach(chip => {
             chip.classList.toggle('active', chip.dataset.emotion === selectedEmotion);
         });
@@ -149,35 +166,40 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch('/api/recommend', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ diary: diaryTextarea.value.trim(), emotion: selectedEmotion })
+                body: JSON.stringify({ 
+                    diary: diaryTextarea.value.trim(), 
+                    emotion: selectedEmotion 
+                })
             });
             const data = await response.json();
-            stopLoader();
+            
             if (data.error) {
-                resultDiv.innerHTML = `<p style="color: red;">추천 업데이트 오류: ${data.error}</p>`;
+                stopLoader();
+                resultDiv.innerHTML = `<p style="color: red;">오류: ${data.error}</p>`;
             } else {
+                // 화면 갱신 (기존 후보군은 유지)
                 renderFullResult({
-                    candidates: currentCandidates,
-                    activeEmotion: selectedEmotion,
-                    recommendation: data.recommendation
+                    recommendation: data.recommendation,
+                    candidates: currentCandidates, 
+                    top_score: 0 // 칩을 계속 보여주기 위해 0으로 설정
                 });
             }
         } catch (error) {
-            console.error('Error fetching new recommendation:', error);
+            console.error('Error:', error);
             stopLoader();
-            resultDiv.innerHTML = '<p style="color: red;">추천 업데이트 중 서버 오류가 발생했습니다.</p>';
+            resultDiv.innerHTML = '<p style="color: red;">서버 오류가 발생했습니다.</p>';
         }
     }
 
+    // 분석 버튼 클릭 시
     async function handleDiarySubmission() {
-        const diaryText = diaryTextarea.value.trim();
+        diaryText = diaryTextarea.value.trim(); // 상위 스코프의 diaryText에 할당
         if (!diaryText) return;
 
         submitBtn.disabled = true;
         submitBtn.textContent = '분석 중...';
         
-        saveBtnContainer.style.display = 'none';
-        resultContainer.appendChild(saveBtnContainer);
+        if(saveBtnContainer) saveBtnContainer.style.display = 'none'; 
 
         saveStatus.textContent = '';
         showLoader('감정을 분석하고 추천을 생성하는 중입니다...');
@@ -196,14 +218,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             
+            // 상태 업데이트 및 렌더링
             currentEmotion = data.top_emotion;
             currentCandidates = data.candidates;
             
-            renderFullResult({
-                candidates: data.candidates,
-                activeEmotion: data.top_emotion,
-                recommendation: data.recommendation
-            });
+            renderFullResult(data); // 이제 인자 하나만 넘기면 됩니다!
 
         } catch (error) {
             console.error('Error:', error);
@@ -214,49 +233,81 @@ document.addEventListener('DOMContentLoaded', function () {
             submitBtn.textContent = '다시 분석하기';
         }
     }
+    // 감정별 구슬 색상 매핑
+    const emotionColors = {
+    '기쁨': '#FFD700', // 금색 (더 진한 노랑)
+    '슬픔': '#4682B4', // 스틸블루 (더 진한 파랑)
+    '분노': '#B22222', // 파이어브릭 (더 진한 빨강)
+    '불안': '#8A2BE2', // 블루 바이올렛 (더 진한 보라)
+    '당황': '#FF8C00', // 다크 오렌지 (더 진한 주황)
+    '상처': '#2E8B57'  // 시 그린 (더 진한 초록)
+};
 
     async function handleDiarySave() {
-        const diaryText = diaryTextarea.value.trim();
-        if (!diaryText || !currentEmotion) {
-            saveStatus.innerHTML = `<span style="color: red;">저장할 일기 내용이나 선택된 감정이 없습니다.</span>`;
-            return;
-        }
+        const diaryBook = document.querySelector('.diary-book');
+        if (!diaryBook) return;
 
-        saveDiaryBtn.disabled = true;
-        saveDiaryBtn.textContent = '저장 중...';
-        saveStatus.textContent = '';
+        // 1. UI 업데이트 및 저장 요청 시작
+        if (saveDiaryBtn) saveDiaryBtn.disabled = true;
+        saveStatus.textContent = '기억을 저장하는 중...';
 
-        try {
-            const formData = new FormData();
-            formData.append('diary', diaryText);
-            formData.append('emotion', currentEmotion);
+        const formData = new FormData();
+        formData.append('diary', diaryText);
+        formData.append('emotion', currentEmotion);
+        fetch('/diary/save', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json()).then(data => {
+            if (!data.success) saveStatus.innerHTML = `<span style="color: red;">저장 실패: ${data.error}</span>`;
+        }).catch(err => {
+            saveStatus.innerHTML = `<span style="color: red;">저장 중 오류 발생</span>`;
+            console.error(err);
+        });
 
-            const response = await fetch('/diary/save', {
-                method: 'POST',
-                body: formData 
-            });
-            const data = await response.json();
+        // 2. 애니메이션을 위한 클론(복제) 요소 생성
+        const rect = diaryBook.getBoundingClientRect();
+        const clone = document.createElement('div');
+        clone.style.position = 'fixed';
+        clone.style.top = `${rect.top}px`;
+        clone.style.left = `${rect.left}px`;
+        clone.style.width = `${rect.width}px`;
+        clone.style.height = `${rect.height}px`;
+        clone.style.backgroundColor = '#fdfbf7'; // 원본 책 배경색
+        clone.style.boxShadow = '0 30px 60px rgba(0,0,0,0.15), 0 0 0 12px #5d4037'; // 원본 책 그림자
+        clone.style.borderRadius = '20px';
+        clone.style.zIndex = '9999'; // 최상단에 위치
 
-            if (response.ok && data.success) {
-                saveStatus.innerHTML = `<span style="color: green;">${data.success}</span>`;
-            } else {
-                saveStatus.innerHTML = `<span style="color: red;">오류: ${data.error || '알 수 없는 오류'}</span>`;
-            }
-        } catch (error) {
-            console.error('Error saving diary:', error);
-            saveStatus.innerHTML = `<span style="color: red;">일기 저장 중 서버 오류가 발생했습니다.</span>`;
-        } finally {
-            saveDiaryBtn.disabled = false;
-            saveDiaryBtn.textContent = '일기 저장하기';
-            setTimeout(() => { saveStatus.textContent = '' }, 4000);
-        }
+        // 감정 색상 설정
+        const emotionKey = (currentEmotion || '').split(' ')[0];
+        const orbColor = emotionColors[emotionKey] || '#a1c4fd';
+        clone.style.setProperty('--orb-color', orbColor);
+        
+        document.body.appendChild(clone);
+
+        // 3. 원본 숨기고 클론에 애니메이션 적용
+        diaryBook.style.visibility = 'hidden';
+        clone.classList.add('crumple-animation');
+
+        // 4. 애니메이션 종료 후 정리 및 UI 초기화
+        setTimeout(() => {                                                                                                                                                                 
+            document.body.removeChild(clone); // 복제본 제거
+            diaryBook.style.visibility = 'visible'; // 원래 책 다시 표시
+
+            // 내부 UI 초기화
+            diaryTextarea.value = '';
+            resultDiv.innerHTML = `<div class="empty-state"><p>왼쪽 페이지에<br>분석할 일기를<br>작성해주세요.</p></div>`;
+            if (saveBtnContainer) saveBtnContainer.style.display = 'none';
+            saveStatus.textContent = '저장 완료! 새로운 일기를 기록해보세요.';
+
+            updateButtonState();
+            if (saveDiaryBtn) saveDiaryBtn.disabled = false;
+        }, 2500); // 2.5초 애니메이션 시간과 일치
     }
 
-    // --- INITIALIZATION ---
+    // --- 초기화 실행 ---
+    if(diaryTextarea) diaryTextarea.addEventListener('input', updateButtonState);
+    if(submitBtn) submitBtn.addEventListener('click', handleDiarySubmission);
+    if(saveDiaryBtn) saveDiaryBtn.addEventListener('click', handleDiarySave);
 
-    diaryTextarea.addEventListener('input', updateButtonState);
-    submitBtn.addEventListener('click', handleDiarySubmission);
-    saveDiaryBtn.addEventListener('click', handleDiarySave);
-
-    updateButtonState();
+    if(diaryTextarea) updateButtonState();
 });

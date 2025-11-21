@@ -94,20 +94,43 @@
     </div>
 
     <div class="main-content">
-        <div class="chat-container">
-            <h1>오늘 하루는 어떠셨나요?</h1>
+        <div class="diary-book">
+            
+            <div class="book-page left-page chat-container">
+                <div class="page-header">
+                    <h2>오늘의 기록 ✏️</h2>
+                    <span class="date-label">Nov 21</span> </div>
+                
+                <textarea id="diary" placeholder="오늘 당신의 하루는 어땠나요?&#13;&#10;솔직한 마음을 적어주세요."></textarea>
+                
+                <div class="button-container">
+                    <button id="submit-btn" disabled>분석하기</button>
+                </div>
+            </div>
 
-            <textarea id="diary" placeholder="당신의 이야기를 들려주세요." rows="8"></textarea>
-            <div class="button-container">
-                <button id="submit-btn" disabled>분석하기</button>
+            <div class="book-spine"></div>
+
+            <div class="book-page right-page" id="result-container">
+                <div class="page-header">
+                    <h2>AI의 답장 💌</h2>
+                    <div id="save-action-container" style="display:none; text-align: center; margin-top: 20px;">
+                        <button id="final-save-btn" class="save-btn">일기장에 저장하기</button>
+                    </div>
+                </div>
+
+                <div id="emotion-chips" class="emotion-chips" style="display:none;"></div>
+
+                <div id="result">
+                    <div class="empty-state">
+                        <p>왼쪽 페이지에 일기를 쓰고<br>분석 버튼을 눌러주세요.</p>
+                    </div>
+                </div>
+                <div id="save-status" style="margin-top: 1rem; text-align: center;"></div>
             </div>
 
         </div>
-        <div id="result-container">
-            <div id="result">
-                <p>이곳에 감정 분석 및 추천 결과가 표시됩니다.</p>
-            </div>
-            
+    </div>
+        
             <!-- 감정 선택 UI (초기에는 숨김) -->
             <div id="emotion-choice-container" style="display: none;">
                 <div class="notification">
