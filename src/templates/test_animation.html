@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Animation Test{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content" style="padding: 50px; text-align: center;">
+    <h1>Animation Test Page</h1>
+    <p>Click the button to test the folding orb animation.</p>
+    <h2 id="timer-display" style="font-size: 2em; margin: 20px 0; color: #333;">0.00s</h2>
+    <button id="test-animation-btn" style="padding: 15px 30px; font-size: 18px; cursor: pointer;">Start Animation</button>
+    
+    <hr style="margin: 40px 0;">
+
+    <!-- Simplified diary book for animation target -->
+    <div class="diary-book">
+        <div class="book-page left-page">
+            <h2>Left Page</h2>
+        </div>
+        <div class="book-spine"></div>
+        <div class="book-page right-page">
+            <h2>Right Page</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }} {# Inherit scripts from base.html #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const testBtn = document.getElementById('test-animation-btn');
+            const diaryBook = document.querySelector('.diary-book');
+            const leftPage = diaryBook.querySelector('.left-page');
+            const rightPage = diaryBook.querySelector('.right-page');
+            const timerDisplay = document.getElementById('timer-display');
+            let timerInterval;
+
+            if (!testBtn || !diaryBook || !leftPage || !rightPage) {
+                console.error('Test elements not found!');
+                return;
+            }
+
+            const emotionColors = {
+                '기쁨': '#FFD700', '슬픔': '#4682B4', '분노': '#B22222',
+                '불안': '#8A2BE2', '당황': '#FF8C00', '상처': '#2E8B57'
+            };
+            let currentEmotion = '기쁨';
+
+            function playFullAnimation(element, orbColor, duration) {
+                const keyframes = [
+                    // Start as an orb in the center
+                    {
+                        top: 'calc(50vh - 25px)', left: 'calc(50vw - 25px)',
+                        transform: 'scale(1)',
+                        offset: 0
+                    },
+                    // Bounce 1: Central impact
+                    {
+                        top: 'calc(100vh - 80px)', left: 'calc(50vw - 25px)',
+                        transform: 'scale(1.2, 0.8)', // Squash
+                        offset: 0.1
+                    },
+                    // Up from central bounce
+                    {
+                        top: '60vh', left: '58vw', // Start moving right
+                        transform: 'scale(1, 1)',
+                        offset: 0.25
+                    },
+                    // Bounce 2
+                    {
+                        top: 'calc(100vh - 80px)', left: '68vw',
+                        transform: 'scale(1.15, 0.85)',
+                        offset: 0.40
+                    },
+                    // Up from Bounce 2
+                    {
+                        top: '75vh', left: '76vw',
+                        transform: 'scale(1, 1)',
+                        offset: 0.55
+                    },
+                    // Bounce 3
+                    {
+                        top: 'calc(100vh - 80px)', left: '83vw',
+                        transform: 'scale(1.1, 0.9)',
+                        offset: 0.65
+                    },
+                    // Up from Bounce 3
+                    {
+                        top: '85vh', left: '89vw',
+                        transform: 'scale(1, 1)',
+                        offset: 0.75
+                    },
+                    // Bounce 4
+                    {
+                        top: 'calc(100vh - 80px)', left: '94vw',
+                        transform: 'scale(1.05, 0.95)',
+                        offset: 0.85
+                    },
+                     // Up from Bounce 4 (smaller bounce)
+                    {
+                        top: '90vh', left: '96.5vw',
+                        transform: 'scale(1, 1)',
+                        offset: 0.92
+                    },
+                    // Bounce 5 (smaller bounce)
+                    {
+                        top: 'calc(100vh - 80px)', left: '98vw',
+                        transform: 'scale(1.02, 0.98)',
+                        offset: 0.96
+                    },
+                    // Bounce 6 / Final Rest (at screen edge)
+                    {
+                        top: 'calc(100vh - 80px)', left: 'calc(100vw - 80px)',
+                        transform: 'scale(1, 1)',
+                        offset: 1
+                    }
+                ];
+    
+                const options = { duration: duration, easing: 'ease-in-out', fill: 'forwards' };
+                return element.animate(keyframes, options);
+            }
+    
+            testBtn.addEventListener('click', () => {
+                if (document.querySelector('.js-animating')) return;
+
+                const bookFoldDuration = 1500;
+                const bounceDuration = 5000;
+                const totalDuration = bookFoldDuration + bounceDuration;
+
+                const orbColor = emotionColors[currentEmotion] || '#a1c4fd';
+
+                // --- Create the orb element from the start, but keep it hidden ---
+                const animElement = document.createElement('div');
+                animElement.classList.add('js-animating-orb');
+                animElement.style.position = 'fixed';
+                animElement.style.zIndex = '9999';
+                animElement.style.width = '50px';
+                animElement.style.height = '50px';
+                animElement.style.borderRadius = '50%';
+                animElement.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), ${orbColor} 80%)`;
+                animElement.style.boxShadow = `0 0 35px ${orbColor}, inset 3px 3px 8px rgba(0,0,0,0.4), inset -3px -3px 8px rgba(255,255,255,0.7)`;
+                animElement.style.top = 'calc(50vh - 25px)';
+                animElement.style.left = 'calc(50vw - 25px)';
+                animElement.style.opacity = '0'; // Initially invisible
+                animElement.style.transform = 'scale(0)';
+                document.body.appendChild(animElement);
+
+                // --- Timer Start ---
+                let startTime = Date.now();
+                if(timerInterval) clearInterval(timerInterval);
+                timerDisplay.textContent = '0.00s';
+                timerInterval = setInterval(() => {
+                    const elapsedTime = (Date.now() - startTime) / 1000;
+                    if (elapsedTime <= totalDuration / 1000) {
+                        if(timerDisplay) timerDisplay.textContent = `${elapsedTime.toFixed(2)}s`;
+                    } else {
+                        clearInterval(timerInterval);
+                    }
+                }, 10);
+
+                // --- Animation Part 1: Book Folds & Fades Out ---
+                diaryBook.classList.add('js-animating');
+
+                const bookRect = diaryBook.getBoundingClientRect();
+                const translateX = (window.innerWidth / 2) - (bookRect.left + bookRect.width / 2);
+                const translateY = (window.innerHeight / 2) - (bookRect.top + bookRect.height / 2);
+
+                const bookToOrbKeyframes = [
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1, backgroundColor: '#fdfbf7', borderRadius: '20px' },
+                    { backgroundColor: orbColor, borderRadius: '50%', offset: 0.7 },
+                    { transform: `translate(${translateX}px, ${translateY}px) scale(0)`, opacity: 0, backgroundColor: orbColor, borderRadius: '50%' }
+                ];
+                
+                const animOptions = { duration: bookFoldDuration, easing: 'ease-in-out', fill: 'forwards' };
+                const bookAnimation = diaryBook.animate(bookToOrbKeyframes, animOptions);
+
+                // --- Simultaneously, Orb Fades In ---
+                const orbAppearKeyframes = [
+                    { transform: 'scale(0)', opacity: 0 },
+                    { transform: 'scale(1)', opacity: 1, offset: 0.8 }, // Appear towards the end
+                    { transform: 'scale(1)', opacity: 1 }
+                ];
+                animElement.animate(orbAppearKeyframes, { duration: bookFoldDuration, easing: 'ease-out', fill: 'forwards' });
+
+
+                // --- Animation Part 2: Orb Bouncing (chained) ---
+                bookAnimation.onfinish = () => {
+                    diaryBook.style.visibility = 'hidden';
+                    
+                    const bounceAnimation = playFullAnimation(animElement, orbColor, bounceDuration);
+
+                    bounceAnimation.onfinish = () => {
+                        if (document.body.contains(animElement)) document.body.removeChild(animElement);
+                        
+                        // Reset book for next run
+                        diaryBook.style.visibility = 'visible';
+                        leftPage.getAnimations().forEach(anim => anim.cancel());
+                        rightPage.getAnimations().forEach(anim => anim.cancel());
+                        diaryBook.getAnimations().forEach(anim => anim.cancel());
+
+                        const pageResetStyle = { transform: '', opacity: '1' };
+                        Object.assign(leftPage.style, pageResetStyle);
+                        Object.assign(rightPage.style, pageResetStyle);
+                        Object.assign(diaryBook.style, pageResetStyle);
+                        
+                        diaryBook.classList.remove('js-animating');
+                        console.log('Animation finished and reset.');
+                    };
+                };
+            });
+        });
+    </script>
+{% endblock %}

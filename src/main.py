@@ -317,3 +317,7 @@ def delete_diary(diary_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "삭제 중 오류가 발생했습니다."}), 500
+
+@bp.route('/test/animation')
+def test_animation():
+    return render_template('test_animation.html', display_name='테스트')

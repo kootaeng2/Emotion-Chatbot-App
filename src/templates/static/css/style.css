@@ -9,7 +9,7 @@
     --font-family: 'Spoqa Han Sans Neo', sans-serif;
 }
 
-html, body {
+body {
     font-family: var(--font-family);
     margin: 0;
     background: linear-gradient(135deg, #ece9f7, #cacae0);
@@ -49,23 +49,4 @@ html, body {
     padding: 3rem;
     width: 100%;
     box-sizing: border-box;
-}
-
-/* Page Transition Curtain */
-#transition-curtain {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(135deg, #ece9f7, #cacae0); /* Match body background */
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease-in-out;
-    z-index: 9999;
-}
-
-#transition-curtain.active {
-    opacity: 1;
-    pointer-events: all;
 }
