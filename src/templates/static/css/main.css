@@ -566,33 +566,34 @@ textarea {
     font-size: 0.9rem;
 }
 
-/* --- 📖 저장 애니메이션 효과 (Crumple and Morph) --- */
-
+/* --- 📖 저장 애니메이션: 책이 구겨져서 구슬이 되고, 개구리처럼 튀어가는 효과 --- */
 .crumple-animation {
-    transform-origin: center bottom; /* 바닥 기준으로 찌그러지도록 변경 */
-    animation: crumple-book-and-morph 2.5s ease-in-out forwards;
+    transform-origin: center bottom;
+    animation: crumple-book-and-morph 7s linear forwards;
+    position: fixed; /* 화면 기준 이동 */
+    z-index: 9999;
 }
 
-/* 애니메이션 시작 시, 내부 페이지들은 즉시 투명하게 만듦 */
+/* 내부 요소 숨김 처리 */
 .crumple-animation > * {
     opacity: 0 !important;
     transition: opacity 0.1s;
 }
 
 @keyframes crumple-book-and-morph {
-    /* 0-50%: Crumple and Drop to bottom-center */
+    /* [Phase 1] 0-29%: 책이 구겨지며 중앙 하단으로 낙하 (약 2초) */
     0% {
         width: 70vw; height: 750px; border-radius: 20px;
         transform: translate(0, 0) scale(1);
         opacity: 1;
     }
-    25% {
+    14% {
         width: 250px; height: 250px; border-radius: 40px;
         transform: translateX(calc(35vw - 125px)) translateY(250px) rotate(10deg);
         opacity: 0.7;
         background: var(--orb-color, #a1c4fd);
     }
-    50% { /* Land at bottom-center and squash */
+    29% {
         width: 30px; height: 30px; border-radius: 50%;
         transform: translateX(calc(35vw - 15px)) translateY(720px) scale(1.2, 0.7);
         opacity: 0.7;
@@ -600,25 +601,42 @@ textarea {
         box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 20px var(--orb-color, #a1c4fd);
     }
 
-    /* 50-100%: 5 frog jumps to the right */
-    55% { transform: translateX(calc(35vw - 15px + 6vw)) translateY(680px) scale(1, 1); }
-    60% { transform: translateX(calc(35vw - 15px + 12vw)) translateY(720px) scale(1.2, 0.7); }
+    /* [Phase 2] 29-72%: 오른쪽으로 5번 빠르게 통통 튀어가기 (약 3초) */
+    
+    /* Jump 1 */
+    33%   { transform: translateX(calc(35vw - 15px + 6vw)) translateY(623px) scale(1, 1); }
+    38%   { transform: translateX(calc(35vw - 15px + 12vw)) translateY(720px) scale(1.2, 0.7); }
 
-    65% { transform: translateX(calc(35vw - 15px + 18vw)) translateY(680px) scale(1, 1); }
-    70% { transform: translateX(calc(35vw - 15px + 24vw)) translateY(720px) scale(1.2, 0.7); }
+    /* Jump 2 */
+    42%   { transform: translateX(calc(35vw - 15px + 18vw)) translateY(450px) scale(1, 1); }
+    46%   { transform: translateX(calc(35vw - 15px + 24vw)) translateY(720px) scale(1.2, 0.7); }
 
-    75% { transform: translateX(calc(35vw - 15px + 30vw)) translateY(680px) scale(1, 1); }
-    80% { transform: translateX(calc(35vw - 15px + 36vw)) translateY(720px) scale(1.2, 0.7); }
+    /* Jump 3 */
+    50%   { transform: translateX(calc(35vw - 15px + 30vw)) translateY(350px) scale(1, 1); }
+    55%   { transform: translateX(calc(35vw - 15px + 36vw)) translateY(720px) scale(1.2, 0.7); }
 
-    85% { transform: translateX(calc(35vw - 15px + 42vw)) translateY(680px) scale(1, 1); }
-    90% { transform: translateX(calc(35vw - 15px + 48vw)) translateY(720px) scale(1.2, 0.7); }
+    /* Jump 4 */
+    59%   { transform: translateX(calc(35vw - 15px + 42vw)) translateY(310px) scale(1, 1); }
+    63%   { transform: translateX(calc(35vw - 15px + 50vw)) translateY(720px) scale(1.2, 0.7); }
 
-    95% { transform: translateX(calc(35vw - 15px + 54vw)) translateY(680px) scale(1, 1); }
-    100% { /* Final landing */
+    /* Jump 5 (마지막 점프) */
+    67%   { transform: translateX(calc(35vw - 15px + 55vw)) translateY(275px) scale(1, 1); }
+    72% { 
         width: 30px; height: 30px; border-radius: 50%;
         transform: translateX(calc(35vw - 15px + 60vw)) translateY(720px) scale(1, 1);
-        opacity: 0.7;
-        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), var(--orb-color, #a1c4fd) 70%, rgba(0,0,0,0.5) 100%);
-        box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.4), 0 0 20px var(--orb-color, #a1c4fd);
+        opacity: 1; /* Disappearing effect removed */
+        box-shadow: none; 
+        border: none;
+        background: transparent;
+    }
+
+    /* 72% 부터 100% 까지 최종 상태 유지 */
+    100% {
+        width: 30px; height: 30px; border-radius: 50%;
+        transform: translateX(calc(35vw - 15px + 60vw)) translateY(720px) scale(1, 1);
+        opacity: 1; /* Disappearing effect removed */
+        box-shadow: none; 
+        border: none;
+        background: transparent;
     }
 }

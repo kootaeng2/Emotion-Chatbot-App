@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             updateButtonState();
             if (saveDiaryBtn) saveDiaryBtn.disabled = false;
-        }, 2500); // 2.5초 애니메이션 시간과 일치
+        }, 7000); // 7초 애니메이션 시간과 일치
     }
 
     // --- 초기화 실행 ---
