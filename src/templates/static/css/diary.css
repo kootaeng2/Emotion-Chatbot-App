@@ -1,26 +1,26 @@
+/* --- Diary Page Layout --- */
 .main-content {
     display: flex;
     gap: 2rem;
     width: 100%;
     max-width: 1600px;
-}
-
-.calendar-wrapper, .diary-display-wrapper {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    padding: 40px 20px;
-    box-sizing: border-box;
+    align-items: flex-start; /* Align items to the top */
 }
 
 .calendar-wrapper {
     flex: 1;
-    min-width: 500px;
+    max-width: 450px; /* Set a max-width for the calendar card */
+    min-width: 400px; /* Prevent it from getting too small */
 }
 
 .diary-display-wrapper {
     flex: 2;
     align-self: stretch;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    padding: 40px;
+    box-sizing: border-box;
 }
 
 h1, h2 {
@@ -37,39 +37,146 @@ h2 {
     margin-top: 0;
 }
 
-/* Flatpickr Customization */
+
+/* --- Flatpickr Modern Card Style --- */
+
 .flatpickr-calendar {
-    margin: 0 auto; /* Center the calendar block itself */
-    font-size: 1em;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    border: none;
+    font-family: var(--font-family);
+    display: block; /* Ensure it's not inline */
+    margin: 0; /* Remove default margins */
 }
-.flatpickr-weekday {
-    font-size: 1.2em; /* User's preference */
-    text-align: center; /* Explicitly center */
-    font-weight: 500;
-    color: #333;
-}
-.flatpickr-day {
-    height: 70px;
+
+.flatpickr-months {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 15px 10px;
+    border-radius: 15px 15px 0 0;
+    margin: -20px -20px 10px -20px; /* Extend to edges */
     display: flex;
-    justify-content: center;
     align-items: center;
 }
+
+.flatpickr-month {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.flatpickr-current-month {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: inherit;
+}
+.flatpickr-current-month .numInputWrapper {
+    color: inherit;
+}
+.flatpickr-current-month .numInput {
+    color: inherit;
+}
+
+
+.flatpickr-prev-month, .flatpickr-next-month {
+    color: rgba(255, 255, 255, 0.8);
+    transition: color 0.2s;
+}
+.flatpickr-prev-month:hover, .flatpickr-next-month:hover {
+    color: #fff;
+}
+
+.flatpickr-weekdays {
+    background: var(--primary-color);
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    padding: 10px 0;
+    margin: 0 -20px 10px -20px;
+}
+
+span.flatpickr-weekday {
+    flex: 1;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: inherit;
+}
+
+.dayContainer {
+    padding: 0;
+    gap: 5px; /* Add gap between day rows */
+}
+
+.flatpickr-day {
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px 0;
+    border-radius: 12px;
+    transition: background-color 0.2s, border-color 0.2s;
+    border: 2px solid transparent;
+    color: #333;
+    background: #fff;
+}
+
+.flatpickr-day:hover {
+    background-color: #f5f5f5;
+}
+
+.flatpickr-day.today {
+    border-color: var(--primary-hover-color);
+    font-weight: bold;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: var(--primary-hover-color);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #ccc;
+    background: #f9f9f9;
+}
+.flatpickr-day.prevMonthDay .emotion-emoji,
+.flatpickr-day.nextMonthDay .emotion-emoji {
+    opacity: 0.4;
+}
+
+
+/* --- Day Content --- */
 .day-content-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
+    width: 100%;
 }
 .day-number {
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 .emotion-emoji {
-    font-size: 1.3rem;
-    opacity: 0.9;
-    margin-top: 2px;
+    font-size: 1.5rem;
+    margin-top: 5px;
 }
 
+/* --- Diary Display Styles --- */
 #diary-display {
     height: 100%;
     display: flex;
@@ -83,7 +190,6 @@ h2 {
     color: #888;
 }
 
-/* Diary List & Detail */
 #diary-list-container {
     margin-bottom: 2rem;
     display: flex;
@@ -124,10 +230,15 @@ h2 {
 .delete-btn:hover {
     opacity: 1;
 }
+
 #diary-detail-container {
     border-top: 2px solid #eee;
     padding-top: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
+
 .diary-header {
     margin-bottom: 1.5rem;
 }
@@ -143,6 +254,7 @@ h2 {
 }
 .diary-body {
     overflow-y: auto;
+    flex-grow: 1;
 }
 .diary-section {
     margin-bottom: 1.5rem;
