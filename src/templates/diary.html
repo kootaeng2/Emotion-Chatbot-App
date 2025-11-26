@@ -1,26 +1,62 @@
 {% extends "base.html" %}
 
-{% block title %}{{ display_name }}님의 감정 달력{% endblock %}
+{% block title %}{{ display_name }}'s Dashboard{% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="main-content">
-    <div class="calendar-wrapper">
-        <h1>나의 감정 달력</h1>
-        <div id="calendar"></div>
-    </div>
-    <div class="diary-display-wrapper">
-        <div id="diary-display" class="placeholder">
-            <h2>일기를 선택해주세요</h2>
-            <p>달력에서 날짜를 클릭하면 여기에 내용이 표시됩니다.</p>
+<div class="dashboard-container">
+    <!-- 1열: 좌측 사이드바 -->
+    <aside class="sidebar">
+        <div class="year-selector">
+            <button id="prev-year">◀</button>
+            <h2 id="current-year">2025</h2>
+            <button id="next-year">▶</button>
         </div>
-    </div>
+        <ul class="month-list">
+            <li class="month-item" data-month="0">Jan</li>
+            <li class="month-item" data-month="1">Feb</li>
+            <li class="month-item" data-month="2">Mar</li>
+            <li class="month-item" data-month="3">Apr</li>
+            <li class="month-item" data-month="4">May</li>
+            <li class="month-item" data-month="5">Jun</li>
+            <li class="month-item" data-month="6">Jul</li>
+            <li class="month-item" data-month="7">Aug</li>
+            <li class="month-item" data-month="8">Sep</li>
+            <li class="month-item" data-month="9">Oct</li>
+            <li class="month-item" data-month="10">Nov</li>
+            <li class="month-item" data-month="11">Dec</li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>Emotion Diary</p>
+        </div>
+    </aside>
+
+    <!-- 2열: 중앙 달력 -->
+    <main class="calendar-area">
+        <div class="calendar-header">
+            <h2 id="calendar-month-title">November</h2>
+            <button class="add-btn" title="오늘 날짜로 새 일기 작성 (구현 예정)">+ Add</button>
+        </div>
+        <div id="calendar"></div>
+    </main>
+
+    <!-- 3열: 우측 타임라인 -->
+    <section class="timeline-area">
+        <h2 class="timeline-title">Journal List</h2>
+        <div id="diary-list-container">
+            <div class="placeholder">
+                <p>날짜를 선택하면<br>이곳에 일기가 표시됩니다.</p>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="{{ url_for('static', filename='js/diary_logic.js') }}"></script>
 {% endblock %}

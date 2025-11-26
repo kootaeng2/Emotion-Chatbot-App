@@ -1,17 +1,27 @@
-function createRecommendationTabs(acceptanceContent, diversionContent, containerId) {
-    const acceptanceHtml = marked.parse(acceptanceContent || '추천을 불러오지 못했습니다.');
-    const diversionHtml = marked.parse(diversionContent || '추천을 불러오지 못했습니다.');
+document.addEventListener('DOMContentLoaded', function() {
+    // --- 매직 내비게이션 바 동작 ---
+    const marker = document.querySelector('.nav-marker');
+    const navItems = document.querySelectorAll('.nav-item a');
+    const navList = document.querySelector('.navbar-menu');
 
-    return `
-        <div class="rec-tabs">
-            <button class="rec-tab-btn active" data-tab="${containerId}-acceptance">수용</button>
-            <button class="rec-tab-btn" data-tab="${containerId}-diversion">전환</button>
-        </div>
-        <div id="${containerId}-acceptance" class="rec-content active">
-            ${acceptanceHtml}
-        </div>
-        <div id="${containerId}-diversion" class="rec-content">
-            ${diversionHtml}
-        </div>
-    `;
-}
+    function moveMarker(e) {
+        const item = e.target.closest('li'); // li 요소 기준
+        if (item && marker) {
+            marker.style.width = (item.offsetWidth - 10) + 'px';
+            marker.style.left = (item.offsetLeft + 12) + 'px';
+            marker.style.opacity = '1';
+        }
+    }
+
+    // 각 메뉴에 마우스 올리면 마커 이동
+    navItems.forEach(link => {
+        link.addEventListener('mouseenter', moveMarker);
+    });
+
+    // 메뉴 밖으로 나가면 마커 숨기기 (선택사항)
+    if (navList) {
+        navList.addEventListener('mouseleave', () => {
+            if(marker) marker.style.opacity = '0';
+        });
+    }
+});

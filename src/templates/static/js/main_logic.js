@@ -290,10 +290,22 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
+    // --- 날짜 표시 업데이트 ---
+    function updateDateLabel() {
+        const dateLabel = document.querySelector('.date-label');
+        if (dateLabel) {
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = today.toLocaleDateString('ko-KR', options);
+            dateLabel.textContent = formattedDate;
+        }
+    }
+
     // --- 초기화 실행 ---
     if(diaryTextarea) diaryTextarea.addEventListener('input', updateButtonState);
     if(submitBtn) submitBtn.addEventListener('click', handleDiarySubmission);
     if(saveDiaryBtn) saveDiaryBtn.addEventListener('click', handleDiarySave);
 
     if(diaryTextarea) updateButtonState();
+    updateDateLabel();
 });

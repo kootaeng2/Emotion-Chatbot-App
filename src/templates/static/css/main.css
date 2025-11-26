@@ -1,7 +1,86 @@
-/* --- 헤더(네비게이션 바) 스타일 --- */
-.navbar-left {
+/* --- 🛸 매직 캡슐 내비게이션 바 (Magic Capsule Navbar) --- */
+
+.navbar-container {
+    position: fixed;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.navbar {
     display: flex;
     align-items: center;
+    gap: 30px;
+    padding: 8px 15px;
+    border-radius: 50px; /* 둥근 캡슐 모양 */
+    
+    /* 글래스모피즘 (유리 효과) */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 0 15px;
+    letter-spacing: -0.5px;
+}
+
+/* 메뉴 리스트 */
+.navbar-menu {
+    position: relative; /* 마커의 기준점 */
+    display: flex;
+    flex-direction: row; /* Added */
+    align-items: center; /* Added */
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+    background: rgba(0,0,0,0.03); /* 메뉴 뒤 연한 트랙 */
+    border-radius: 30px;
+}
+
+.nav-item {
+    position: relative;
+    z-index: 2; /* 마커보다 위에 위치 */
+}
+
+.nav-item a {
+    display: block;
+    padding: 8px 20px;
+    text-decoration: none;
+    color: #666;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 30px;
+    transition: color 0.3s;
+}
+
+/* 마우스 올렸을 때 글자색 변경 */
+.nav-item a:hover {
+    color: var(--primary-color);
+}
+
+/* ✨ 움직이는 하이라이트 (Marker) */
+.nav-marker {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 0; /* JS로 제어 */
+    height: calc(100% - 10px);
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.5, 0, 0, 1); /* 부드러운 이동 */
+    z-index: 1;
+    opacity: 0; /* 처음엔 숨김 */
 }
 
 .copyright-dropdown {
@@ -68,6 +147,7 @@
     justify-content: center;
     align-items: center;
     min-height: 80vh; /* 화면 중앙 정렬 */
+    margin-top: 1.5rem;
     padding: 10px;
 }
 
@@ -79,7 +159,7 @@
     max-width: 1600px;     /* 최대 너비 1600px */
     min-width: 1200px;      /* 최소 너비 1200px 강제 */
     height: 750px;         /* 높이 고정 */
-    
+    margin-top: 5rem; 
     background-color: #fdfbf7;
     border-radius: 20px;
     box-shadow: 0 30px 60px rgba(0,0,0,0.15), 0 0 0 12px #5d4037;
@@ -120,6 +200,10 @@
 }
 .book-page::-webkit-scrollbar-thumb:hover {
     background-color: #ccc;
+}
+
+.page-header {
+    margin-bottom: 0.5rem;
 }
 
 /* --- 3. 입력창 크기 대응 --- */

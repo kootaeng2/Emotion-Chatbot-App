@@ -2,8 +2,9 @@
 .mypage-box {
     width: 100%; 
     max-width: 600px;
-    margin: 0;
-    padding: 2rem;
+    margin: 0 auto;
+    padding: 4rem 2rem 2rem;
+    margin-top: 5rem;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
