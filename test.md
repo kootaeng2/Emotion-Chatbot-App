@@ -1,7 +1,8 @@
 ```mermaid
 graph LR
 
-```    %% 1. 클라이언트 영역
+```
+    %% 1. 클라이언트 영역
     subgraph Client ["💻 Client Side (Frontend)"]
         User[👤 사용자 / 웹 브라우저<br/>(HTML5, CSS3, JS)]
     end
@@ -39,5 +40,6 @@ graph LR
     ```    
     style Server fill:#fff3e0,stroke:#e65100
     style External fill:#f3e5f5,stroke:#4a148c
-    style InternalModel fill:#ffccbc,stroke:#bf360c,stroke-width:2px  ```
+    style InternalModel fill:#ffccbc,stroke:#bf360c,stroke-width:2px 
+    ```
 ```
