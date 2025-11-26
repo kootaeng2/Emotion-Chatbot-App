@@ -37,7 +37,6 @@ graph LR
 
     %% 스타일링 (선택 사항)
     style Client fill:#e1f5fe,stroke:#01579b
-    ```    
     style Server fill:#fff3e0,stroke:#e65100
     style External fill:#f3e5f5,stroke:#4a148c
     style InternalModel fill:#ffccbc,stroke:#bf360c,stroke-width:2px 
