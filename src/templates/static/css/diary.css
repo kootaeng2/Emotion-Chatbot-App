@@ -21,6 +21,7 @@
     max-width: 1400px;
     height: 750px;
     margin: 2rem auto;
+    margin-top: 5rem;
     background-color: white;
     border-radius: 20px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
@@ -33,7 +34,7 @@
     width: 200px;
     background-color: var(--primary-theme-color);
     color: white;
-    padding: 2rem 0;
+    padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -70,8 +71,8 @@
     flex-grow: 1;
 }
 .month-item {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
+    padding: 0.7rem 2rem;
+    font-size: 1.3rem;
     cursor: pointer;
     transition: background-color 0.2s;
     opacity: 0.7;
@@ -203,48 +204,84 @@ span.flatpickr-weekday {
 }
 
 .flatpickr-day {
-    width: auto !important;
+    width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    height: 80px !important;
+    height: 80px !important; /* 원래 높이 유지 */
     border-radius: 12px;
     position: relative;
     z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, color 0.2s; /* color transition 추가 */
     font-size: 1.4rem; 
+    overflow: hidden; /* 가상요소가 둥근 모서리를 넘지 않도록 */
+}
+
+/* 날짜 숫자 스타일 */
+.flatpickr-day span.flatpickr-day-num {
+    position: relative;
+    z-index: 2; /* 배경보다 위에 오도록 */
+}
+
+/* 일기가 있는 날의 가상요소 (배경 역할) */
+.flatpickr-day.has-diary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* 숫자보다 뒤에 오도록 */
+    transition: background-color 0.2s;
 }
 
 .flatpickr-day.today {
     border: 1px solid var(--primary-theme-color);
 }
-.flatpickr-day:hover {
+
+.flatpickr-day:not(.has-diary):hover { /* 일기가 없는 날짜에만 적용 */
     background-color: #f0edff;
 }
-.flatpickr-day.selected {
-    background-color: var(--primary-theme-color);
-    color: white;
+
+.flatpickr-day.has-diary:hover::before { /* 일기가 있는 날짜는 밝기만 조절 */
+    filter: brightness(90%);
 }
+
+.flatpickr-day.selected {
+    border: 2px solid var(--primary-theme-color); /* 배경색 대신 테두리로 선택 표시 */
+}
+/* .flatpickr-day.selected::before 규칙은 완전히 제거됨 */
+
+
 .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #ccc; }
 
-.emotion-dot {
-    position: absolute;
-    bottom: 8px; 
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    z-index: 2;
+.flatpickr-day.has-diary {
+    color: white; /* 기본 텍스트 색상을 흰색으로 변경 */
 }
-/* 감정별 점 색상 */
-.dot-기쁨 { background-color: var(--dot-joy); }
-.dot-슬픔 { background-color: var(--dot-sad); }
-.dot-분노 { background-color: var(--dot-angry); }
-.dot-불안 { background-color: var(--dot-anxious); }
-.dot-당황 { background-color: var(--dot-surprised); }
-.dot-상처 { background-color: var(--dot-hurt); }
-.dot-default { background-color: var(--dot-default); }
+
+/* 감정별 배경색 (가상요소에 적용) */
+.flatpickr-day.has-diary.bg-기쁨::before { background-color: var(--dot-joy); }
+.flatpickr-day.has-diary.bg-슬픔::before { background-color: var(--dot-sad); }
+.flatpickr-day.has-diary.bg-분노::before { background-color: var(--dot-angry); }
+.flatpickr-day.has-diary.bg-불안::before { background-color: var(--dot-anxious); }
+.flatpickr-day.has-diary.bg-당황::before { background-color: var(--dot-surprised); }
+.flatpickr-day.has-diary.bg-상처::before { background-color: var(--dot-hurt); }
+.flatpickr-day.has-diary.bg-default::before { background-color: var(--dot-default); }
+
+.flatpickr-day.has-diary.bg-기쁨 span.flatpickr-day-num,
+.flatpickr-day.has-diary.bg-당황 span.flatpickr-day-num,
+.flatpickr-day.has-diary.bg-default span.flatpickr-day-num {
+    color: #333; /* 밝은 배경색에 어두운 글자색 적용 */
+}
+
+
+.flatpickr-day.today.has-diary {
+    border: none; /* 배경색이 채워지므로 테두리 제거 */
+}
+
+
 
 /* --- 3. 우측 타임라인 --- */
 .timeline-area {
@@ -312,6 +349,29 @@ span.flatpickr-weekday {
 .item-emotion {
     font-size: 1.2rem;
 }
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 이모지와 삭제 버튼 사이 간격 */
+}
+
+.delete-diary-btn {
+    background: none;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.delete-diary-btn:hover {
+    background-color: #ff6b6b;
+    color: white;
+}
+
 .item-content {
     font-size: 0.9rem;
     line-height: 1.6;
@@ -328,10 +388,101 @@ span.flatpickr-weekday {
 .item-content p {
     margin: 0;
 }
+
+.item-recommendations {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.item-recommendations h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 10px 0;
+}
+
+.item-recommendations ul {
+    list-style-type: '🎵';
+    padding-left: 20px;
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.item-recommendations li {
+    padding-left: 8px;
+    margin-bottom: 5px;
+}
 .item-content ul {
     padding-left: 20px;
     margin: 10px 0 0 0;
 }
 .item-content li {
     margin-bottom: 5px;
+}
+
+/* --- 상세 정보 모달 스타일 --- */
+.diary-detail-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    backdrop-filter: blur(5px);
+}
+
+.diary-detail-modal-content {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.diary-detail-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#diary-detail-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+#diary-detail-body {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #444;
+}
+
+#diary-detail-body .diary-content-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+#diary-detail-body .diary-content-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary-theme-color);
+}
+
+#diary-detail-body #rec-container h3 {
+    margin-bottom: 15px;
 }

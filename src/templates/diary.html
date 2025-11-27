@@ -16,20 +16,20 @@
             <h2 id="current-year">2025</h2>
             <button id="next-year">▶</button>
         </div>
-        <ul class="month-list">
-            <li class="month-item" data-month="0">Jan</li>
-            <li class="month-item" data-month="1">Feb</li>
-            <li class="month-item" data-month="2">Mar</li>
-            <li class="month-item" data-month="3">Apr</li>
-            <li class="month-item" data-month="4">May</li>
-            <li class="month-item" data-month="5">Jun</li>
-            <li class="month-item" data-month="6">Jul</li>
-            <li class="month-item" data-month="7">Aug</li>
-            <li class="month-item" data-month="8">Sep</li>
-            <li class="month-item" data-month="9">Oct</li>
-            <li class="month-item" data-month="10">Nov</li>
-            <li class="month-item" data-month="11">Dec</li>
-        </ul>
+                <ul class="month-list">
+                    <li class="month-item" data-month="0" style="display: flex; justify-content: space-between;"><span>Jan</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="1" style="display: flex; justify-content: space-between;"><span>Feb</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="2" style="display: flex; justify-content: space-between;"><span>Mar</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="3" style="display: flex; justify-content: space-between;"><span>Apr</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="4" style="display: flex; justify-content: space-between;"><span>May</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="5" style="display: flex; justify-content: space-between;"><span>Jun</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="6" style="display: flex; justify-content: space-between;"><span>Jul</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="7" style="display: flex; justify-content: space-between;"><span>Aug</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="8" style="display: flex; justify-content: space-between;"><span>Sep</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="9" style="display: flex; justify-content: space-between;"><span>Oct</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="10" style="display: flex; justify-content: space-between;"><span>Nov</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="11" style="display: flex; justify-content: space-between;"><span>Dec</span> <span class="diary-count"></span></li>
+                </ul>
         <div class="sidebar-footer">
             <p>Emotion Diary</p>
         </div>
@@ -53,6 +53,25 @@
             </div>
         </div>
     </section>
+</div>
+<!-- Recommendation Modal -->
+<div id="rec-modal-overlay" class="modal-overlay">
+    <div id="rec-modal-content" class="modal-content">
+        <button id="rec-modal-close" class="modal-close-btn">&times;</button>
+        <h2 id="rec-modal-title"></h2>
+        <div id="rec-modal-body"></div>
+    </div>
+</div>
+
+<!-- Diary Detail Modal -->
+<div id="diary-detail-modal-overlay" class="diary-detail-modal-overlay">
+    <div class="diary-detail-modal-content">
+        <button id="diary-detail-modal-close" class="diary-detail-modal-close">&times;</button>
+        <h2 id="diary-detail-title"></h2>
+        <div id="diary-detail-body">
+            <!-- 내용은 JS를 통해 동적으로 채워집니다 -->
+        </div>
+    </div>
 </div>
 {% endblock %}
 

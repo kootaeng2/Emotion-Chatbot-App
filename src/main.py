@@ -5,11 +5,13 @@ import time
 from . import db
 from .models import Diary, User
 from .emotion_engine import predict_emotion
+from .recommender import Recommender
 import logging
 import os
 import google.generativeai as genai
 
 bp = Blueprint('main', __name__)
+recommender = Recommender()
 
 # --- Gemini API 설정 ---
 try:
@@ -168,6 +170,8 @@ def api_diaries():
     year = request.args.get('year', type=int)
     month = request.args.get('month', type=int)
 
+    logging.info(f"API 요청: user_id={user_id}, year={year}, month={month}")
+
     if not year or not month:
         today = datetime.date.today()
         year = today.year
@@ -178,6 +182,8 @@ def api_diaries():
         end_date = datetime.date(year + 1, 1, 1)
     else:
         end_date = datetime.date(year, month + 1, 1)
+
+    logging.info(f"DB 쿼리 범위: {start_date} <= created_at < {end_date}")
 
     user_diaries = Diary.query.filter(
         Diary.user_id == user_id,
@@ -190,22 +196,51 @@ def api_diaries():
     kst_tz = datetime.timezone(datetime.timedelta(hours=9))
 
     for diary in user_diaries:
-        # Assume created_at from DB is a naive datetime representing UTC, make it aware
-        utc_time = diary.created_at.replace(tzinfo=utc_tz)
+        created_at_utc = diary.created_at
         
-        # Convert to KST for display
-        kst_time = utc_time.astimezone(kst_tz)
-        
+        # 타임존 정보가 없는 경우 UTC로 간주
+        if created_at_utc.tzinfo is None:
+            created_at_utc = created_at_utc.replace(tzinfo=utc_tz)
+
+        created_at_kst = created_at_utc.astimezone(kst_tz)
+
         diaries_data.append({
             "id": diary.id,
-            "date": kst_time.strftime('%Y-%m-%d'),
-            "createdAt": kst_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "date": created_at_kst.strftime('%Y-%m-%d'),
+            "createdAt": created_at_kst.strftime('%Y-%m-%d %H:%M:%S'),
             "content": diary.content,
             "emotion": diary.emotion,
             "recommendation": diary.recommendation
         })
 
     return jsonify(diaries_data)
+
+
+@bp.route('/api/diaries/counts')
+def api_diaries_counts():
+    if 'user_id' not in session:
+        return jsonify({"error": "로그인이 필요합니다."}), 401
+
+    user_id = session['user_id']
+    year = request.args.get('year', type=int)
+
+    if not year:
+        year = datetime.date.today().year
+
+    counts = db.session.query(
+        extract('month', Diary.created_at), 
+        db.func.count(Diary.id)
+    ).filter(
+        Diary.user_id == user_id,
+        extract('year', Diary.created_at) == year
+    ).group_by(
+        extract('month', Diary.created_at)
+    ).all()
+
+    # 결과를 {month: count} 형태의 딕셔너리로 변환
+    counts_dict = {month: count for month, count in counts}
+    
+    return jsonify(counts_dict)
 
 
 @bp.route('/my_diary')
@@ -276,6 +311,21 @@ def diary_save():
     try:
         # 추천 생성
         recommendation_text = generate_recommendation(diary_content, predicted_emotion)
+
+        # Gemini API 실패 시 Recommender 클래스로 대체
+        if recommendation_text is None:
+            logging.info("Gemini 추천 실패. Recommender 클래스로 대체합니다.")
+            su_yoong_recs = recommender.recommend(predicted_emotion, '수용')
+            jeon_hwan_recs = recommender.recommend(predicted_emotion, '전환')
+            
+            # diary_logic.js가 파싱할 수 있는 형식으로 만듭니다.
+            recommendation_text = f"## [수용]\n"
+            for rec in su_yoong_recs:
+                recommendation_text += f"* {rec}\n"
+            
+            recommendation_text += f"\n## [전환]\n"
+            for rec in jeon_hwan_recs:
+                recommendation_text += f"* {rec}\n"
 
         # 일기 저장
         new_diary = Diary(
