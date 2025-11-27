@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const counts = await response.json();
             
             document.querySelectorAll('.month-item').forEach(item => {
-                const month = parseInt(item.dataset.month) + 1; // data-month는 0-indexed
+                const month_key = (parseInt(item.dataset.month) + 1).toString(); // 월 번호를 문자열로 변환
                 const countSpan = item.querySelector('.diary-count');
-                const count = counts[month] || 0;
+                const count = counts[month_key] || 0; // 문자열 키로 접근
                 
                 if (count > 0) {
                     countSpan.textContent = count;

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request, current_app
-from sqlalchemy import extract
+from sqlalchemy import extract, String # String 추가
 import datetime
 import time
 from . import db
@@ -227,8 +227,9 @@ def api_diaries_counts():
     if not year:
         year = datetime.date.today().year
 
+    # PostgreSQL은 extract를 지원하므로 원래 로직으로 복원
     counts = db.session.query(
-        extract('month', Diary.created_at), 
+        extract('month', Diary.created_at).cast(String), # 월을 문자열로 캐스팅
         db.func.count(Diary.id)
     ).filter(
         Diary.user_id == user_id,
@@ -237,7 +238,6 @@ def api_diaries_counts():
         extract('month', Diary.created_at)
     ).all()
 
-    # 결과를 {month: count} 형태의 딕셔너리로 변환
     counts_dict = {month: count for month, count in counts}
     
     return jsonify(counts_dict)
