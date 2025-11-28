@@ -9,6 +9,46 @@
 5.  **마이페이지 '기억의 유리병' 시각화 구현.**
 
 ---
+graph LR
+    %% 1. 클라이언트 영역 (Frontend)
+    subgraph Client ["💻 Client Side (Frontend)"]
+        User[👤 사용자 / 웹 브라우저<br/>(HTML5, CSS3, Vanilla JS)]
+    end
+
+    %% 2. 서버 영역 (Backend)
+    subgraph Server ["⚙️ Flask Server (Backend)"]
+        direction TB
+        Controller[🎮 Main Controller<br/>(Routing & Logic)]
+        InternalModel[🤖 Internal AI Engine<br/>(klue/roberta-base)]
+    end
+
+    %% 3. 외부 서비스 및 데이터베이스
+    subgraph External ["☁️ Infrastructure & External APIs"]
+        direction TB
+        Gemini[✨ Google Gemini API<br/>(Generative Recommendation)]
+        Supabase[(🗄️ Supabase DB<br/>PostgreSQL)]
+    end
+
+    %% --- 데이터 흐름 (Data Flow) ---
+    
+    %% [Phase 1] 감정 분석 및 추천 생성
+    User -- "1. 일기 작성 & 분석 요청<br/>(POST /api/predict)" --> Controller
+    Controller -- "2. 텍스트 전처리 & 감정 추론" --> InternalModel
+    InternalModel -- "3. 감정 라벨 & 확률 반환" --> Controller
+    Controller -- "4. 맞춤형 콘텐츠 추천 요청" --> Gemini
+    Gemini -- "5. 추천 결과(공감/환기) 생성" --> Controller
+    Controller -- "6. 분석 결과(JSON) 응답" --> User
+
+    %% [Phase 2] 결과 저장 (인터랙션)
+    User -- "7. '저장하기' 클릭<br/>(POST /diary/save)" --> Controller
+    Controller -- "8. 일기 & 분석 데이터 저장" --> Supabase
+
+    %% 스타일링 (가독성 향상)
+    style Client fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style Server fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style External fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style InternalModel fill:#ffccbc,stroke:#d84315,stroke-dasharray: 5 5
+---
 
 ## 📅 2025년 11월 27일
 ### 주제: UI 디테일 완성도 향상 & 애니메이션 고도화 (Polishing)
