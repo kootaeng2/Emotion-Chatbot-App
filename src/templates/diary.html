@@ -1,26 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %}{{ display_name }}님의 감정 달력{% endblock %}
+{% block title %}{{ display_name }}'s Dashboard{% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/diary.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="main-content">
-    <div class="calendar-wrapper">
-        <h1>나의 감정 달력</h1>
+<div class="dashboard-container">
+    <!-- 1열: 좌측 사이드바 -->
+    <aside class="sidebar">
+        <div class="year-selector">
+            <button id="prev-year">◀</button>
+            <h2 id="current-year">2025</h2>
+            <button id="next-year">▶</button>
+        </div>
+                <ul class="month-list">
+                    <li class="month-item" data-month="0" style="display: flex; justify-content: space-between;"><span>Jan</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="1" style="display: flex; justify-content: space-between;"><span>Feb</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="2" style="display: flex; justify-content: space-between;"><span>Mar</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="3" style="display: flex; justify-content: space-between;"><span>Apr</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="4" style="display: flex; justify-content: space-between;"><span>May</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="5" style="display: flex; justify-content: space-between;"><span>Jun</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="6" style="display: flex; justify-content: space-between;"><span>Jul</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="7" style="display: flex; justify-content: space-between;"><span>Aug</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="8" style="display: flex; justify-content: space-between;"><span>Sep</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="9" style="display: flex; justify-content: space-between;"><span>Oct</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="10" style="display: flex; justify-content: space-between;"><span>Nov</span> <span class="diary-count"></span></li>
+                    <li class="month-item" data-month="11" style="display: flex; justify-content: space-between;"><span>Dec</span> <span class="diary-count"></span></li>
+                </ul>
+        <div class="sidebar-footer">
+            <p>Emotion Diary</p>
+        </div>
+    </aside>
+
+    <!-- 2열: 중앙 달력 -->
+    <main class="calendar-area">
+        <div class="calendar-header">
+            <h2 id="calendar-month-title">November</h2>
+            <button class="add-btn" title="오늘 날짜로 새 일기 작성 (구현 예정)">+ Add</button>
+        </div>
         <div id="calendar"></div>
+    </main>
+
+    <!-- 3열: 우측 타임라인 -->
+    <section class="timeline-area">
+        <h2 class="timeline-title">일기 목록</h2>
+        <div id="diary-list-container">
+            <div class="placeholder">
+                <p>날짜를 선택하면<br>이곳에 일기가 표시됩니다.</p>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- Recommendation Modal -->
+<div id="rec-modal-overlay" class="modal-overlay">
+    <div id="rec-modal-content" class="modal-content">
+        <button id="rec-modal-close" class="modal-close-btn">&times;</button>
+        <h2 id="rec-modal-title"></h2>
+        <div id="rec-modal-body"></div>
     </div>
-    <div class="diary-display-wrapper">
-        <div id="diary-display" class="placeholder">
-            <h2>일기를 선택해주세요</h2>
-            <p>달력에서 날짜를 클릭하면 여기에 내용이 표시됩니다.</p>
+</div>
+
+<!-- Diary Detail Modal -->
+<div id="diary-detail-modal-overlay" class="diary-detail-modal-overlay">
+    <div class="diary-detail-modal-content">
+        <button id="diary-detail-modal-close" class="diary-detail-modal-close">&times;</button>
+        <h2 id="diary-detail-title"></h2>
+        <div id="diary-detail-body">
+            <!-- 내용은 JS를 통해 동적으로 채워집니다 -->
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="{{ url_for('static', filename='js/diary_logic.js') }}"></script>
 {% endblock %}

@@ -1,306 +1,488 @@
-/* --- Diary Page Layout --- */
-.main-content {
+/* --- 감정별 색상 변수 --- */
+:root {
+    --primary-theme-color: #7b68ee; /* 보라색 포인트 */
+    --background-light: #f4f7fc;
+    --text-dark: #333;
+    --text-light: #888;
+    
+    --dot-joy: #ffdd57;
+    --dot-sad: #5390e3;
+    --dot-angry: #ff6b6b;
+    --dot-anxious: #9775fa;
+    --dot-surprised: #ffa94d;
+    --dot-hurt: #48d1cc;
+    --dot-default: #e0e0e0;
+}
+
+/* --- 전체 레이아웃 --- */
+.dashboard-container {
     display: flex;
-    gap: 2rem;
-    width: 100%;
-    max-width: 1600px;
-    align-items: flex-start; /* Align items to the top */
-}
-
-.calendar-wrapper {
-    flex: 1;
-    max-width: 450px; /* Set a max-width for the calendar card */
-    min-width: 400px; /* Prevent it from getting too small */
-}
-
-.diary-display-wrapper {
-    flex: 2;
-    align-self: stretch;
+    width: 95%;
+    max-width: 1400px;
+    height: 750px;
+    margin: 2rem auto;
+    margin-top: 5rem;
     background-color: white;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.07);
-    padding: 40px;
-    box-sizing: border-box;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    font-family: 'Spoqa Han Sans Neo', sans-serif;
 }
 
-h1, h2 {
-    font-weight: 700;
-    color: var(--primary-color);
-    text-align: center;
-}
-h1 {
-    font-size: 28px;
-    margin: 0 0 25px 0;
-}
-h2 {
-    font-size: 24px;
-    margin-top: 0;
-}
-
-
-/* --- Flatpickr Modern Card Style --- */
-
-.flatpickr-calendar {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 450px;
-    padding: 20px;
-    border: none;
-    font-family: var(--font-family);
-    display: block; /* Ensure it's not inline */
-    margin: 0; /* Remove default margins */
-}
-
-.flatpickr-months {
-    background: var(--primary-color);
-    color: #fff;
-    padding: 15px 10px;
-    border-radius: 15px 15px 0 0;
-    margin: -20px -20px 10px -20px; /* Extend to edges */
-    display: flex;
-    align-items: center;
-}
-
-.flatpickr-month {
-    flex-grow: 1;
-    text-align: center;
-}
-
-.flatpickr-current-month {
-    font-size: 1.4em;
-    font-weight: 600;
-    color: inherit;
-}
-.flatpickr-current-month .numInputWrapper {
-    color: inherit;
-}
-.flatpickr-current-month .numInput {
-    color: inherit;
-}
-
-
-.flatpickr-prev-month, .flatpickr-next-month {
-    color: rgba(255, 255, 255, 0.8);
-    transition: color 0.2s;
-}
-.flatpickr-prev-month:hover, .flatpickr-next-month:hover {
-    color: #fff;
-}
-
-.flatpickr-weekdays {
-    background: var(--primary-color);
-    color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    padding: 10px 0;
-    margin: 0 -20px 10px -20px;
-}
-
-span.flatpickr-weekday {
-    flex: 1;
-    text-align: center;
-    font-weight: 500;
-    font-size: 0.9em;
-    text-transform: uppercase;
-    color: inherit;
-}
-
-.dayContainer {
-    padding: 0;
-    gap: 5px; /* Add gap between day rows */
-}
-
-.flatpickr-day {
-    height: 80px;
+/* --- 1. 좌측 사이드바 --- */
+.sidebar {
+    width: 200px;
+    background-color: var(--primary-theme-color);
+    color: white;
+    padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 8px 0;
-    border-radius: 12px;
-    transition: background-color 0.2s, border-color 0.2s;
-    border: 2px solid transparent;
-    color: #333;
-    background: #fff;
+    flex-shrink: 0;
 }
 
-.flatpickr-day:hover {
-    background-color: #f5f5f5;
-}
-
-.flatpickr-day.today {
-    border-color: var(--primary-hover-color);
-    font-weight: bold;
-}
-
-.flatpickr-day.selected,
-.flatpickr-day.startRange,
-.flatpickr-day.endRange {
-    background: var(--primary-color);
-    color: #fff;
-    border-color: var(--primary-color);
-}
-
-.flatpickr-day.selected:hover,
-.flatpickr-day.startRange:hover,
-.flatpickr-day.endRange:hover {
-    background: var(--primary-hover-color);
-}
-
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-    color: #ccc;
-    background: #f9f9f9;
-}
-.flatpickr-day.prevMonthDay .emotion-emoji,
-.flatpickr-day.nextMonthDay .emotion-emoji {
-    opacity: 0.4;
-}
-
-
-/* --- Day Content --- */
-.day-content-wrapper {
+.year-selector {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
-    justify-content: flex-start;
-    text-align: center;
-    width: 100%;
-}
-.day-number {
-    font-size: 1.1em;
-}
-.emotion-emoji {
-    font-size: 1.5rem;
-    margin-top: 5px;
-}
-
-/* --- Diary Display Styles --- */
-#diary-display {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-#diary-display.placeholder {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #888;
-}
-
-#diary-list-container {
+    padding: 0 1.5rem;
     margin-bottom: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
 }
-.diary-list-item {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border: 1px solid #eee;
+.year-selector h2 {
+    font-size: 1.5rem;
+    margin: 0;
 }
-.diary-list-item:hover, .diary-list-item.active {
-    background-color: #f0f5ff;
-    border-color: var(--primary-color);
-}
-.list-item-emoji {
-    font-size: 1.3rem;
-    margin-right: 10px;
-}
-.list-item-time {
-    font-size: 0.9rem;
-    color: var(--light-text-color);
-}
-.delete-btn {
-    background: transparent;
+.year-selector button {
+    background: none;
     border: none;
-    color: var(--danger-color);
+    color: white;
     font-size: 1.2rem;
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.8;
     transition: opacity 0.2s;
-    margin-left: 8px;
 }
-.delete-btn:hover {
+.year-selector button:hover {
     opacity: 1;
 }
 
-#diary-detail-container {
-    border-top: 2px solid #eee;
-    padding-top: 2rem;
+.month-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     flex-grow: 1;
+}
+.month-item {
+    padding: 0.7rem 2rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    opacity: 0.7;
+    position: relative;
+}
+.month-item:hover, .month-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+}
+.month-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: white;
+}
+
+.sidebar-footer {
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+/* --- 2. 중앙 달력 --- */
+.calendar-area {
+    flex-grow: 1;
+    padding: 2rem 2.5rem;
+    background-color: #fff;
     display: flex;
     flex-direction: column;
 }
-
-.diary-header {
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
 }
-.diary-date {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
+.calendar-header h2 {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin: 0;
 }
-.diary-emotion {
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin-top: 0.5rem;
+.add-btn {
+    background-color: var(--primary-theme-color);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
-.diary-body {
-    overflow-y: auto;
+.add-btn:hover { transform: scale(1.1); }
+
+/* Flatpickr 커스텀 */
+#calendar { 
+    flex-grow: 1; 
+    display: flex;
+}
+.flatpickr-calendar {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    height: 100%;
+    background: transparent;
+    box-shadow: none;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+}
+.flatpickr-innerContainer { 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column;
     flex-grow: 1;
 }
-.diary-section {
-    margin-bottom: 1.5rem;
-}
-.diary-section h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 0.5rem;
-}
-.diary-content, .diary-recommendation {
-    white-space: pre-wrap;
-    line-height: 1.6;
-    background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 8px;
-}
-.diary-recommendation ul, .diary-recommendation ol {
-    padding-left: 20px;
+
+.flatpickr-rContainer {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
-/* Recommendation Tabs */
-.rec-tabs {
+/* --- 요일 헤더 정렬 수정 (Weekday Alignment Fix) --- */
+
+.flatpickr-weekdays {
+    display: flex !important; /* Grid 대신 Flex 사용 */
+    width: 100% !important;
+    padding: 0 2.5rem !important; 
+    box-sizing: border-box !important;
+    margin: 0 0 10px 0 !important;
+    overflow: hidden; /* 넘치는 것 방지 */
+}
+
+span.flatpickr-weekday {
+    /* 7등분 강제 적용 (100% / 7 = 14.2857%) */
+    flex: 1 0 14.28% !important; 
+    max-width: 14.28% !important;
+    
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    
+    color: #888 !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+}
+.flatpickr-days {
+    width: 100%;
+    flex-grow: 1;
+}
+
+.dayContainer {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 100%;
+    justify-items: center !important;
+    gap: 0 !important;
+    padding: 0 2.5rem !important; /* Match weekday padding */
+    box-sizing: border-box; /* Match weekday box-sizing */
+}
+
+.flatpickr-day {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    height: 80px !important; /* 원래 높이 유지 */
+    border-radius: 12px;
+    position: relative;
+    z-index: 1;
     display: flex;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #ddd;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, color 0.2s; /* color transition 추가 */
+    font-size: 1.4rem; 
+    overflow: hidden; /* 가상요소가 둥근 모서리를 넘지 않도록 */
 }
-.rec-tab-btn {
-    padding: 10px 15px;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-    font-size: 1rem;
-    color: var(--light-text-color);
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+
+/* 날짜 숫자 스타일 */
+.flatpickr-day span.flatpickr-day-num {
+    position: relative;
+    z-index: 2; /* 배경보다 위에 오도록 */
 }
-.rec-tab-btn.active {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
+
+/* 일기가 있는 날의 가상요소 (배경 역할) */
+.flatpickr-day.has-diary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* 숫자보다 뒤에 오도록 */
+    transition: background-color 0.2s;
+}
+
+.flatpickr-day.today {
+    border: 1px solid var(--primary-theme-color);
+}
+
+.flatpickr-day:not(.has-diary):hover { /* 일기가 없는 날짜에만 적용 */
+    background-color: #f0edff;
+}
+
+.flatpickr-day.has-diary:hover::before { /* 일기가 있는 날짜는 밝기만 조절 */
+    filter: brightness(90%);
+}
+
+.flatpickr-day.selected {
+    border: 2px solid var(--primary-theme-color); /* 배경색 대신 테두리로 선택 표시 */
+}
+/* .flatpickr-day.selected::before 규칙은 완전히 제거됨 */
+
+
+.flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #ccc; }
+
+.flatpickr-day.has-diary {
+    color: white; /* 기본 텍스트 색상을 흰색으로 변경 */
+}
+
+/* 감정별 배경색 (가상요소에 적용) */
+.flatpickr-day.has-diary.bg-기쁨::before { background-color: var(--dot-joy); }
+.flatpickr-day.has-diary.bg-슬픔::before { background-color: var(--dot-sad); }
+.flatpickr-day.has-diary.bg-분노::before { background-color: var(--dot-angry); }
+.flatpickr-day.has-diary.bg-불안::before { background-color: var(--dot-anxious); }
+.flatpickr-day.has-diary.bg-당황::before { background-color: var(--dot-surprised); }
+.flatpickr-day.has-diary.bg-상처::before { background-color: var(--dot-hurt); }
+.flatpickr-day.has-diary.bg-default::before { background-color: var(--dot-default); }
+
+.flatpickr-day.has-diary.bg-기쁨 span.flatpickr-day-num,
+.flatpickr-day.has-diary.bg-당황 span.flatpickr-day-num,
+.flatpickr-day.has-diary.bg-default span.flatpickr-day-num {
+    color: #333; /* 밝은 배경색에 어두운 글자색 적용 */
+}
+
+
+.flatpickr-day.today.has-diary {
+    border: none; /* 배경색이 채워지므로 테두리 제거 */
+}
+
+
+
+/* --- 3. 우측 타임라인 --- */
+.timeline-area {
+    width: 350px;
+    background-color: #fcfcfc;
+    border-left: 1px solid #f0f0f0;
+    padding: 2rem;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+.timeline-title {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin: 0 0 2rem 0;
+}
+
+.timeline-area .placeholder {
+    text-align: center;
+    color: var(--text-light);
+    padding-top: 5rem;
+}
+
+#diary-list-container { position: relative; }
+
+.timeline-item {
+    position: relative;
+    padding-left: 30px;
+    padding-bottom: 25px;
+    border-left: 2px solid #e0e0e0;
+}
+/* 타임라인 마지막 아이템의 선 제거 */
+.timeline-item:last-child { border-left: 2px solid transparent; }
+
+/* 타임라인 점 */
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -9px; /* (16px / 2) - 2px */
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: white;
+    border: 3px solid var(--primary-theme-color);
+}
+.timeline-item.item-기쁨::before { border-color: var(--dot-joy); }
+.timeline-item.item-슬픔::before { border-color: var(--dot-sad); }
+.timeline-item.item-분노::before { border-color: var(--dot-angry); }
+.timeline-item.item-불안::before { border-color: var(--dot-anxious); }
+.timeline-item.item-당황::before { border-color: var(--dot-surprised); }
+.timeline-item.item-상처::before { border-color: var(--dot-hurt); }
+.timeline-item.item-default::before { border-color: var(--dot-default); }
+
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.item-time {
     font-weight: 600;
+    color: var(--text-dark);
 }
-.rec-content {
-    display: none;
+.item-emotion {
+    font-size: 1.2rem;
 }
-.rec-content.active {
-    display: block;
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 이모지와 삭제 버튼 사이 간격 */
+}
+
+.delete-diary-btn {
+    background: none;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.delete-diary-btn:hover {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.item-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #666;
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #f0f0f0;
+}
+.item-content h3 {
+    font-size: 1rem;
+    margin: 0 0 10px 0;
+}
+.item-content p {
+    margin: 0;
+}
+
+.item-recommendations {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.item-recommendations h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 10px 0;
+}
+
+.item-recommendations ul {
+    list-style-type: '🎵';
+    padding-left: 20px;
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.item-recommendations li {
+    padding-left: 8px;
+    margin-bottom: 5px;
+}
+.item-content ul {
+    padding-left: 20px;
+    margin: 10px 0 0 0;
+}
+.item-content li {
+    margin-bottom: 5px;
+}
+
+/* --- 상세 정보 모달 스타일 --- */
+.diary-detail-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    backdrop-filter: blur(5px);
+}
+
+.diary-detail-modal-content {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.diary-detail-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#diary-detail-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+#diary-detail-body {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #444;
+}
+
+#diary-detail-body .diary-content-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+#diary-detail-body .diary-content-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary-theme-color);
+}
+
+#diary-detail-body #rec-container h3 {
+    margin-bottom: 15px;
 }
