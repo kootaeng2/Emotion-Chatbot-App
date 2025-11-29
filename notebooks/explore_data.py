@@ -71,7 +71,6 @@ except FileNotFoundError as e:
 
 # 2. 라벨 데이터 정제 및 추출
 def extract_emotions(raw_labels):
-    # 'emotion' 컬럼에 원본 E코드를 저장합니다.
     emotions = []
     for dialogue in raw_labels:
         try:
@@ -109,7 +108,6 @@ df_combined = pd.concat([df_train, df_val], ignore_index=True)
 
 
 print("\n--- 통합 데이터프레임의 첫 5줄 (매핑 후) ---")
-# 'emotion' (E코드)와 'major_emotion' (대분류 감정) 모두 출력하여 확인
 print(df_combined[['text', 'emotion', 'major_emotion']].head())
 print("\n--- 통합 데이터프레임 크기 ---")
 print(f"통합 데이터: {df_combined.shape}")
@@ -128,23 +126,15 @@ print("-------------------------------------------\n")
 
 # 감정 분포 시각화
 plt.figure(figsize=(10, 6))
-
-# value_counts() 결과를 직접 Bar Plot으로 그립니다.
 sns.barplot(x=emotion_counts.values, y=emotion_counts.index, color='#2c7bb6') 
-
-# 수량 (개수)을 막대 끝에 추가
 for index, value in enumerate(emotion_counts.values):
-    # 막대 끝에 텍스트 추가 (쉼표 포함)
     plt.text(x=value + 100, y=index, s=f'{value:,}', va='center', ha='left', fontsize=12, color='black')
 
 plt.title('훈련 + 검증 데이터 통합 감정 분포 시각화', fontsize=15)
 plt.xlabel('개수', fontsize=12)
 plt.ylabel('감정', fontsize=12)
 plt.grid(axis='x', linestyle='--', alpha=0.7)
-
-# X축 범위를 수량 텍스트가 잘리지 않도록 확장 (약 15000개로 설정)
 plt.xlim(0, 15000)
-# 과학적 표기법 해제
 plt.ticklabel_format(style='plain', axis='x')
 
 plt.show() 

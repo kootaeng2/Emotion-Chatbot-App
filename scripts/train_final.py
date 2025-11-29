@@ -1,5 +1,4 @@
 # 파일 이름: train_final.py
-# [전략 수정] 6-Class 오버샘플링(Oversampling) 적용
 
 import os
 import pandas as pd
@@ -15,7 +14,7 @@ from transformers import (
 )
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
 from sklearn.model_selection import train_test_split 
-from sklearn.utils import resample # 오버샘플링 
+from sklearn.utils import resample 
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
 import platform
@@ -134,7 +133,6 @@ def load_and_process(text_file, label_file, data_dir):
 
     df_combined['cleaned_text'] = df_combined['text'].apply(clean_text)
     
-    # 1단계: E코드를 6-Class("분노")로 매핑
     df_combined['major_emotion'] = df_combined['e_code'].apply(map_ecode_to_6class)
     
     df_combined.dropna(subset=['major_emotion', 'cleaned_text'], inplace=True)
@@ -196,7 +194,7 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     # 4. 나머지 데이터와 복제된 '기쁨' 데이터를 다시 합침
     df_train = pd.concat([df_train_others, df_joy_oversampled])
     
-    # 5. [중요] 데이터셋을 다시 섞어줌
+    # 5. 데이터셋을 다시 섞어줌
     df_train = df_train.sample(frac=1, random_state=42).reset_index(drop=True)
     
     print("\n--- [Oversampling] New Train 6-Class (최종 분포) ---")
@@ -219,12 +217,11 @@ def run_training():
         return
 
     text_column = 'cleaned_text'
-    label_column_str = 'major_emotion' # [수정] 6-Class 라벨
+    label_column_str = 'major_emotion' 
     
     model_name_to_load = config.get_model_name()
     tokenizer = AutoTokenizer.from_pretrained(model_name_to_load)
 
-    # [수정] 6-Class 라벨 맵 생성
     unique_labels = sorted(df_train[label_column_str].unique())
     label_to_id = {label: i for i, label in enumerate(unique_labels)}
     id_to_label = {i: label for label, i in label_to_id.items()}
@@ -246,13 +243,11 @@ def run_training():
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\nUsing device: {device}")
-
-    # [제거] 클래스 가중치 계산 로직 제거
     
     print("모델 로딩 중...")
     model = AutoModelForSequenceClassification.from_pretrained(
         model_name_to_load,
-        num_labels=len(unique_labels), # [수정] 6개
+        num_labels=len(unique_labels),
         id2label=id_to_label,
         label2id=label_to_id,
         ignore_mismatched_sizes=True 
@@ -274,14 +269,12 @@ def run_training():
         report_to="none"
     )
 
-    # [수정] 기본 Trainer 사용
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=val_dataset,      
         compute_metrics=compute_metrics
-        # [제거] class_weights 파라미터 제거
     )
     
     print(f"\n 6-Class (Oversampled) 모델 훈련을 시작합니다...")

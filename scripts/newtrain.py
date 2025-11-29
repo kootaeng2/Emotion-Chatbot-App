@@ -1,9 +1,4 @@
-# 파일 이름: train_final_v2.py
-# 
-# [v2 변경 사항]
-# 1. 훈련/검증/테스트 데이터 분리 (90% / 10% / 기존 검증셋)
-# 2. 'cosine' 학습률 스케줄러 적용
-# 3. '수동 클래스 가중치' 적용 (TODO 섹션 확인)
+#newtrain.py
 
 import os
 import pandas as pd
@@ -56,7 +51,6 @@ class TrainingConfig:
     warmup_ratio: float = 0.1
     
     def get_model_name(self) -> str:
-        # 감정 모드일 땐 항상 klue/roberta-base 원본을 사용
         return self.base_model_name
         
     def get_output_dir(self) -> str:
@@ -105,7 +99,6 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Dat
     elif config.mode == 'emotion':
         print("--- 감정 데이터 로딩 (Train/Val/Test 분리) ---")
         
-        # (내부 함수) JSON 파일 로드 및 라벨 매핑
         def load_and_map_labels(file_name):
             def map_ecode_to_major_emotion(ecode):
                 try: code_num = int(ecode[1:])
@@ -156,8 +149,6 @@ def get_data(config: TrainingConfig) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Dat
 # --- 4. 메인 실행 함수 ---
 def run_training():
     config = TrainingConfig()
-    
-    # 1. 데이터 준비 (3개 세트를 받음)
     df_train, df_val, df_test = get_data(config)
     
     text_column = 'cleaned_text'
@@ -165,8 +156,6 @@ def run_training():
     
     # 2. 토크나이저 및 라벨 인코딩
     tokenizer = AutoTokenizer.from_pretrained(config.get_model_name())
-
-    # [중요] 라벨 순서는 '신규 훈련 데이터(df_train)' 기준으로 생성
     unique_labels = sorted(df_train[label_column_str].unique())
     label_to_id = {label: i for i, label in enumerate(unique_labels)}
     id_to_label = {i: label for label, i in label_to_id.items()}
@@ -188,7 +177,7 @@ def run_training():
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\nUsing device: {device}")
-    # 클래스 가중치 계산 (신규 훈련 데이터 기준)
+    # 클래스 가중치 계산 
     manual_weights_list = [6.00, 4.50, 0.85, 1.80, 1.80, 0.92] 
     class_weights = torch.tensor(manual_weights_list, dtype=torch.float).to(device)
     
@@ -246,7 +235,7 @@ def run_training():
     results = trainer.evaluate() # 기본값 (eval_dataset)
     print(results)
 
-    # --- [핵심 변경] 최종 Test Set으로 '진짜 성능' 평가 ---
+    # --- 최종 Test Set으로 '진짜 성능' 평가 ---
     print("\n" + "="*50)
     print("--- 최종 Test Set으로 '진짜 성능' 평가 시작 ---")
     print("="*50)
