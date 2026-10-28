@@ -22,15 +22,6 @@ pinned: false
 
 ---
 
-### 📸 Screenshots
-
-*(스크린샷을 여기에 추가하세요. 예: 메인 페이지, 일기 작성, 결과 화면)*
-
-![Main Page](https://via.placeholder.com/400x250.png?text=Main+Page)
-![Result Page](https://via.placeholder.com/400x250.png?text=Result+Page)
-
----
-
 ## 🚀 핵심 기능
 
 - **🤖 텍스트 속 감정 탐색**: `klue/roberta-base` 모델을 기반으로, 일기 속에 담긴 복합적인 감정을 80% 이상의 정확도로 분석합니다.
