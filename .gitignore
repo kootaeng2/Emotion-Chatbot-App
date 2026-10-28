@@ -112,3 +112,8 @@ Thumbs.db
 # 예: !data/required_data.csv
 data/
 src/static/images/
+
+# Logs and scratch files
+*.log
+output.txt
+test.md
